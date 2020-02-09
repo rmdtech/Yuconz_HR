@@ -3,7 +3,7 @@ public class User{
     private String employeeNumber;
     private String password;
     private String passwordSalt;
-    private String accessLevel;
+    private AccessLevels accessLevel;
 
     private DatabaseParser dp = new DatabaseParser();
 
@@ -35,5 +35,13 @@ public class User{
 
     public void logout(){
 
+    }
+
+    public String getEmployeeNumber(){
+        return employeeNumber;
+    }
+
+    public AccessLevels getAccessLevel(){
+        return accessLevel;
     }
 }
