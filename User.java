@@ -6,6 +6,7 @@ public class User{
     private Position.Department department;
     private Position.Role role;
 
+    // Does this need to be an object?
     private DatabaseParser dp = new DatabaseParser();
 
     /**
