@@ -15,18 +15,18 @@ public class Authorise{
      * @param user User object of the currently logged in user attempting this action
      * @return Whether or not the attempted action was successful
      */
-    public static boolean AuthorisationAttempt(String action, Position.Department requiredDpt, Position.Role requiredRole, User user){
+    public static boolean AuthorisationAttempt(String action, String target, Position.Department requiredDpt, Position.Role requiredRole, User user){
         DatabaseParser dp = new DatabaseParser();
         LocalDateTime now = LocalDateTime.now();
+
         String logMessage = "[" + user.getEmployeeID() + " at " + dateFormat.format(now) + "] " + action;
 
         if (requiredDpt.equals(user.getDepartment()) && requiredRole.equals(user.getRole())){
-            logMessage += " AUTHORISED";
-            dp.recordAuthorisationAttempt(logMessage);
+            dp.recordAuthorisationAttempt(user.getEmployeeID(), dateFormat.format(now), action, target, true);
             return true;
         }
         else{
-            logMessage += " DENIED.\nLevel required: " + requiredDpt.toString() + " " + requiredRole.toString() + "\n " + user.getEmployeeID() + " is " + user.getDepartment().toString() + " " + user.getRole().toString();
+            dp.recordAuthorisationAttempt(user.getEmployeeID(), dateFormat.format(now), action, target, false);
             dp.recordAuthorisationAttempt(logMessage);
             return false;
         }
