@@ -9,7 +9,7 @@ public class Position {
 
         public final String label;
 
-        private Department(String label)
+        Department(String label)
         {
             this.label = label;
         }
@@ -22,7 +22,7 @@ public class Position {
 
         public final String label;
 
-        private Role(String label)
+        Role(String label)
         {
             this.label = label;
         }
