@@ -39,7 +39,7 @@ public class User{
                 if (dp.getPasswordSalt(employeeID).equals(passwordSalt))
                 {
                     // do something that indicates the login status
-                    getRoles();
+                    getRole();
                 }
             }
         }
