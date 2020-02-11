@@ -3,7 +3,6 @@ public class User{
     private String employeeNumber;
     private String password;
     private String passwordSalt;
-    private AccessLevels accessLevel;
 
     private DatabaseParser dp = new DatabaseParser();
 
@@ -12,6 +11,7 @@ public class User{
         /* Want to take employeenumber and password through some kind of user input
          * Password would also be handed over in an encrypted form so it can be checked against the DB record
         */
+        Role.Element role = Role.Element.valueOf("Manager");
         this.employeeNumber = employeeNumber;
         this.password = password;
         this.passwordSalt = passwordSalt;
@@ -41,7 +41,7 @@ public class User{
         return employeeNumber;
     }
 
-    public AccessLevels getAccessLevel(){
-        return accessLevel;
+    public Role getAccessLevel(){
+
     }
 }

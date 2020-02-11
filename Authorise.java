@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 public class Authorise{
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 
-    public static boolean AuthorisationAttempt(String action, AccessLevels required, User user){
+    public static boolean AuthorisationAttempt(String action, Role required, User user){
         DatabaseParser dp = new DatabaseParser();
         LocalDateTime now = LocalDateTime.now();
         String logMessage = "[" + user.getEmployeeNumber() + " at " + dateFormat.format(now) + "] " + action;
@@ -20,5 +20,4 @@ public class Authorise{
             return false;
         }
     }
-
 }
