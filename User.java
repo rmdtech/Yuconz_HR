@@ -53,14 +53,62 @@ public class User{
             // notify that this employeeId is already in use
             return false;
         }
-        UUID uuid = new UUID(15,0);
-        passwordSalt = uuid.toString();
+
 
         this.department = Position.Department.valueOf(department);
         this.role = Position.Role.valueOf(role);
         dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password+passwordSalt), department, role);
 
         return true;
+    }
+
+    public boolean updatePassword(String updatedPassword)
+    {
+        UUID uuid = new UUID(15,0);
+        passwordSalt = uuid.toString();
+
+        if (dp.updatePassword(employeeId, sha512Encrypt(updatedPassword+passwordSalt), passwordSalt))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public boolean isLoggedIn()
+    {
+        if (sessionId.equals(dp.fetchSessionId(getEmployeeId())))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * This will log the user into the system
+     */
+    public void login()
+    {
+        if (dp.checkEmployeeId(employeeId))
+        {
+            if (verifyPassword())
+            {
+                department=Position.Department.valueOf(dp.fetchDepartment(employeeId));
+                role=Position.Role.valueOf(dp.fetchRole(employeeId));
+                sessionId = new UUID(15,0).toString();
+                dp.createSession(employeeId, sessionId);
+            }
+        }
+    }
+
+    /**
+     * This will log the user out of the system
+     */
+    public void logout()
+    {
+        dp.deleteSession(employeeId);
     }
 
     /**
@@ -86,32 +134,6 @@ public class User{
         }
     }
 
-    public boolean isLoggedIn()
-    {
-        if (sessionId.equals(dp.fetchSessionId(user.getEmployeeId())))
-        {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * This will log the user into the system
-     */
-    public void login()
-    {
-        if (dp.checkEmployeeId(employeeId))
-        {
-            if (verifyPassword())
-            {
-               department=Position.Department.valueOf(dp.fetchDepartment(employeeId));
-               role=Position.Role.valueOf(dp.fetchRole(employeeId));
-               sessionId = new UUID(15,0).toString();
-               dp.createSession(employeeId, sessionId);
-            }
-        }
-    }
-
     /**
      * This verifies the password given in the constructor with the salt stored in the Database.
      * @return If the passwords match
@@ -122,15 +144,6 @@ public class User{
         String authenticationString = sha512Encrypt(password + passwordSalt);
         return dp.fetchEmployeePassword(employeeId).equals(authenticationString);
     }
-
-    /**
-     * This will log the user out of the system
-     */
-    public void logout()
-    {
-        dp.deleteSession(employeeId);
-    }
-
 
     // Database fetching roles
     /**
