@@ -54,13 +54,12 @@ public class DatabaseParser
         }
     }
 
-    Boolean recordAuthorisationAttempt(String employeeId, Object deleteMe, String actionAttempted, String actionTarget, Boolean successful)
+    void recordAuthorisationAttempt(String employeeId, String actionAttempted, String actionTarget, Boolean successful)
     {
         sqlUpdate("INSERT INTO AuthorisationLog" +
                 "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
                 String.format("VALUES ('%s', '%s', '%s', '%s')", employeeId, actionAttempted, actionTarget, successful)
         );
-        return true;
     }
 
     Boolean checkEmployeeId(String employeeId)
