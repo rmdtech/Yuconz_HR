@@ -1,2 +1,0 @@
-# Yuconz-Group-29
-

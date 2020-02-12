@@ -167,4 +167,9 @@ public class User{
     {
         return role;
     }
+
+    public String getSessionId()
+    {
+        return sessionId;
+    }
 }
