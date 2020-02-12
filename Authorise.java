@@ -1,12 +1,8 @@
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 
 /**
  * Constructor for class Authorise
  */
 public class Authorise{
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
-
     /**
      * Method to print authorisation attempts into the database
      * @param action String of the action that was tried to perform
@@ -15,20 +11,21 @@ public class Authorise{
      * @param user User object of the currently logged in user attempting this action
      * @return Whether or not the attempted action was successful
      */
-    public static boolean AuthorisationAttempt(String action, String target, Position.Department requiredDpt, Position.Role requiredRole, User user)
-    {
+    public static boolean AuthorisationAttempt(String action, String target, Position.Department requiredDpt, Position.Role requiredRole, User user) {
         DatabaseParser dp = new DatabaseParser();
-        LocalDateTime now = LocalDateTime.now();
-
-        if (requiredDpt.equals(user.getDepartment()) && requiredRole.getLevel() < user.getRole().getLevel())
-        {
-            dp.recordAuthorisationAttempt(user.getEmployeeId(), dateFormat.format(now), action, target, true);
-            return true;
+        String sessionID = dp.getSessionId(user.getEmployeeId());
+        if (sessionID.equals(user.getSessionId())) {
+            if (requiredDpt.equals(user.getDepartment()) && requiredRole.getLevel() < user.getRole().getLevel()) {
+                dp.recordAuthorisationAttempt(user.getEmployeeId(), action, target, true);
+                return true;
+            }
+            else
+            {
+                dp.recordAuthorisationAttempt(user.getEmployeeId(), action, target, false);
+                return false;
+            }
         }
-        else
-        {
-            dp.recordAuthorisationAttempt(user.getEmployeeId(), dateFormat.format(now), action, target, false);
-            return false;
-        }
+        // else, user is not logged in
+        return false;
     }
 }
