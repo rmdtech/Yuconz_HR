@@ -21,16 +21,12 @@ public class DatabaseParser
         }
         System.out.println("Opened database successfully");
     }
-    Boolean recordAuthorisationAttempt(String employeeId, Object deleteMe, String actionAttempted, String actionTarget, Boolean successful)
+
+    void runSql(String sql)
     {
         try
         {
             stmt = c.createStatement();
-
-            String sql = "INSERT INTO AuthorisationLog" +
-                    "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
-                    String.format("VALUES ('%s', '%s', '%s', '%s')", employeeId, actionAttempted, actionTarget, successful);
-
             stmt.executeUpdate(sql);
             stmt.close();
             c.close();
@@ -39,6 +35,14 @@ public class DatabaseParser
         {
             e.printStackTrace();
         }
+    }
+
+    Boolean recordAuthorisationAttempt(String employeeId, Object deleteMe, String actionAttempted, String actionTarget, Boolean successful)
+    {
+        runSql("INSERT INTO AuthorisationLog" +
+                "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
+                String.format("VALUES ('%s', '%s', '%s', '%s')", employeeId, actionAttempted, actionTarget, successful)
+        );
         return true;
     }
 
