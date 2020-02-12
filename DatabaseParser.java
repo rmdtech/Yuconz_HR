@@ -106,4 +106,9 @@ public class DatabaseParser
     {
 
     }
+
+    void updatePassword(String employeeId, String newPassword, String salt)
+    {
+
+    }
 }
