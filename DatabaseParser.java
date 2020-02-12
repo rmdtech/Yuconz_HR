@@ -91,4 +91,19 @@ public class DatabaseParser
     {
 
     }
+
+    String fetchSessionId(String employeeId)
+    {
+        return "changeMe";
+    }
+
+    void createSession(String employeeId, String sessionId)
+    {
+
+    }
+
+    void deleteSession(String employeeId)
+    {
+
+    }
 }
