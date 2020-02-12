@@ -47,14 +47,14 @@ public class DatabaseParser
         return true;
     }
 
-    Boolean fetchEmployeePassword(String employeeId)
+    String fetchEmployeePassword(String employeeId)
     {
-        return true;
+        return "ChangeMe";
     }
 
-    Boolean fetchPasswordSalt(String employeeId)
+    String fetchPasswordSalt(String employeeId)
     {
-        return true;
+        return "changeMe";
     }
 
     String fetchDepartment(String employeeId)
