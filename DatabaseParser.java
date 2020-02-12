@@ -66,4 +66,9 @@ public class DatabaseParser
     {
         return "ChangeMe";
     }
+
+    void newEmployee(String id, String salt, String hashedPassword, String department, String role)
+    {
+
+    }
 }
