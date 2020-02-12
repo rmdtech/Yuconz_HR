@@ -3,7 +3,10 @@ import java.sql.*;
 
 public class DatabaseParser
 {
+
     Connection c = null;
+    Statement stmt = null;
+
     public DatabaseParser()
     {
         try
@@ -18,8 +21,24 @@ public class DatabaseParser
         }
         System.out.println("Opened database successfully");
     }
-    Boolean recordAuthorisationAttempt(String employeeId, Object deleteMe, Object deleteMe2, Object deleteMe3, Boolean Successful)
+    Boolean recordAuthorisationAttempt(String employeeId, Object deleteMe, String actionAttempted, String actionTarget, Boolean successful)
     {
+        try
+        {
+            stmt = c.createStatement();
+
+            String sql = "INSERT INTO AuthorisationLog" +
+                    "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
+                    String.format("VALUES ('%s', '%s', '%s', '%s')", employeeId, actionAttempted, actionTarget, successful);
+
+            stmt.executeUpdate(sql);
+            stmt.close();
+            c.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
         return true;
     }
 
