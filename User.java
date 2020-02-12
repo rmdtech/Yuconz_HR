@@ -1,10 +1,15 @@
+import org.intellij.lang.annotations.RegExp;
+import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class User{
 
-    private String employeeID;
+    private String employeeId;
     private String password;
     private String passwordSalt;
     private Position.Department department;
@@ -15,19 +20,43 @@ public class User{
 
     /**
      * Constructor for User
-     * @param employeeID String value given from GUI
+     * @param employeeId String value given from GUI
      * @param password Encrypted password provided from GUI
      */
-    public User(String employeeID, String password)
+    public User(String employeeId, String password)
     {
-        this.employeeID = employeeID;
+        this.employeeId= employeeId;
         this.password = password;
         this.passwordSalt = null;
         department = null;
         role = null;
     }
 
-    private String sha512Encrypt(String input)
+    public boolean addNewUser(String employeeId, String password, String department, String role)
+    {
+        Matcher employeeIdMatcher = Pattern.compile("[a-z]{3}[0-9]{3}").matcher(employeeId);
+        if (!employeeIdMatcher.matches())
+        {
+            // notify that the employeeId given is in the wrong format
+            return false;
+        }
+        UUID uuid = new UUID(15,0);
+        passwordSalt = uuid.toString();
+        if (verifyPassword())
+        {
+            this.department = Position.Department.valueOf(department);
+            this.role = Position.Role.valueOf(role);
+            dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password+passwordSalt), department, role);
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Encrypts a given String using the SHA-512 standard
+     * @param input The String to be encrypted
+     * @return The encrypted String
+     */
+    private String sha512Encrypt(@NotNull String input)
     {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
@@ -50,18 +79,22 @@ public class User{
      */
     public void login()
     {
-        if (dp.checkEmployeeID(employeeID) == true)
+        if (dp.checkEmployeeId(employeeId))
         {
-            passwordSalt=dp.fetchPasswordSalt(employeeID);
-            String authenticationString = sha512Encrypt(password + passwordSalt);
-
-            if (dp.fetchEmployeePassword(employeeID).equals(authenticationString))
+            if (verifyPassword())
             {
+               department=Position.Department.valueOf(dp.fetchDepartment(employeeId));
+               role=Position.Role.valueOf(dp.fetchRole(employeeId));
                 // login
             }
         }
     }
-
+private boolean verifyPassword()
+{
+    passwordSalt=dp.fetchPasswordSalt(employeeId);
+    String authenticationString = sha512Encrypt(password + passwordSalt);
+    return dp.fetchEmployeePassword(employeeId).equals(authenticationString);
+}
     /**
      * This will log the user out of the system
      */
@@ -77,7 +110,7 @@ public class User{
      */
     private void fetchDepartment()
     {
-        department = Position.Department.valueOf(dp.fetchDepartment(employeeID));
+        department = Position.Department.valueOf(dp.fetchDepartment(employeeId));
     }
 
     /**
@@ -85,7 +118,7 @@ public class User{
      */
     private void fetchRole()
     {
-        role = Position.Role.valueOf(dp.fetchRole(employeeID));
+        role = Position.Role.valueOf(dp.fetchRole(employeeId));
     }
 
 
@@ -93,9 +126,9 @@ public class User{
      * Accessor method for the employeeID
      * @return the employeeID
      */
-    public String getEmployeeID()
+    public String getEmployeeId()
     {
-        return employeeID;
+        return employeeId;
     }
 
     /**

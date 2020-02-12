@@ -42,7 +42,7 @@ public class DatabaseParser
         return true;
     }
 
-    Boolean checkEmployeeID(String employeeId)
+    Boolean checkEmployeeId(String employeeId)
     {
         return true;
     }

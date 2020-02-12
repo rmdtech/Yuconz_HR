@@ -1,2 +1,6 @@
 .idea
 /out/
+.class
+.ctext
+.bluej
+*SHELL0*
