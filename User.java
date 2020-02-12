@@ -57,7 +57,7 @@ public class User{
 
         this.department = Position.Department.valueOf(department);
         this.role = Position.Role.valueOf(role);
-        dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password+passwordSalt), department, role);
+        dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password, passwordSalt), department, role);
 
         return true;
     }
@@ -67,7 +67,7 @@ public class User{
         UUID uuid = new UUID(15,0);
         passwordSalt = uuid.toString();
 
-        if (dp.updatePassword(employeeId, sha512Encrypt(updatedPassword+passwordSalt), passwordSalt))
+        if (dp.updatePassword(employeeId, sha512Encrypt(updatedPassword, passwordSalt), passwordSalt))
         {
             return true;
         }
@@ -113,24 +113,31 @@ public class User{
 
     /**
      * Encrypts a given String using the SHA-512 standard
-     * @param input The String to be encrypted
+     * @param password The password to be encrypted
+     * @param salt The associated salt
      * @return The encrypted String
      */
-    private String sha512Encrypt(String input)
+    private String sha512Encrypt(String password, String salt)
     {
-        try {
+        // Courtesy of howtodoin.java.ocm
+        String hashedString = null;
+        try
+        {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
-            byte[] messageDigest = md.digest(input.getBytes());
-            BigInteger no = new BigInteger(1, messageDigest);
-            String hashtext = no.toString(16);
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
+            md.update(salt.getBytes());
+            byte[] bytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
             }
-            return hashtext;
+            hashedString = sb.toString();
+            return hashedString;
         }
         catch (NoSuchAlgorithmException e)
         {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return hashedString;
         }
     }
 
@@ -141,7 +148,7 @@ public class User{
     private boolean verifyPassword()
     {
         passwordSalt=dp.fetchPasswordSalt(employeeId);
-        String authenticationString = sha512Encrypt(password + passwordSalt);
+        String authenticationString = sha512Encrypt(password, passwordSalt);
         return dp.fetchEmployeePassword(employeeId).equals(authenticationString);
     }
 
