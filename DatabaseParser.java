@@ -22,24 +22,41 @@ public class DatabaseParser
         System.out.println("Opened database successfully");
     }
 
-    void runSql(String sql)
+    void sqlUpdate(String sql)
     {
         try
         {
             stmt = c.createStatement();
             stmt.executeUpdate(sql);
             stmt.close();
-            c.close();
         }
         catch (SQLException e)
         {
             e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    ResultSet sqlRead(String sql)
+    {
+        try
+        {
+            stmt = c.createStatement();
+            ResultSet result = stmt.executeQuery(sql);
+            stmt.close();
+            return result;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.exit(0);
+            return null; //keeps the compiler happy
         }
     }
 
     Boolean recordAuthorisationAttempt(String employeeId, Object deleteMe, String actionAttempted, String actionTarget, Boolean successful)
     {
-        runSql("INSERT INTO AuthorisationLog" +
+        sqlUpdate("INSERT INTO AuthorisationLog" +
                 "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
                 String.format("VALUES ('%s', '%s', '%s', '%s')", employeeId, actionAttempted, actionTarget, successful)
         );
