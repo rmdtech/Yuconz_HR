@@ -86,6 +86,15 @@ public class User{
         }
     }
 
+    public boolean isLoggedIn()
+    {
+        if (sessionId.equals(dp.fetchSessionId(user.getEmployeeId())))
+        {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * This will log the user into the system
      */
