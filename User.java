@@ -33,10 +33,10 @@ public class User{
         if (dp.checkEmployeeID(employeeID) == true)
         {
             // Call the database parser and ask it to read the encrypted password stored in the database
-            if (dp.getEmployeePassword(employeeID).equals(password))
+            if (dp.fetchEmployeePassword(employeeID).equals(password))
             {
                 // Call the database parser and ask it to read the salt tied to this password
-                if (dp.getPasswordSalt(employeeID).equals(passwordSalt))
+                if (dp.fetchPasswordSalt(employeeID).equals(passwordSalt))
                 {
                     // do something that indicates the login status
                     getRole();
