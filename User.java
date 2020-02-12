@@ -1,4 +1,3 @@
-import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -32,6 +31,14 @@ public class User{
         role = null;
     }
 
+    /**
+     * Creates and writes a new User to the database
+     * @param employeeId Their employeeID which will be verified within this function
+     * @param password Their chosen password (has no requirements yet)
+     * @param department The department which they are assigned to
+     * @param role Their role within the company
+     * @return If the action has been successful
+     */
     public boolean addNewUser(String employeeId, String password, String department, String role)
     {
         Matcher employeeIdMatcher = Pattern.compile("[a-z]{3}[0-9]{3}").matcher(employeeId);
@@ -51,12 +58,13 @@ public class User{
         }
         return false;
     }
+
     /**
      * Encrypts a given String using the SHA-512 standard
      * @param input The String to be encrypted
      * @return The encrypted String
      */
-    private String sha512Encrypt(@NotNull String input)
+    private String sha512Encrypt(String input)
     {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
@@ -89,12 +97,18 @@ public class User{
             }
         }
     }
-private boolean verifyPassword()
-{
-    passwordSalt=dp.fetchPasswordSalt(employeeId);
-    String authenticationString = sha512Encrypt(password + passwordSalt);
-    return dp.fetchEmployeePassword(employeeId).equals(authenticationString);
-}
+
+    /**
+     * This verifies the password given in the constructor with the salt stored in the Database.
+     * @return If the passwords match
+     */
+    private boolean verifyPassword()
+    {
+        passwordSalt=dp.fetchPasswordSalt(employeeId);
+        String authenticationString = sha512Encrypt(password + passwordSalt);
+        return dp.fetchEmployeePassword(employeeId).equals(authenticationString);
+    }
+
     /**
      * This will log the user out of the system
      */
