@@ -10,6 +10,7 @@ public class User{
     private String employeeId;
     private String password;
     private String passwordSalt;
+    private String sessionId;
     private Position.Department department;
     private Position.Role role;
 
@@ -26,6 +27,7 @@ public class User{
         this.employeeId= employeeId;
         this.password = password;
         this.passwordSalt = null;
+        sessionId = null;
         department = null;
         role = null;
     }
@@ -95,7 +97,8 @@ public class User{
             {
                department=Position.Department.valueOf(dp.fetchDepartment(employeeId));
                role=Position.Role.valueOf(dp.fetchRole(employeeId));
-                // login
+               sessionId = new UUID(15,0).toString();
+               dp.createSession(employeeId, sessionId);
             }
         }
     }
@@ -116,7 +119,7 @@ public class User{
      */
     public void logout()
     {
-
+        dp.deleteSession(employeeId);
     }
 
 
