@@ -1,3 +1,7 @@
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class User{
 
     private String employeeID;
@@ -13,15 +17,32 @@ public class User{
      * Constructor for User
      * @param employeeID String value given from GUI
      * @param password Encrypted password provided from GUI
-     * @param passwordSalt UUID provided from the GUI
      */
-    public User(String employeeID, String password, String passwordSalt)
+    public User(String employeeID, String password)
     {
         this.employeeID = employeeID;
         this.password = password;
-        this.passwordSalt = passwordSalt;
+        this.passwordSalt = null;
         department = null;
         role = null;
+    }
+
+    private String sha512Encrypt(String input)
+    {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            byte[] messageDigest = md.digest(input.getBytes());
+            BigInteger no = new BigInteger(1, messageDigest);
+            String hashtext = no.toString(16);
+            while (hashtext.length() < 32) {
+                hashtext = "0" + hashtext;
+            }
+            return hashtext;
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -29,18 +50,14 @@ public class User{
      */
     public void login()
     {
-        // Call the database parser and ask it if this employeeNumber exists within the database
         if (dp.checkEmployeeID(employeeID) == true)
         {
-            // Call the database parser and ask it to read the encrypted password stored in the database
-            if (dp.fetchEmployeePassword(employeeID).equals(password))
+            passwordSalt=dp.fetchPasswordSalt(employeeID);
+            String authenticationString = sha512Encrypt(password + passwordSalt);
+
+            if (dp.fetchEmployeePassword(employeeID).equals(authenticationString))
             {
-                // Call the database parser and ask it to read the salt tied to this password
-                if (dp.fetchPasswordSalt(employeeID).equals(passwordSalt))
-                {
-                    // do something that indicates the login status
-                    getRole();
-                }
+                // login
             }
         }
     }
