@@ -13,18 +13,25 @@ public class Position {
         {
             this.label = label;
         }
+
+        public String toString()
+        {
+            return label;
+        }
     }
 
     public enum Role {
-        Employee("Employee"),
-        Manager("Manager"),
-        Director("Director");
-
-        public final String label;
-
-        Role(String label)
+        Employee(0),
+        Manager(1),
+        Director(2);
+        public final int level;
+        Role(int level)
         {
-            this.label = label;
+            this.level = level;
+        }
+        public int getLevel()
+        {
+            return level;
         }
     }
 }
