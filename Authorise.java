@@ -22,12 +22,12 @@ public class Authorise{
 
         if (requiredDpt.equals(user.getDepartment()) && requiredRole.getLevel() < user.getRole().getLevel())
         {
-            dp.recordAuthorisationAttempt(user.getEmployeeID(), dateFormat.format(now), action, target, true);
+            dp.recordAuthorisationAttempt(user.getEmployeeId(), dateFormat.format(now), action, target, true);
             return true;
         }
         else
         {
-            dp.recordAuthorisationAttempt(user.getEmployeeID(), dateFormat.format(now), action, target, false);
+            dp.recordAuthorisationAttempt(user.getEmployeeId(), dateFormat.format(now), action, target, false);
             return false;
         }
     }

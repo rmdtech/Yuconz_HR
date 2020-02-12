@@ -46,16 +46,19 @@ public class User{
             // notify that the employeeId given is in the wrong format
             return false;
         }
+        if(dp.checkEmployeeId(employeeId))
+        {
+            // notify that this employeeId is already in use
+            return false;
+        }
         UUID uuid = new UUID(15,0);
         passwordSalt = uuid.toString();
-        if (verifyPassword())
-        {
-            this.department = Position.Department.valueOf(department);
-            this.role = Position.Role.valueOf(role);
-            dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password+passwordSalt), department, role);
-            return true;
-        }
-        return false;
+
+        this.department = Position.Department.valueOf(department);
+        this.role = Position.Role.valueOf(role);
+        dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password+passwordSalt), department, role);
+
+        return true;
     }
 
     /**
@@ -161,5 +164,4 @@ public class User{
     {
         return role;
     }
-
 }
