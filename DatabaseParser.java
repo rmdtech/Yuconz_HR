@@ -43,6 +43,7 @@ public class DatabaseParser
         {
             stmt = c.createStatement();
             ResultSet result = stmt.executeQuery(sql);
+
             stmt.close();
             return result;
         }
@@ -58,12 +59,26 @@ public class DatabaseParser
     {
         sqlUpdate("INSERT INTO AuthorisationLog" +
                 "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
-                String.format("VALUES ('%s', '%s', '%s', '%s')", employeeId, actionAttempted, actionTarget, successful)
+                String.format("VALUES ('%s', '%s', '%s', '%s');", employeeId, actionAttempted, actionTarget, successful)
         );
     }
 
     Boolean checkEmployeeId(String employeeId)
     {
+        ResultSet result = sqlRead("SELECT * FROM User" +
+                String.format("WHERE employeeId = '%s';", employeeId));
+        try
+        {
+            while (result.next())
+            {
+               System.out.println(result.getString("employeeId"));
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            System.exit(0);
+        }
         return true;
     }
 
