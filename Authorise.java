@@ -23,7 +23,7 @@ public class Authorise{
                 return false;
             }
         }
-        // else, user is not logged in
+        System.out.println(user.getEmployeeId() + " was not logged in");
         return false;
     }
 }
