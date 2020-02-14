@@ -11,6 +11,7 @@ public class Authorise{
      * @return Whether or not the attempted action was successful
      */
     public static boolean AuthorisationAttempt(String action, String target, Position.Department requiredDpt, Position.Role requiredRole, User user) {
+        DatabaseParser dp = new DatabaseParser();
         if (user.isLoggedIn()) {
             if (requiredDpt.equals(user.getDepartment()) && requiredRole.getLevel() < user.getRole().getLevel()) {
                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action, target, true);

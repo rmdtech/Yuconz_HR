@@ -66,15 +66,8 @@ public class User{
     {
         UUID uuid = new UUID(15,0);
         passwordSalt = uuid.toString();
-
-        if (dp.updatePassword(employeeId, sha512Encrypt(updatedPassword, passwordSalt), passwordSalt))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        dp.updatePassword(employeeId, sha512Encrypt(updatedPassword, passwordSalt), passwordSalt);
+        return true;
     }
 
     public boolean isLoggedIn()
