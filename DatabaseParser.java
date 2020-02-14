@@ -64,7 +64,7 @@ public class DatabaseParser
     {
         sqlUpdate("INSERT INTO AuthorisationLog" +
                 "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
-                String.format("VALUES ('%s', '%s', '%s', '%s');", employeeId, actionAttempted, actionTarget, successful)
+                String.format("VALUES ('%s', CURRENT_TIME, '%s', '%s', '%s');", employeeId, actionAttempted, actionTarget, successful)
         );
     }
 
