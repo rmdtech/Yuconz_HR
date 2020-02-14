@@ -139,7 +139,7 @@ public class DatabaseParser
         try
         {
             result.next(); // only ever be one result, while loop not required
-            String department = result.getString("hashedPassword");
+            String department = result.getString("department");
             result.close();
             stmt.close();
             return department;
