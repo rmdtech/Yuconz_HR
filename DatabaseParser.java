@@ -6,6 +6,7 @@ public class DatabaseParser
 
     Connection c = null;
     Statement stmt = null;
+    ResultSet result = null;
 
     public DatabaseParser()
     {
@@ -37,21 +38,18 @@ public class DatabaseParser
         }
     }
 
-    ResultSet sqlRead(String sql)
+    void sqlRead(String sql)
     {
         try
         {
             stmt = c.createStatement();
-            ResultSet result = stmt.executeQuery(sql);
-
+            result = stmt.executeQuery(sql);
             stmt.close();
-            return result;
         }
         catch (SQLException e)
         {
             e.printStackTrace();
             System.exit(0);
-            return null; //keeps the compiler happy
         }
     }
 
@@ -65,7 +63,7 @@ public class DatabaseParser
 
     Boolean checkEmployeeId(String employeeId)
     {
-        ResultSet result = sqlRead("SELECT * FROM User" +
+        sqlRead("SELECT * FROM User" +
                 String.format("WHERE employeeId = '%s';", employeeId));
         try
         {
@@ -73,6 +71,7 @@ public class DatabaseParser
             {
                System.out.println(result.getString("employeeId"));
             }
+            result.close();
         }
         catch(Exception e)
         {
