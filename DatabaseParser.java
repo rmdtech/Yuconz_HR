@@ -154,7 +154,23 @@ public class DatabaseParser
 
     String fetchRole(String employeeId)
     {
-        return "ChangeMe";
+        sqlRead("SELECT role FROM User " +
+                String.format("WHERE employeeId = '%s'", employeeId)
+        );
+        try
+        {
+            result.next(); // only ever be one result, while loop not required
+            String role = result.getString("role");
+            result.close();
+            stmt.close();
+            return role;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.exit(0);
+            return null; // keep compiler happy
+        }
     }
 
     void newEmployee(String id, String salt, String hashedPassword, String department, String role)
