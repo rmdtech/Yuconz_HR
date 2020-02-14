@@ -173,9 +173,12 @@ public class DatabaseParser
         }
     }
 
-    void newEmployee(String id, String salt, String hashedPassword, String department, String role)
+    void newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
     {
-
+        sqlUpdate("INSERT INTO User" +
+                "(employeeID, hashedPassword, salt, role, department)" +
+                String.format("VALUES ('%s', '%s', '%s', '%s', '%s');", employeeId, hashedPassword, salt, role, department)
+        );
     }
 
     String fetchSessionId(String employeeId)
