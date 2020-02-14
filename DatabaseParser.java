@@ -44,10 +44,17 @@ public class DatabaseParser
         {
             stmt = c.createStatement();
             result = stmt.executeQuery(sql);
-            stmt.close();
+            System.out.println(result.isBeforeFirst());
         }
         catch (SQLException e)
         {
+            e.printStackTrace();
+            System.exit(0);
+        }
+
+        catch(Exception e)
+        {
+            System.out.println("Error Occurred");
             e.printStackTrace();
             System.exit(0);
         }
@@ -63,21 +70,29 @@ public class DatabaseParser
 
     Boolean checkEmployeeId(String employeeId)
     {
-        sqlRead("SELECT * FROM User" +
-                String.format("WHERE employeeId = '%s';", employeeId));
+        sqlRead("SELECT employeeId FROM User " +
+                String.format("WHERE employeeId = '%s'", employeeId)
+        );
+
         try
         {
+            System.out.println("Hi");
+
             while (result.next())
             {
                System.out.println(result.getString("employeeId"));
+                System.out.println(result.getString("actionAttempted"));
             }
             result.close();
+            stmt.close();
         }
         catch(Exception e)
         {
+            System.out.println("Error Occurred");
             e.printStackTrace();
             System.exit(0);
         }
+
         return true;
     }
 
