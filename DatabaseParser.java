@@ -91,7 +91,23 @@ public class DatabaseParser
 
     String fetchEmployeePassword(String employeeId)
     {
-        return "ChangeMe";
+        sqlRead("SELECT hashedPassword FROM User " +
+                String.format("WHERE employeeId = '%s'", employeeId)
+        );
+        try
+        {
+            result.next(); // only ever be one result, while loop not required
+            String hashedPassword = result.getString("hashedPassword");
+            result.close();
+            stmt.close();
+            return hashedPassword;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.exit(0);
+            return null; // keep compiler happy
+        }
     }
 
     String fetchPasswordSalt(String employeeId)
