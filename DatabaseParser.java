@@ -44,7 +44,6 @@ public class DatabaseParser
         {
             stmt = c.createStatement();
             result = stmt.executeQuery(sql);
-            System.out.println(result.isBeforeFirst());
         }
         catch (SQLException e)
         {
@@ -76,19 +75,13 @@ public class DatabaseParser
 
         try
         {
-            System.out.println("Hi");
-
-            while (result.next())
-            {
-               System.out.println(result.getString("employeeId"));
-                System.out.println(result.getString("actionAttempted"));
-            }
+            Boolean isPresent = result.isBeforeFirst();
             result.close();
             stmt.close();
+            return isPresent;
         }
         catch(Exception e)
         {
-            System.out.println("Error Occurred");
             e.printStackTrace();
             System.exit(0);
         }
