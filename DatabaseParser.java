@@ -112,7 +112,23 @@ public class DatabaseParser
 
     String fetchPasswordSalt(String employeeId)
     {
-        return "changeMe";
+        sqlRead("SELECT salt FROM User " +
+                String.format("WHERE employeeId = '%s'", employeeId)
+        );
+        try
+        {
+            result.next(); // only ever be one result, while loop not required
+            String salt = result.getString("salt");
+            result.close();
+            stmt.close();
+            return salt;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.exit(0);
+            return null; // keep compiler happy
+        }
     }
 
     String fetchDepartment(String employeeId)
