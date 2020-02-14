@@ -59,11 +59,19 @@ public class DatabaseParser
         }
     }
 
-    void recordAuthorisationAttempt(String employeeId, String actionAttempted, String actionTarget, Boolean successful)
+    void newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
     {
-        sqlUpdate("INSERT INTO AuthorisationLog" +
-                "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
-                String.format("VALUES ('%s', CURRENT_TIME, '%s', '%s', '%s');", employeeId, actionAttempted, actionTarget, successful)
+        sqlUpdate("INSERT INTO User" +
+                "(employeeID, hashedPassword, salt, role, department)" +
+                String.format("VALUES ('%s', '%s', '%s', '%s', '%s');", employeeId, hashedPassword, salt, role, department)
+        );
+    }
+
+    void updatePassword(String employeeId, String newPassword, String salt)
+    {
+        sqlUpdate("UPDATE User " +
+                String.format("SET hashedPassword = '%s', salt = '%s' " , newPassword, salt) +
+                String.format("WHERE employeeId = '%s';", employeeId)
         );
     }
 
@@ -173,19 +181,6 @@ public class DatabaseParser
         }
     }
 
-    void newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
-    {
-        sqlUpdate("INSERT INTO User" +
-                "(employeeID, hashedPassword, salt, role, department)" +
-                String.format("VALUES ('%s', '%s', '%s', '%s', '%s');", employeeId, hashedPassword, salt, role, department)
-        );
-    }
-
-    String fetchSessionId(String employeeId)
-    {
-        return "changeMe";
-    }
-
     void createSession(String employeeId, String sessionId)
     {
 
@@ -196,11 +191,16 @@ public class DatabaseParser
 
     }
 
-    void updatePassword(String employeeId, String newPassword, String salt)
+    String fetchSessionId(String employeeId)
     {
-        sqlUpdate("UPDATE User " +
-                String.format("SET hashedPassword = '%s', salt = '%s' " , newPassword, salt) +
-                String.format("WHERE employeeId = '%s';", employeeId)
+        return "changeMe";
+    }
+
+    void recordAuthorisationAttempt(String employeeId, String actionAttempted, String actionTarget, Boolean successful)
+    {
+        sqlUpdate("INSERT INTO AuthorisationLog" +
+                "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
+                String.format("VALUES ('%s', CURRENT_TIME, '%s', '%s', '%s');", employeeId, actionAttempted, actionTarget, successful)
         );
     }
 }
