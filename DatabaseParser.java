@@ -198,6 +198,9 @@ public class DatabaseParser
 
     void updatePassword(String employeeId, String newPassword, String salt)
     {
-
+        sqlUpdate("UPDATE User " +
+                String.format("SET hashedPassword = '%s', salt = '%s' " , newPassword, salt) +
+                String.format("WHERE employeeId = '%s';", employeeId)
+        );
     }
 }
