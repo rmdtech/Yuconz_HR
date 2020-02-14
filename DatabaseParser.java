@@ -133,7 +133,23 @@ public class DatabaseParser
 
     String fetchDepartment(String employeeId)
     {
-        return "ChangeMe";
+        sqlRead("SELECT department FROM User " +
+                String.format("WHERE employeeId = '%s'", employeeId)
+        );
+        try
+        {
+            result.next(); // only ever be one result, while loop not required
+            String department = result.getString("hashedPassword");
+            result.close();
+            stmt.close();
+            return department;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.exit(0);
+            return null; // keep compiler happy
+        }
     }
 
     String fetchRole(String employeeId)
