@@ -28,8 +28,7 @@ public class User{
      */
     public static String generateSalt()
     {
-        UUID uuid = new UUID(15,0);
-        return uuid.toString();
+        return  UUID.randomUUID().toString();
     }
 
     /**
