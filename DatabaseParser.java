@@ -203,4 +203,12 @@ public class DatabaseParser
                 String.format("VALUES ('%s', CURRENT_TIME, '%s', '%s', '%s');", employeeId, actionAttempted, actionTarget, successful)
         );
     }
+
+    void recordAuthentication(String employeeId)
+    {
+        sqlUpdate("INSERT INTO AuthenticationLog" +
+                "(employeeID, timestamp)" +
+                String.format("VALUES ('%s', CURRENT_TIME);", employeeId)
+        );
+    }
 }
