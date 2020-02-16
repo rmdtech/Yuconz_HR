@@ -189,9 +189,11 @@ public class DatabaseParser
         );
     }
 
-    void deleteSession(String employeeId)
+    void deleteSession(String sessionId)
     {
-
+        sqlUpdate("DELETE FROM Session " +
+                String.format("WHERE sessionId = '%s';", sessionId)
+        );
     }
 
     String fetchSessionId(String employeeId)
