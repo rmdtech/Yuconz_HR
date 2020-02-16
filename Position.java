@@ -2,10 +2,10 @@ public class Position {
     public enum Department{
         Admin("Admin"),
         SalesAndMarketing("SalesAndMarketing"),
-        IT("IT"),
-        BI("BI"),
-        MC("MC"),
-        HR("HR");
+        IT("IT"), // Information Technology
+        BI("BI"), // Business Intelligence
+        MC("MC"), // Management Consultancy
+        HR("HR"); // Human Resources
 
         public final String label;
 

@@ -73,6 +73,7 @@ public class DatabaseParser
      * @param hashedPassword the password + the salt hashed using SHA512
      * @param department the department the new employee is registered to
      * @param role the role of the new employee
+     * @return whether or not the operation has been successful
      */
     boolean newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
     {
@@ -95,6 +96,7 @@ public class DatabaseParser
      * @param employeeId the user's employeeId
      * @param newPassword the user's new password
      * @param salt the newly generated salt used when hashing the user's password
+     * @return whether or not the operation has been successful
      */
     boolean updatePassword(String employeeId, String newPassword, String salt)
     {
@@ -192,7 +194,7 @@ public class DatabaseParser
     /**
      * Fetches the department of the user with  matching employeeId
      * @param employeeId the employeeId of the user who's department is being fetched
-     * @return the department if the user exists
+     * @return the department of the user if they exist
      */
     Position.Department fetchDepartment(String employeeId)
     {
@@ -221,7 +223,7 @@ public class DatabaseParser
     /**
      * Fetches the role of the user with  matching employeeId
      * @param employeeId the employeeId of the user who's role is being fetched
-     * @return the role if the user exists
+     * @return the enum of the role of this user if they exist
      */
     Position.Role fetchRole(String employeeId)
     {
@@ -263,6 +265,7 @@ public class DatabaseParser
     /**
      * Deletes a session with the given sessionId from the database
      * @param sessionId the sessionId of the session to delete
+     * @return whether or not the operation has been successful
      */
     boolean deleteSession(String sessionId)
     {
