@@ -23,6 +23,10 @@ public class DatabaseParser
         System.out.println("Opened database successfully");
     }
 
+    /**
+     * Runs SQL code that modifies the database in any way including creating, updating and deleting records
+     * @param sql the SQL String to be executed on the database
+     */
     void sqlUpdate(String sql)
     {
         try
@@ -38,6 +42,10 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * Runs SQL code that reads the database in any way and stores the result in the 'result' field variable
+     * @param sql the SQL String to be executed on the database
+     */
     void sqlRead(String sql)
     {
         try
@@ -59,6 +67,14 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * Creates a new record in the User table for a new employee
+     * @param employeeId the employeeId of the new user to be stored in the database
+     * @param salt the salt that was used to hash the password
+     * @param hashedPassword the password + the salt hashed using SHA512
+     * @param department the department the new employee is registered to
+     * @param role the role of the new employee
+     */
     void newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
     {
         sqlUpdate("INSERT INTO User" +
@@ -67,6 +83,12 @@ public class DatabaseParser
         );
     }
 
+    /**
+     * Updates the hashed password and salt stored in the database for a given employee
+     * @param employeeId the user's employeeId
+     * @param newPassword the user's new password
+     * @param salt the newly generated salt used when hashing the user's password
+     */
     void updatePassword(String employeeId, String newPassword, String salt)
     {
         sqlUpdate("UPDATE User " +
@@ -75,6 +97,11 @@ public class DatabaseParser
         );
     }
 
+    /**
+     * Checks to see if an employeeId exists in the User table
+     * @param employeeId the employeeId to check
+     * @return whether or not the employeeId was found
+     */
     Boolean checkEmployeeId(String employeeId)
     {
         sqlRead("SELECT employeeId FROM User " +
@@ -97,6 +124,11 @@ public class DatabaseParser
         return true;
     }
 
+    /**
+     * Fetches the salted and hashed password from the database for a given employeeId
+     * @param employeeId the employeeId of the user who's password needs fetching
+     * @return the user's password if the user exists
+     */
     String fetchEmployeePassword(String employeeId)
     {
         sqlRead("SELECT hashedPassword FROM User " +
@@ -118,6 +150,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * Fetches the password salt for a given employeeId
+     * @param employeeId the employeeId of the user who's salt is being fetched
+     * @return the salt if the user exists
+     */
     String fetchPasswordSalt(String employeeId)
     {
         sqlRead("SELECT salt FROM User " +
@@ -139,6 +176,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * Fetches the department of the user with  matching employeeId
+     * @param employeeId the employeeId of the user who's department is being fetched
+     * @return the department if the user exists
+     */
     String fetchDepartment(String employeeId)
     {
         sqlRead("SELECT department FROM User " +
@@ -160,6 +202,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * Fetches the role of the user with  matching employeeId
+     * @param employeeId the employeeId of the user who's role is being fetched
+     * @return the role if the user exists
+     */
     String fetchRole(String employeeId)
     {
         sqlRead("SELECT role FROM User " +
@@ -181,6 +228,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * creates a session for a newly logged in user
+     * @param employeeId the employeeId of the user who's creating a session
+     * @param sessionId the UUID generated for the session
+     */
     void createSession(String employeeId, String sessionId)
     {
         sqlUpdate("INSERT INTO Session" +
@@ -189,6 +241,10 @@ public class DatabaseParser
         );
     }
 
+    /**
+     * Deletes a session with the given sessionId from the database
+     * @param sessionId the sessionId of the session to delete
+     */
     void deleteSession(String sessionId)
     {
         sqlUpdate("DELETE FROM Session " +
@@ -196,6 +252,13 @@ public class DatabaseParser
         );
     }
 
+    /**
+     * Records an authorisation attempt in the AuthorisationLog table
+     * @param employeeId the employeeId of the user who's being authorised
+     * @param actionAttempted the crud operation "create", "read", "update", "delete" that the user attempted on the target
+     * @param actionTarget the target the user attempted to modify
+     * @param successful whether or not the user had sufficient permissions to perform the attempted action
+     */
     void recordAuthorisationAttempt(String employeeId, String actionAttempted, String actionTarget, Boolean successful)
     {
         sqlUpdate("INSERT INTO AuthorisationLog" +
@@ -204,6 +267,10 @@ public class DatabaseParser
         );
     }
 
+    /**
+     * Records a login in the AuthenticationLog table
+     * @param employeeId the employeeId of the user who logged in
+     */
     void recordAuthentication(String employeeId)
     {
         sqlUpdate("INSERT INTO AuthenticationLog" +
