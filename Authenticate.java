@@ -35,7 +35,6 @@ public class Authenticate{
     public static void logout(User user)
     {
         dp.deleteSession(user.getSessionId());
-        activeUsers.remove(findActiveUser(employeeId));
     }
 
     /**
