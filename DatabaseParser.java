@@ -74,12 +74,20 @@ public class DatabaseParser
      * @param department the department the new employee is registered to
      * @param role the role of the new employee
      */
-    void newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
+    boolean newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
     {
-        sqlUpdate("INSERT INTO User" +
-                "(employeeID, hashedPassword, salt, role, department)" +
-                String.format("VALUES ('%s', '%s', '%s', '%s', '%s');", employeeId, hashedPassword, salt, role, department)
-        );
+        if (checkEmployeeId(employeeId) == false)
+        {
+            sqlUpdate("INSERT INTO User" +
+                    "(employeeID, hashedPassword, salt, role, department)" +
+                    String.format("VALUES ('%s', '%s', '%s', '%s', '%s');", employeeId, hashedPassword, salt, role, department)
+            );
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
@@ -88,12 +96,20 @@ public class DatabaseParser
      * @param newPassword the user's new password
      * @param salt the newly generated salt used when hashing the user's password
      */
-    void updatePassword(String employeeId, String newPassword, String salt)
+    boolean updatePassword(String employeeId, String newPassword, String salt)
     {
-        sqlUpdate("UPDATE User " +
-                String.format("SET hashedPassword = '%s', salt = '%s' " , newPassword, salt) +
-                String.format("WHERE employeeId = '%s';", employeeId)
-        );
+        if (checkEmployeeId(employeeId) == true)
+        {
+            sqlUpdate("UPDATE User " +
+                    String.format("SET hashedPassword = '%s', salt = '%s' " , newPassword, salt) +
+                    String.format("WHERE employeeId = '%s';", employeeId)
+            );
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
@@ -117,10 +133,8 @@ public class DatabaseParser
         catch(Exception e)
         {
             e.printStackTrace();
-            System.exit(0);
+            return false;
         }
-
-        return true;
     }
 
     /**
@@ -180,7 +194,7 @@ public class DatabaseParser
      * @param employeeId the employeeId of the user who's department is being fetched
      * @return the department if the user exists
      */
-    String fetchDepartment(String employeeId)
+    Position.Department fetchDepartment(String employeeId)
     {
         sqlRead("SELECT department FROM User " +
                 String.format("WHERE employeeId = '%s'", employeeId)
@@ -191,7 +205,10 @@ public class DatabaseParser
             String department = result.getString("department");
             result.close();
             stmt.close();
-            return department;
+            Position.Department departmentEnum = Position.Department.valueOf(department);
+            // if (departmentEnum == null)
+            // There is a typo in the database
+            return departmentEnum;
         }
         catch (SQLException e)
         {
@@ -206,7 +223,7 @@ public class DatabaseParser
      * @param employeeId the employeeId of the user who's role is being fetched
      * @return the role if the user exists
      */
-    String fetchRole(String employeeId)
+    Position.Role fetchRole(String employeeId)
     {
         sqlRead("SELECT role FROM User " +
                 String.format("WHERE employeeId = '%s'", employeeId)
@@ -217,7 +234,10 @@ public class DatabaseParser
             String role = result.getString("role");
             result.close();
             stmt.close();
-            return role;
+            Position.Role roleEnum = Position.Role.valueOf(role);
+            // if (roleEnum == null)
+            // This means there is a typo in the Database
+            return roleEnum;
         }
         catch (SQLException e)
         {
@@ -244,11 +264,15 @@ public class DatabaseParser
      * Deletes a session with the given sessionId from the database
      * @param sessionId the sessionId of the session to delete
      */
-    void deleteSession(String sessionId)
+    boolean deleteSession(String sessionId)
     {
+        /* To-Do:
+           Please check if the session ID has not already been deleted and return accordingly with true/false
+         */
         sqlUpdate("DELETE FROM Session " +
                 String.format("WHERE sessionId = '%s';", sessionId)
         );
+        return true;
     }
 
     /**

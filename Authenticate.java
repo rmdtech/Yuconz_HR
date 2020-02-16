@@ -21,8 +21,8 @@ public class Authenticate{
             if (verifyPassword(employeeId, password))
             {
                 User newUser = new User(employeeId, UUID.randomUUID().toString().replace("-", ""));
-                newUser.setDepartment(Position.Department.valueOf(dp.fetchDepartment(employeeId)));
-                newUser.setRole(Position.Role.valueOf(dp.fetchRole(employeeId)));
+                newUser.setDepartment(dp.fetchDepartment(employeeId));
+                newUser.setRole(dp.fetchRole(employeeId));
                 activeUsers.add(newUser);
                 dp.createSession(employeeId, newUser.getSessionId());
             }
@@ -96,7 +96,7 @@ public class Authenticate{
      */
     public static String sha512Encrypt(String password, String salt)
     {
-        // Courtesy of howtodoin.java.ocm
+        // Courtesy of howtodoin.java.com
         String hashedString = null;
         try
         {
