@@ -32,17 +32,10 @@ public class Authenticate{
     /**
      * This will log the user out of the system
      */
-    public static void logout(String employeeId)
+    public static void logout(User user)
     {
-        dp.deleteSession(employeeId);
-        if (findActiveUser(employeeId) != null)
-        {
-            activeUsers.remove(findActiveUser(employeeId));
-        }
-        else
-        {
-            System.out.println("Failed to find " + employeeId + "\nSession ID has not been deleted");
-        }
+        dp.deleteSession(user.getSessionId());
+        activeUsers.remove(findActiveUser(employeeId));
     }
 
     /**
