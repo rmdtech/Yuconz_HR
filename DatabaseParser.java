@@ -183,7 +183,10 @@ public class DatabaseParser
 
     void createSession(String employeeId, String sessionId)
     {
-
+        sqlUpdate("INSERT INTO Session" +
+                "(sessionId, employeeID, timestamp)" +
+                String.format("VALUES ('%s', '%s', 'CURRENT_TIME');", sessionId, employeeId)
+        );
     }
 
     void deleteSession(String employeeId)
