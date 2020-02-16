@@ -1,11 +1,11 @@
 public class Position {
     public enum Department{
-        Admin("Administration"),
-        SM("Sales and Marketing"),
-        IT("Information Technology"),
-        BI("Business Intelligence"),
-        MC("Management Consultancy"),
-        HR("Human Resources");
+        Admin("Admin"),
+        SalesAndMarketing("SalesAndMarketing"),
+        IT("IT"),
+        BI("BI"),
+        MC("MC"),
+        HR("HR");
 
         public final String label;
 
@@ -21,13 +21,21 @@ public class Position {
     }
 
     public enum Role {
-        Employee(0),
-        Manager(1),
-        Director(2);
+        Employee(0, "Employee"),
+        Manager(1, "Manager"),
+        Director(2, "Director");
         public final int level;
-        Role(int level)
+        public final String label;
+
+        Role(int level, String label)
+
         {
             this.level = level;
+            this.label = label;
+        }
+        public String toString()
+        {
+            return label;
         }
         public int getLevel()
         {
