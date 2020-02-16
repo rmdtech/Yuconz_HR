@@ -46,7 +46,7 @@ public class Authenticate{
      * @param role Their role within the company
      * @return If the action has been successful
      */
-    public boolean addNewUser(String employeeId, String password, String department, String role)
+    public static boolean addNewUser(String employeeId, String password, String department, String role)
     {
         String passwordSalt = User.generateSalt();
 
