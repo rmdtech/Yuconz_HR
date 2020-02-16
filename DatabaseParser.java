@@ -196,11 +196,6 @@ public class DatabaseParser
         );
     }
 
-    String fetchSessionId(String employeeId)
-    {
-        return "changeMe";
-    }
-
     void recordAuthorisationAttempt(String employeeId, String actionAttempted, String actionTarget, Boolean successful)
     {
         sqlUpdate("INSERT INTO AuthorisationLog" +
