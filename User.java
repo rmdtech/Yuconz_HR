@@ -28,7 +28,7 @@ public class User{
      */
     public static String generateSalt()
     {
-        return  UUID.randomUUID().toString();
+        return  UUID.randomUUID().toString().replace("-", "");
     }
 
     /**
