@@ -91,6 +91,7 @@ public class DatabaseParser
         }
     }
 
+
     /**
      * Updates the hashed password and salt stored in the database for a given employee
      * @param employeeId the user's employeeId
@@ -98,6 +99,7 @@ public class DatabaseParser
      * @param salt the newly generated salt used when hashing the user's password
      * @return whether or not the operation has been successful
      */
+    /*
     boolean updatePassword(String employeeId, String newPassword, String salt)
     {
         if (checkEmployeeId(employeeId) == true)
@@ -113,7 +115,7 @@ public class DatabaseParser
             return false;
         }
     }
-
+*/
     /**
      * Checks to see if an employeeId exists in the User table
      * @param employeeId the employeeId to check

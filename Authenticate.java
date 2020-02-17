@@ -65,12 +65,13 @@ public class Authenticate{
         return true;
     }
 
+    /*
     public static boolean updatePassword(String employeeId, String updatedPassword, String passwordSalt)
     {
         dp.updatePassword(employeeId, Authenticate.sha512Encrypt(updatedPassword, passwordSalt), passwordSalt);
         return true;
     }
-
+    */
     /**
      * Returns a given User object based on the employeeId given
      * @param employeeId The employeeId of the User that should be found
