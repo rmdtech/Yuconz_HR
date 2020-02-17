@@ -56,11 +56,12 @@ public class User{
      * @param updatedPassword The desired new password for this User
      * @return Whether or not this operation was successful
      */
+    /*
     public boolean updatePassword(String updatedPassword)
     {
         return Authenticate.updatePassword(employeeId, updatedPassword, generateSalt());
     }
-
+    */
     /**
      * Checks whether this User object is logged in
      * @return Logged in status
