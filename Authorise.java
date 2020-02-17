@@ -20,6 +20,7 @@ public class Authorise{
             else
             {
                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action, target, false);
+                System.out.println("Invalid role or department");
                 return false;
             }
         }
