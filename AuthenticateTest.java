@@ -101,23 +101,16 @@ class AuthenticateTest {
         int fails = 0;
         String password = "password";
 
-        // For valid employeeId, make sure this test ID hasn't already been used
-        DatabaseParser dp = new DatabaseParser();
-        String employeeId = "tes" + randomNumericID();
-        while(dp.checkEmployeeId(employeeId))
-        {
-            employeeId = "tes" + randomNumericID();
-        }
-
         System.out.println("\n----- addNewUser tests -----");
         System.out.println("   Test: Add valid employeeID");
-        if (Authenticate.addNewUser(employeeId, password, "IT", "Employee"))
+        String validEmpID = newEmployeeID();
+        if (Authenticate.addNewUser(validEmpID, password, "IT", "Employee"))
         {
-            System.out.println("     [✓]    employeeId Written: " + employeeId);
+            System.out.println("     [✓]    employeeId Written: " + validEmpID);
         }
         else
         {
-            System.out.println("     [x]    " + employeeId + " has not been added");
+            System.out.println("     [x]    " + validEmpID + " has not been added");
             fails++;
         }
         System.out.println("   valid employeeID test concluded");
@@ -159,7 +152,8 @@ class AuthenticateTest {
         System.out.println("   add invalid, but same sized employeeID test concluded");
 
         System.out.println("\n   Test: Add User with invalid Department");
-        if(Authenticate.addNewUser(employeeId, password, "Invalid Department", "Employee"))
+        String invalidDptEmpId = newEmployeeID();
+        if(Authenticate.addNewUser(invalidDptEmpId, password, "Invalid Department", "Employee"))
         {
             System.out.println("     [x]    department was invalid but user has been added regardless");
             fails++;
@@ -171,7 +165,8 @@ class AuthenticateTest {
         System.out.println("   add User with invalid Department test concluded");
 
         System.out.println("\n   Test: Add User with invalid Role");
-        if(Authenticate.addNewUser(employeeId, password, "IT", "Invalid Role"))
+        String invalidRoleEmpID = newEmployeeID();
+        if(Authenticate.addNewUser(invalidRoleEmpID, password, "IT", "Invalid Role"))
         {
             System.out.println("     [x]    role was invalid but user has been added regardless");
             fails++;
@@ -190,5 +185,17 @@ class AuthenticateTest {
     {
         double x = (Math.random()*((999-100)+1))+100;
         return (int)x;
+    }
+
+    private static String newEmployeeID()
+    {
+        // For valid employeeId, make sure this test ID hasn't already been used
+        DatabaseParser dp = new DatabaseParser();
+        String employeeId = "tes" + randomNumericID();
+        while(dp.checkEmployeeId(employeeId))
+        {
+            employeeId = "tes" + randomNumericID();
+        }
+        return employeeId;
     }
 }
