@@ -8,7 +8,7 @@ public class AuthoriseTest
         User nullSessionIdUser = new User(AuthenticateTest.newEmployeeID(), null);
         nullSessionIdUser.setDepartment(Position.Department.HR);
         nullSessionIdUser.setRole(Position.Role.Employee);
-        if (Authorise.AuthorisationAttempt("Read with no session ID", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, nullSessionIdUser))
+        if (Authorise.AuthorisationAttempt("Read", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, nullSessionIdUser))
         {
             System.out.println("      [x]    " + nullSessionIdUser.getEmployeeId() + " was not logged in");
             fails++;
@@ -19,11 +19,11 @@ public class AuthoriseTest
         }
         System.out.println("   Attempt action when not logged in (no sessionID) concluded");
 
-        System.out.println("   Test: Attempt action when not logged in (no sessionID)");
+        System.out.println("\n   Test: Attempt action when not logged in (invalid sessionID)");
         User invalidSessionIdUser = new User(AuthenticateTest.newEmployeeID(), "invalidSessionID");
         invalidSessionIdUser.setDepartment(Position.Department.HR);
         invalidSessionIdUser.setRole(Position.Role.Employee);
-        if (Authorise.AuthorisationAttempt("Read with invalid sessionId", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, invalidSessionIdUser))
+        if (Authorise.AuthorisationAttempt("Read", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, invalidSessionIdUser))
         {
             System.out.println("      [x]    " + invalidSessionIdUser.getEmployeeId() + " was not logged in");
             fails++;
@@ -34,11 +34,13 @@ public class AuthoriseTest
         }
         System.out.println("   Attempt action when not logged in (invalid sessionID) concluded");
 
-        System.out.println("   Test: Attempt action from wrong department");
+        System.out.println("\n   Test: Attempt action from wrong department");
         String wrongDepartmentID = AuthenticateTest.newEmployeeID();
+
         Authenticate.addNewUser(wrongDepartmentID, "password", Position.Department.BI, Position.Role.Employee);
+
         User  wrongDepartmentUser = Authenticate.login(wrongDepartmentID, "password");
-        if (Authorise.AuthorisationAttempt("Read from wrong department", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, wrongDepartmentUser))
+        if (Authorise.AuthorisationAttempt("Read", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, wrongDepartmentUser))
         {
             System.out.println("      [x]    " + wrongDepartmentUser.getEmployeeId() + " was in the wrong department but action got authorised");
             fails++;
@@ -49,11 +51,11 @@ public class AuthoriseTest
         }
         System.out.println("   Attempt action from wrong department concluded");
 
-        System.out.println("   Test: Attempt action from wrong role");
+        System.out.println("\n   Test: Attempt action from wrong role");
         String wrongRoleID = AuthenticateTest.newEmployeeID();
         Authenticate.addNewUser(wrongRoleID, "password", Position.Department.BI, Position.Role.Employee);
         User  wrongRoleUser = Authenticate.login(wrongDepartmentID, "password");
-        if (Authorise.AuthorisationAttempt("Read from wrong department", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, wrongRoleUser))
+        if (Authorise.AuthorisationAttempt("Read", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, wrongRoleUser))
         {
             System.out.println("      [x]    " + wrongRoleUser.getEmployeeId() + " did not meet the min. role but still got authorised");
             fails++;
@@ -64,10 +66,10 @@ public class AuthoriseTest
         }
         System.out.println("   Attempt action from wrong role concluded");
 
-        System.out.println("   Test: Attempt action with uninitiated User");
+        System.out.println("\n   Test: Attempt action with uninitiated User");
         String incompleteUserId = AuthenticateTest.newEmployeeID();
         User  incompleteUser = new User(incompleteUserId, "invalidSession");
-        if (Authorise.AuthorisationAttempt("Read from wrong department", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, incompleteUser))
+        if (Authorise.AuthorisationAttempt("Read", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, incompleteUser))
         {
             System.out.println("      [x]    " + incompleteUser.getEmployeeId() + " user is not initialised properly yet action to accepted");
             fails++;
@@ -78,9 +80,9 @@ public class AuthoriseTest
         }
         System.out.println("   Attempt action with uninitiated User concluded");
 
-        System.out.println("   Test: Attempt action with valid User");
+        System.out.println("\n   Test: Attempt action with valid User");
         User trueUser = Authenticate.login("abc123", "password");
-        if (Authorise.AuthorisationAttempt("Read from wrong department", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, trueUser))
+        if (Authorise.AuthorisationAttempt("Read", "abc123 - Personal Details", Position.Department.HR, Position.Role.Employee, trueUser))
         {
             System.out.println("      [✓]    Action has been authorised as intended");
         }
