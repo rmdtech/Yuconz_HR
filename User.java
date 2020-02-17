@@ -68,12 +68,7 @@ public class User{
      */
     public boolean isLoggedIn()
     {
-       User myEmployeeId = Authenticate.findActiveUser(employeeId);
-       if (myEmployeeId != null)
-       {
-           return true;
-       }
-       return false;
+        return Authenticate.isUserLoggedIn(employeeId);
     }
 
     /**
