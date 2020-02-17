@@ -13,7 +13,7 @@ class AuthenticateTest {
             System.out.println("All encyrption tests have passed");
             return true;
         }
-        System.out.println("     [x]    Strings don't match");
+        System.out.println("      [x]    Strings don't match");
         System.out.println("         Expected: " + expected);
         System.out.println("        Generated: " + generated);
         return false;
@@ -190,7 +190,7 @@ class AuthenticateTest {
         return (int)x;
     }
 
-    private static String newEmployeeID()
+    public static String newEmployeeID()
     {
         // For valid employeeId, make sure this test ID hasn't already been used
         DatabaseParser dp = new DatabaseParser();
