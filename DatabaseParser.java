@@ -289,7 +289,7 @@ public class DatabaseParser
     void recordAuthorisationAttempt(String employeeId, String actionAttempted, String actionTarget, Boolean successful)
     {
         sqlUpdate("INSERT INTO AuthorisationLog" +
-                "(employeeID, actionAttempted, actionTarget, actionSucceeded)" +
+                "(employeeID, timestamp, actionAttempted, actionTarget, actionSucceeded)" +
                 String.format("VALUES ('%s', CURRENT_TIME, '%s', '%s', '%s');", employeeId, actionAttempted, actionTarget, successful)
         );
     }
