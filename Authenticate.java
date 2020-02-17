@@ -78,16 +78,9 @@ public class Authenticate{
      * @param employeeId The employeeId of the User that should be found
      * @return The User with such employee ID. If not found, this is null
      */
-    public static User findActiveUser(String employeeId)
+    public static boolean isUserLoggedIn(String employeeId)
     {
-        for (User current : activeUsers)
-        {
-            if (current.getEmployeeId().equals(employeeId))
-            {
-                return current;
-            }
-        }
-        return null;
+        return dp.checkEmployeeId(employeeId);
     }
 
     /**
