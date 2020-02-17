@@ -45,7 +45,7 @@ public class Authenticate{
      * @param role Their role within the company
      * @return If the action has been successful
      */
-    public static boolean addNewUser(String employeeId, String password, String department, String role)
+    public static boolean addNewUser(String employeeId, String password, Position.Department department, Position.Role role)
     {
         String passwordSalt = User.generateSalt();
 
@@ -60,7 +60,8 @@ public class Authenticate{
             System.out.println("An employee with ID: "+ employeeId + " already exists");
             return false;
         }
-        dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password, passwordSalt), department, role);
+
+        dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password, passwordSalt), department.label, role.label);
         System.out.println("New User has been created and added to the Database");
         return true;
     }
