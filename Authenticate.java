@@ -101,8 +101,8 @@ public class Authenticate{
         try
         {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
-            md.update(salt.getBytes());
-            byte[] bytes = md.digest(password.getBytes());
+            md.update(password.getBytes());
+            byte[] bytes = md.digest(salt.getBytes());
             StringBuilder sb = new StringBuilder();
             for(int i=0; i< bytes.length ;i++)
             {
