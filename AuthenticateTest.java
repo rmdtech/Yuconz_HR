@@ -104,7 +104,7 @@ class AuthenticateTest {
         System.out.println("\n----- addNewUser tests -----");
         System.out.println("   Test: Add valid employeeID");
         String validEmpID = newEmployeeID();
-        if (Authenticate.addNewUser(validEmpID, password, "IT", "Employee"))
+        if (Authenticate.addNewUser(validEmpID, password, Position.Department.IT, Position.Role.Employee))
         {
             System.out.println("     [✓]    employeeId Written: " + validEmpID);
         }
@@ -116,7 +116,7 @@ class AuthenticateTest {
         System.out.println("   valid employeeID test concluded");
 
         System.out.println("\n   Test: Add invalid (long) employeeID");
-        if(Authenticate.addNewUser("invalidName", password, "IT", "Employee"))
+        if(Authenticate.addNewUser("invalidName", password, Position.Department.IT, Position.Role.Employee))
         {
             System.out.println("     [x]    invalidName has been added when it should have not");
             fails++;
@@ -128,7 +128,7 @@ class AuthenticateTest {
         System.out.println("   add invalid (long) employeeID test concluded");
 
         System.out.println("\n   Test: Add already existing employeeID");
-        if(Authenticate.addNewUser("abc123", password, "IT", "Employee"))
+        if(Authenticate.addNewUser("abc123", password, Position.Department.IT, Position.Role.Employee))
         {
             System.out.println("     [x]    already existing employee has been overwritten");
             fails++;
@@ -140,7 +140,7 @@ class AuthenticateTest {
         System.out.println("   add already existing employeeID test concluded");
 
         System.out.println("\n   Test: Add invalid, but same sized employeeID");
-        if(Authenticate.addNewUser("testin", password, "IT", "Employee"))
+        if(Authenticate.addNewUser("testin", password, Position.Department.IT, Position.Role.Employee))
         {
             System.out.println("     [x]    testin has been added when it should have not");
             fails++;
@@ -151,6 +151,7 @@ class AuthenticateTest {
         }
         System.out.println("   add invalid, but same sized employeeID test concluded");
 
+        /* After fixing Issue #4 this test is no longer applicable
         System.out.println("\n   Test: Add User with invalid Department");
         String invalidDptEmpId = newEmployeeID();
         if(Authenticate.addNewUser(invalidDptEmpId, password, "Invalid Department", "Employee"))
@@ -163,7 +164,9 @@ class AuthenticateTest {
             System.out.println("     [✓]    department was invalid and user has not been added");
         }
         System.out.println("   add User with invalid Department test concluded");
+        */
 
+        /* After fixing issue #4 this test is no longer applicable
         System.out.println("\n   Test: Add User with invalid Role");
         String invalidRoleEmpID = newEmployeeID();
         if(Authenticate.addNewUser(invalidRoleEmpID, password, "IT", "Invalid Role"))
@@ -176,7 +179,7 @@ class AuthenticateTest {
             System.out.println("     [✓]    role was invalid and user has not been added");
         }
         System.out.println("   add invalid (long) employeeID test concluded");
-
+        */
 
         return fails;
     }
