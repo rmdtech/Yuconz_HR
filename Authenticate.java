@@ -14,7 +14,7 @@ public class Authenticate{
      * @param employeeId The employeeID of the User that is to be logged in
      * @param password The password of the User that is to be logged in
      */
-    public static void login(String employeeId, String password)
+    public static User login(String employeeId, String password)
     {
         if (dp.checkEmployeeId(employeeId))
         {
@@ -23,10 +23,14 @@ public class Authenticate{
                 User newUser = new User(employeeId, UUID.randomUUID().toString().replace("-", ""));
                 newUser.setDepartment(dp.fetchDepartment(employeeId));
                 newUser.setRole(dp.fetchRole(employeeId));
-                activeUsers.add(newUser);
                 dp.createSession(employeeId, newUser.getSessionId());
+                return newUser;
             }
+            System.out.println("Wrong password");
+            return null;
         }
+        System.out.println("Wrong employeeID");
+        return null;
     }
 
     /**
@@ -99,11 +103,12 @@ public class Authenticate{
     {
         // Courtesy of howtodoin.java.com
         String hashedString = null;
+
         try
         {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
-            md.update(salt.getBytes());
-            byte[] bytes = md.digest(password.getBytes());
+            md.update(password.getBytes());
+            byte[] bytes = md.digest(salt.getBytes());
             StringBuilder sb = new StringBuilder();
             for(int i=0; i< bytes.length ;i++)
             {
@@ -123,7 +128,7 @@ public class Authenticate{
      * This verifies the password given in the constructor with the salt stored in the Database.
      * @return If the passwords match
      */
-    private static boolean verifyPassword(String employeeId, String password)
+    public static boolean verifyPassword(String employeeId, String password)
     {
         String passwordSalt=dp.fetchPasswordSalt(employeeId);
         String authenticationString = sha512Encrypt(password, passwordSalt);

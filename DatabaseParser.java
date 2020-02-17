@@ -2,7 +2,6 @@ import java.sql.*;
 
 public class DatabaseParser
 {
-
     Connection c = null;
     Statement stmt = null;
     ResultSet result = null;
