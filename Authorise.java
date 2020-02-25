@@ -19,20 +19,48 @@ public class Authorise
         }
     }
 
-    private static void createPersonalDetailsRecord(String[] details)
+    /**
+     * This calls the similarly named function in the DatabaseParser to write any details into the database after creating a new record
+     * @param details Personal details, which may be null at this point
+     * @return whether the action has been successful or not
+     */
+    private static boolean createPersonalDetailsRecord(String[] details)
     {
         DatabaseParser dp = new DatabaseParser();
-        dp.createPersonalDetailsRecord(details);
-        // do validation on payload
+        if (details[0].equals(null))
+        {
+            return false;
+        }
+        return dp.createPersonalDetailsRecord(details);
     }
 
-    private static void updatePersonalDetails(String[] details)
+    /**
+     * This calls the similarly named function in the DatabaseParser to update any details in the associated record for an Employee
+     * @param details The updated details. Only those that need to be updated have to be set
+     * @return whether the operation has been successful or not
+     */
+    private static boolean updatePersonalDetails(String[] details)
     {
         DatabaseParser dp = new DatabaseParser();
-        dp.createPersonalDetailsRecord(details);
-        // do validation on payload
+        String[] currentDetails = dp.readPersonalDetails(details[0]);
+        for (int i = 0; i < details.length; i++)
+        {
+            if (details[i].equals(null))
+            {
+                details[i] = currentDetails[i];
+            }
+        }
+        return dp.updatePersonalDetailsRecord(details);
     }
 
+    /**
+     * Any action must first be authorised by this method
+     * @param action Authorise.Action Enum (CRUD)
+     * @param target The target document ("Personal Details" or "Performance Review")
+     * @param user The User that is trying to perform this action
+     * @param payload Any information that may be associated with this action
+     * @return whether the action has been successful or not
+     */
     public static boolean AuthorisationAttempt(Action action, String target, User user, String[] payload) {
         DatabaseParser dp = new DatabaseParser();
         if (user.isLoggedIn()) {
@@ -59,6 +87,7 @@ public class Authorise
                         System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
                         return false;
                     }
+                    break;
                 case("Read"):
                     if (target.equals("Personal Details"))
                     {
@@ -88,13 +117,15 @@ public class Authorise
                         return false;
                     }
                     break;
+
                 case("Update"):
                     if (target.equals("Personal Details"))
                     {
                         response = dp.getPersonalDetailsPermissions(user.getEmployeeId());
                         Position.Department requiredDpt = Position.Department.valueOf(response[0]);
                         int minimumLevel = Integer.getInteger(response[1]);
-                        if (user.getDepartment().equals(requiredDpt) && user.getRole().getLevel() >= minimumLevel)
+                        String associatedEmployee = response[2];
+                        if ((user.getDepartment().equals(requiredDpt) && user.getRole().getLevel() >= minimumLevel) || associatedEmployee.equals(user.getEmployeeId()))
                         {
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
                             updatePersonalDetails(payload);
