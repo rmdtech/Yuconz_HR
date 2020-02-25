@@ -4,6 +4,7 @@
 public class Authorise
 {
     public enum Action{
+        Create("Create"),
         Read("Read"),
         Update("Update"),
         Delete("Delete");
@@ -18,13 +19,46 @@ public class Authorise
         }
     }
 
+    private static void createPersonalDetailsRecord(String[] details)
+    {
+        DatabaseParser dp = new DatabaseParser();
+        dp.createPersonalDetailsRecord(details);
+        // do validation on payload
+    }
 
-    public static boolean AuthorisationAttempt(Action action, String target, User user) {
+    private static void updatePersonalDetails(String[] details)
+    {
+        DatabaseParser dp = new DatabaseParser();
+        dp.createPersonalDetailsRecord(details);
+        // do validation on payload
+    }
+
+    public static boolean AuthorisationAttempt(Action action, String target, User user, String[] payload) {
         DatabaseParser dp = new DatabaseParser();
         if (user.isLoggedIn()) {
             String[] response;
             switch(action.toString())
             {
+                case("Create"):
+                    if (target.equals("Personal Details"))
+                    {
+                        if (user.getDepartment().equals(Position.Department.HR))
+                        {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
+                            createPersonalDetailsRecord(payload);
+                            return true;
+                        }
+                    }
+                    // Stage 5
+                    else if (target.equals("Performance Review"))
+                    {
+
+                    }
+                    else
+                    {
+                        System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
+                        return false;
+                    }
                 case("Read"):
                     if (target.equals("Personal Details"))
                     {
@@ -63,6 +97,7 @@ public class Authorise
                         if (user.getDepartment().equals(requiredDpt) && user.getRole().getLevel() >= minimumLevel)
                         {
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
+                            updatePersonalDetails(payload);
                             return true;
                         }
                         else
