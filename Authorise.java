@@ -1,26 +1,106 @@
 /**
  * Constructor for class Authorise
  */
-public class Authorise{
-    /**
-     * Method to print authorisation attempts into the database
-     * @param action String of the action that was tried to perform
-     * @param requiredDpt Position.Department enum required to perform this action
-     * @param requiredRole Position.Role enum minimum level required to perform this action
-     * @param user User object of the currently logged in user attempting this action
-     * @return Whether or not the attempted action was successful
-     */
-    public static boolean AuthorisationAttempt(String action, String target, Position.Department requiredDpt, Position.Role requiredRole, User user) {
+public class Authorise
+{
+    public enum Action{
+        Read("Read"),
+        Update("Update"),
+        Delete("Delete");
+        public final String label;
+        Action (String label)
+        {
+            this.label = label;
+        }
+        public String toString()
+        {
+            return label;
+        }
+    }
+
+
+    public static boolean AuthorisationAttempt(Action action, String target, User user) {
         DatabaseParser dp = new DatabaseParser();
         if (user.isLoggedIn()) {
-            if (requiredDpt.equals(user.getDepartment()) && requiredRole.getLevel() <= user.getRole().getLevel()) {
-                dp.recordAuthorisationAttempt(user.getEmployeeId(), action, target, true);
-                return true;
-            }
-            else
+            String[] response;
+            switch(action.toString())
             {
-                dp.recordAuthorisationAttempt(user.getEmployeeId(), action, target, false);
-                return false;
+                case("Read"):
+                    if (target.equals("Personal Details"))
+                    {
+                        response = dp.getPersonalDetailsPermissions(user.getEmployeeId());
+                        Position.Department requiredDpt = Position.Department.valueOf(response[0]);
+                        int minimumLevel = Integer.getInteger(response[1]);
+                        String associatedEmployee = response[2];
+                        if ((user.getDepartment().equals(requiredDpt) && user.getRole().getLevel() >= minimumLevel) || associatedEmployee.equals(user.getEmployeeId()))
+                        {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
+                            return true;
+                        }
+                        else
+                        {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, false);
+                            return false;
+                        }
+                    }
+                    // Stage 5
+                    else if (target.equals("Performance Review"))
+                    {
+
+                    }
+                    else
+                    {
+                        System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
+                        return false;
+                    }
+                    break;
+                case("Update"):
+                    if (target.equals("Personal Details"))
+                    {
+                        response = dp.getPersonalDetailsPermissions(user.getEmployeeId());
+                        Position.Department requiredDpt = Position.Department.valueOf(response[0]);
+                        int minimumLevel = Integer.getInteger(response[1]);
+                        if (user.getDepartment().equals(requiredDpt) && user.getRole().getLevel() >= minimumLevel)
+                        {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
+                            return true;
+                        }
+                        else
+                        {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, false);
+                            return false;
+                        }
+                    }
+                    // Stage 5
+                    else if (target.equals("Performance Review"))
+                    {
+
+                    }
+                    else
+                    {
+                        System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
+                        return false;
+                    }
+                    break;
+                case("Delete"):
+                    if (target.equals("Personal Details"))
+                    {
+                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, false);
+                        return false;
+                    }
+                    // Stage 5
+                    else if (target.equals("Performance Review"))
+                    {
+
+                    }
+                    else
+                    {
+                        System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
+                        return false;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
         System.out.println(user.getEmployeeId() + " was not logged in");
