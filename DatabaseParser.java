@@ -77,7 +77,7 @@ public class DatabaseParser
      */
     boolean newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
     {
-        if (checkEmployeeId(employeeId) == false)
+        if (!checkEmployeeId(employeeId))
         {
             sqlUpdate("INSERT INTO User" +
                     "(employeeID, hashedPassword, salt, role, department)" +
@@ -209,10 +209,9 @@ public class DatabaseParser
             String department = result.getString("department");
             result.close();
             stmt.close();
-            Position.Department departmentEnum = Position.Department.valueOf(department);
             // if (departmentEnum == null)
             // There is a typo in the database
-            return departmentEnum;
+            return Position.Department.valueOf(department);
         }
         catch (SQLException e)
         {
@@ -238,10 +237,9 @@ public class DatabaseParser
             String role = result.getString("role");
             result.close();
             stmt.close();
-            Position.Role roleEnum = Position.Role.valueOf(role);
             // if (roleEnum == null)
             // This means there is a typo in the Database
-            return roleEnum;
+            return Position.Role.valueOf(role);
         }
         catch (SQLException e)
         {
@@ -306,4 +304,96 @@ public class DatabaseParser
                 String.format("VALUES ('%s', CURRENT_TIME);", employeeId)
         );
     }
+
+    /**
+     * Payload:
+     * [0] employeeId
+     * [1] surname
+     * [2] name
+     * [3] dateOfBirth
+     * [4] address
+     * [5] city
+     * [6] county
+     * [7] postcode
+     * [8] telephoneNumber
+     * [9] mobileNumber
+     * [10] emergencyContact
+     * [11] emergencyContactNumber
+     * Full payload to be expected on Update
+     **/
+
+    void createPersonalDetailsRecord(String[] payload)
+    {
+        sqlUpdate("INSERT INTO PersonalDetails" +
+                "(employeeId, " +
+                "surname, " +
+                "name, " +
+                "dateOfBirth, " +
+                "address, " +
+                "city, " +
+                "county, " +
+                "postcode, " +
+                "telephoneNumber, " +
+                "mobileNumber, " +
+                "emergencyContact, " +
+                "emergencyContactNumber)" +
+                String.format("VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',);",
+                        payload[0], payload[1], payload[2], payload[3], payload[4], payload[5],
+                        payload[6], payload[7], payload[8], payload[9], payload[10], payload[11]
+                )
+        );
+    }
+
+    void updatePersonalDetails(String[] payload)
+    {
+
+    }
+
+    String[] getPersonalDetailsReadPermissions(String employeeId)
+    {
+        return null;
+    }
+
+    String[] getPersonalDetailsUpdatePermissions(String employeeId)
+    {
+        return null;
+    }
+
+    String[] readPersonalDetails(String employeeId)
+    {
+
+        String[] payload = new String[12];
+
+        sqlRead("SELECT * FROM PersonalDetails " +
+                String.format("WHERE employeeId = '%s'", employeeId)
+        );
+        try
+        {
+            result.next(); // only ever be one result, while loop not required
+            payload[0] = result.getString("employeeId");
+            payload[1] = result.getString("surname");
+            payload[2] = result.getString("name");
+            payload[3] = result.getString("dateOfBirth");
+            payload[4] = result.getString("address");
+            payload[5] = result.getString("city");
+            payload[6] = result.getString("county");
+            payload[7] = result.getString("postcode");
+            payload[8] = result.getString("telephoneNumber");
+            payload[9] = result.getString("mobileNumber");
+            payload[10] = result.getString("emergencyContact");
+            payload[11] = result.getString("emergencyContactNumber");
+            result.close();
+            stmt.close();
+            // if (roleEnum == null)
+            // This means there is a typo in the Database
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null; // keep compiler happy
+        }
+    }
+
+
 }
