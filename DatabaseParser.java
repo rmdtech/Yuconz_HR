@@ -344,5 +344,25 @@ public class DatabaseParser
         );
     }
 
+    void updatePersonalDetails(String[] payload)
+    {
+
+    }
+
+    String[] getPersonalDetailsReadPermissions(String employeeId)
+    {
+        return null;
+    }
+
+    String[] getPersonalDetailsUpdatePermissions(String employeeId)
+    {
+        return null;
+    }
+
+    String[] readPersonalDetails(String employeeID)
+    {
+        return null;
+    }
+
 
 }
