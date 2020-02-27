@@ -322,7 +322,7 @@ public class DatabaseParser
      * Full payload to be expected on Update
      **/
 
-    void createPersoanlDetailsRecord(String[] payload)
+    void createPersonalDetailsRecord(String[] payload)
     {
         sqlUpdate("INSERT INTO PersonalDetails" +
                 "(employeeId, " +
