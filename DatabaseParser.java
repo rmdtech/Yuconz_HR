@@ -304,4 +304,45 @@ public class DatabaseParser
                 String.format("VALUES ('%s', CURRENT_TIME);", employeeId)
         );
     }
+
+    /**
+     * Payload:
+     * [0] employeeId
+     * [1] surname
+     * [2] name
+     * [3] dateOfBirth
+     * [4] address
+     * [5] city
+     * [6] county
+     * [7] postcode
+     * [8] telephoneNumber
+     * [9] mobileNumber
+     * [10] emergencyContact
+     * [11] emergencyContactNumber
+     * Full payload to be expected on Update
+     **/
+
+    void createPersoanlDetailsRecord(String[] payload)
+    {
+        sqlUpdate("INSERT INTO PersonalDetails" +
+                "(employeeId, " +
+                "surname, " +
+                "name, " +
+                "dateOfBirth, " +
+                "address, " +
+                "city, " +
+                "county, " +
+                "postcode, " +
+                "telephoneNumber, " +
+                "mobileNumber, " +
+                "emergencyContact, " +
+                "emergencyContactNumber)" +
+                String.format("VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',);",
+                        payload[0], payload[1], payload[2], payload[3], payload[4], payload[5],
+                        payload[6], payload[7], payload[8], payload[9], payload[10], payload[11]
+                )
+        );
+    }
+
+
 }
