@@ -77,7 +77,7 @@ public class DatabaseParser
      */
     boolean newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
     {
-        if (checkEmployeeId(employeeId) == false)
+        if (!checkEmployeeId(employeeId))
         {
             sqlUpdate("INSERT INTO User" +
                     "(employeeID, hashedPassword, salt, role, department)" +
@@ -209,10 +209,9 @@ public class DatabaseParser
             String department = result.getString("department");
             result.close();
             stmt.close();
-            Position.Department departmentEnum = Position.Department.valueOf(department);
             // if (departmentEnum == null)
             // There is a typo in the database
-            return departmentEnum;
+            return Position.Department.valueOf(department);
         }
         catch (SQLException e)
         {
@@ -238,10 +237,9 @@ public class DatabaseParser
             String role = result.getString("role");
             result.close();
             stmt.close();
-            Position.Role roleEnum = Position.Role.valueOf(role);
             // if (roleEnum == null)
             // This means there is a typo in the Database
-            return roleEnum;
+            return Position.Role.valueOf(role);
         }
         catch (SQLException e)
         {
