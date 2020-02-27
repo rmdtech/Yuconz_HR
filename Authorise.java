@@ -42,7 +42,7 @@ public class Authorise
     private static boolean updatePersonalDetails(String[] details)
     {
         DatabaseParser dp = new DatabaseParser();
-        String[] currentDetails = dp.readPersonalDetails(details[0]);
+        String[] currentDetails = dp.fetchPersonalDetails(details[0]);
         for (int i = 0; i < details.length; i++)
         {
             if (details[i].equals(null))
