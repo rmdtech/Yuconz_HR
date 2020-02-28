@@ -358,7 +358,23 @@ public class DatabaseParser
 
     void updatePersonalDetails(String[] payload)
     {
-
+        sqlUpdate("UPDATE PersonalDetails" +
+                String.format("SET surname, = '%s'" +
+                        "name, = '%s'" +
+                        "dateOfBirth, = '%s'" +
+                        "address, = '%s'" +
+                        "city, = '%s'" +
+                        "county, = '%s'" +
+                        "postcode, = '%s'" +
+                        "telephoneNumber, = '%s'" +
+                        "mobileNumber, = '%s'" +
+                        "emergencyContact, = '%s'" +
+                        "emergencyContactNumber = '%s' " +
+                        "WHERE employeeId = '%s'",
+                        payload[1], payload[2], payload[3], payload[4], payload[5], payload[6],
+                        payload[7], payload[8], payload[9], payload[10], payload[11], payload[0]
+                )
+        );
     }
 
     String[] fetchPersonalDetailsPermissions(String employeeId)
