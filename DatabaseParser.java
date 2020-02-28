@@ -322,7 +322,7 @@ public class DatabaseParser
      * Full payload to be expected on Update
      **/
 
-    void createPersonalDetailsRecord(String[] payload, String newDocumentId, String[] perms)
+    void createPersonalDetailsRecord(String[] payload, String newDocumentId)
     {
         sqlUpdate("INSERT INTO Documents " +
                 "(documentId, creationTimestamp, lastAccessed) " +
@@ -331,8 +331,8 @@ public class DatabaseParser
 
         sqlUpdate("INSERT INTO Permissions " +
                 "(documentId, hr, it, sales, admin, bi, mc) " +
-                String.format("VALUES ('%s', '%s','%s','%s','%s','%s','%s');",
-                        newDocumentId, perms[0], perms[1], perms[2], perms[3], perms[4], perms[5]
+                String.format("VALUES (%s, %s, %s, %s, %s, %s, %s);",
+                        newDocumentId, 0, null, null, null, null, null
                 ));
 
         sqlUpdate("INSERT INTO PersonalDetails" +
