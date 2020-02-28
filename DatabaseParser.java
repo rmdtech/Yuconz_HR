@@ -333,7 +333,7 @@ public class DatabaseParser
 
         sqlUpdate("INSERT INTO Permissions " +
                 "(documentId, hr, it, sales, admin, bi, mc) " +
-                String.format("VALUES (%s, %s, %s, %s, %s, %s, %s);",
+                String.format("VALUES ('%s', %s, %s, %s, %s, %s, %s);",
                         newDocumentId, 0, null, null, null, null, null
                 ));
 
