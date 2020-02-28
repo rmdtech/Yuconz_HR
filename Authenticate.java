@@ -14,7 +14,7 @@ public class Authenticate{
      * @param employeeId The employeeID of the User that is to be logged in
      * @param password The password of the User that is to be logged in
      */
-    public static void login(String employeeId, String password)
+    public static User login(String employeeId, String password)
     {
         if (dp.checkEmployeeId(employeeId))
         {
@@ -25,8 +25,10 @@ public class Authenticate{
                 newUser.setRole(dp.fetchRole(employeeId));
                 activeUsers.add(newUser);
                 dp.createSession(employeeId, newUser.getSessionId());
+                return newUser;
             }
         }
+        return null;
     }
 
     /**
