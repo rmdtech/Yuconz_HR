@@ -322,7 +322,7 @@ public class DatabaseParser
      * Full payload to be expected on Update
      **/
 
-    Boolean createPersonalDetailsRecord(String[] payload, String newDocumentId)
+    boolean createPersonalDetailsRecord(String[] payload, String newDocumentId)
     {
         sqlUpdate("INSERT INTO Documents " +
                 "(documentId, creationTimestamp, lastAccessed) " +
@@ -357,7 +357,7 @@ public class DatabaseParser
         return true;
     }
 
-    void updatePersonalDetails(String[] payload)
+    boolean updatePersonalDetails(String[] payload)
     {
         sqlUpdate("UPDATE PersonalDetails" +
                 String.format("SET surname, = '%s'" +
@@ -376,6 +376,7 @@ public class DatabaseParser
                         payload[7], payload[8], payload[9], payload[10], payload[11], payload[0]
                 )
         );
+        return true;
     }
 
     String[] fetchPersonalDetailsPermissions(String employeeId)
