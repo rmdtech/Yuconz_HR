@@ -31,7 +31,7 @@ public class Authorise
         {
             return false;
         }
-        return dp.createPersonalDetailsRecord(details);
+        return dp.createPersonalDetailsRecord(User.generateSalt(), details);
     }
 
     /**
@@ -50,7 +50,7 @@ public class Authorise
                 details[i] = currentDetails[i];
             }
         }
-        return dp.updatePersonalDetailsRecord(details);
+        return dp.updatePersonalDetailsRecord(User.generateSalt(), details);
     }
 
     /**
