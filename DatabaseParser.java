@@ -162,7 +162,6 @@ public class DatabaseParser
         catch (SQLException e)
         {
             e.printStackTrace();
-            System.exit(0);
             return null; // keep compiler happy
         }
     }
@@ -188,7 +187,6 @@ public class DatabaseParser
         catch (SQLException e)
         {
             e.printStackTrace();
-            System.exit(0);
             return null; // keep compiler happy
         }
     }
@@ -216,7 +214,6 @@ public class DatabaseParser
         catch (SQLException e)
         {
             e.printStackTrace();
-            System.exit(0);
             return null; // keep compiler happy
         }
     }
@@ -244,7 +241,6 @@ public class DatabaseParser
         catch (SQLException e)
         {
             e.printStackTrace();
-            System.exit(0);
             return null; // keep compiler happy
         }
     }
@@ -322,6 +318,12 @@ public class DatabaseParser
      * Full payload to be expected on Update
      **/
 
+    /**
+     * creates a new record in the PersonalDetails table
+     * @param payload the payload of employee details
+     * @param newDocumentId the newly generated UUID for documentId
+     * @return true
+     */
     boolean createPersonalDetailsRecord(String[] payload, String newDocumentId)
     {
         sqlUpdate("INSERT INTO Documents " +
@@ -357,6 +359,11 @@ public class DatabaseParser
         return true;
     }
 
+    /**
+     * updates a PersonalDetails record for a given employee
+     * @param payload the payload of employee details
+     * @return true
+     */
     boolean updatePersonalDetails(String[] payload)
     {
         sqlUpdate("UPDATE PersonalDetails" +
@@ -379,6 +386,11 @@ public class DatabaseParser
         return true;
     }
 
+    /**
+     * fetches personal details permissions from the database for a given employee
+     * @param employeeId the employee to fetch permissions about
+     * @return perms array
+     */
     String[] fetchPersonalDetailsPermissions(String employeeId)
     {
 
@@ -412,6 +424,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * fetches personal details from the database for a given employee
+     * @param employeeId the employee to fetch details for
+     * @return payload array
+     */
     String[] fetchPersonalDetails(String employeeId)
     {
 
@@ -447,6 +464,4 @@ public class DatabaseParser
             return null; // keep compiler happy
         }
     }
-
-
 }
