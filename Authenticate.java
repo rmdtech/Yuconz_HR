@@ -3,18 +3,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
 
 public class Authenticate{
     private static DatabaseParser dp = new DatabaseParser();
-    private static ArrayList<User> activeUsers = new ArrayList<User>();
 
     /**
      * This will create a sessionID for this user and add it to the local memory of logged in users
      * @param employeeId The employeeID of the User that is to be logged in
      * @param password The password of the User that is to be logged in
      */
-    public static User login(String employeeId, String password)
+    public static void login(String employeeId, String password)
     {
         if (dp.checkEmployeeId(employeeId))
         {
@@ -23,12 +21,9 @@ public class Authenticate{
                 User newUser = new User(employeeId, UUID.randomUUID().toString().replace("-", ""));
                 newUser.setDepartment(dp.fetchDepartment(employeeId));
                 newUser.setRole(dp.fetchRole(employeeId));
-                activeUsers.add(newUser);
                 dp.createSession(employeeId, newUser.getSessionId());
-                return newUser;
             }
         }
-        return null;
     }
 
     /**
