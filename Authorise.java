@@ -31,7 +31,7 @@ public class Authorise
         {
             return false;
         }
-        return dp.createPersonalDetailsRecord(User.generateSalt(), details);
+        return dp.createPersonalDetailsRecord(details, User.generateSalt());
     }
 
     /**
@@ -50,7 +50,7 @@ public class Authorise
                 details[i] = currentDetails[i];
             }
         }
-        return dp.updatePersonalDetailsRecord(User.generateSalt(), details);
+        return dp.updatePersonalDetails(details, User.generateSalt());
     }
 
     /**
@@ -91,7 +91,7 @@ public class Authorise
                 case("Read"):
                     if (target.equals("Personal Details"))
                     {
-                        response = dp.getPersonalDetailsPermissions(user.getEmployeeId());
+                        response = dp.fetchPersonalDetailsPermissions(user.getEmployeeId());
                         Position.Department requiredDpt = Position.Department.valueOf(response[0]);
                         int minimumLevel = Integer.getInteger(response[1]);
                         String associatedEmployee = response[2];
@@ -121,7 +121,7 @@ public class Authorise
                 case("Update"):
                     if (target.equals("Personal Details"))
                     {
-                        response = dp.getPersonalDetailsPermissions(user.getEmployeeId());
+                        response = dp.fetchPersonalDetailsPermissions(user.getEmployeeId());
                         Position.Department requiredDpt = Position.Department.valueOf(response[0]);
                         int minimumLevel = Integer.getInteger(response[1]);
                         String associatedEmployee = response[2];
