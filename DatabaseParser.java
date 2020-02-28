@@ -322,8 +322,19 @@ public class DatabaseParser
      * Full payload to be expected on Update
      **/
 
-    void createPersonalDetailsRecord(String[] payload)
+    void createPersonalDetailsRecord(String[] payload, String newDocumentId, String[] perms)
     {
+        sqlUpdate("INSERT INTO Documents " +
+                "(documentId, creationTimestamp, lastAccessed) " +
+                String.format("VALUES ('%s', CURRENT_TIME, CURRENT_TIME);", newDocumentId)
+        );
+
+        sqlUpdate("INSERT INTO Permissions " +
+                "(documentId, hr, it, sales, admin, bi, mc) " +
+                String.format("VALUES ('%s', '%s','%s','%s','%s','%s','%s');",
+                        newDocumentId, perms[0], perms[1], perms[2], perms[3], perms[4], perms[5]
+                ));
+
         sqlUpdate("INSERT INTO PersonalDetails" +
                 "(employeeId, " +
                 "surname, " +
@@ -336,10 +347,11 @@ public class DatabaseParser
                 "telephoneNumber, " +
                 "mobileNumber, " +
                 "emergencyContact, " +
-                "emergencyContactNumber)" +
-                String.format("VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',);",
+                "emergencyContactNumber, " +
+                "documentId)" +
+                String.format("VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');",
                         payload[0], payload[1], payload[2], payload[3], payload[4], payload[5],
-                        payload[6], payload[7], payload[8], payload[9], payload[10], payload[11]
+                        payload[6], payload[7], payload[8], payload[9], payload[10], payload[11], newDocumentId
                 )
         );
     }
