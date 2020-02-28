@@ -349,14 +349,37 @@ public class DatabaseParser
 
     }
 
-    String[] getPersonalDetailsReadPermissions(String employeeId)
+    String[] fetchPersonalDetailsPermissions(String employeeId)
     {
-        return null;
-    }
 
-    String[] getPersonalDetailsUpdatePermissions(String employeeId)
-    {
-        return null;
+        String[] perms = new String[6];
+
+        sqlRead("SELECT * FROM Permissions " +
+                        "WHERE Permissions.documentId = ( " +
+                        "SELECT PersonalDetails.documentId " +
+                        "FROM PersonalDetails " +
+                        String.format("WHERE PersonalDetails.employeeId = '%s')", employeeId)
+        );
+        try
+        {
+            result.next(); // only ever be one result, while loop not required
+            perms[0] = result.getString("hr");
+            perms[1] = result.getString("it");
+            perms[2] = result.getString("sales");
+            perms[3] = result.getString("admin");
+            perms[4] = result.getString("bi");
+            perms[5] = result.getString("mc");
+            result.close();
+            stmt.close();
+            // if (roleEnum == null)
+            // This means there is a typo in the Database
+            return perms;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null; // keep compiler happy
+        }
     }
 
     String[] fetchPersonalDetails(String employeeId)
