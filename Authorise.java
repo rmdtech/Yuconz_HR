@@ -50,7 +50,7 @@ public class Authorise
                 details[i] = currentDetails[i];
             }
         }
-        return dp.updatePersonalDetails(details, User.generateSalt());
+        return dp.updatePersonalDetails(details);
     }
 
     /**
