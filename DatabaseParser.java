@@ -1,3 +1,5 @@
+import org.sqlite.SQLiteConfig;
+
 import java.sql.*;
 
 public class DatabaseParser
@@ -6,13 +8,18 @@ public class DatabaseParser
     Connection c = null;
     Statement stmt = null;
     ResultSet result = null;
+    SQLiteConfig config = null;
 
     public DatabaseParser()
     {
         try
         {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:databases/yuconz.db");
+            config = new SQLiteConfig();
+            config.enforceForeignKeys(true);
+            c = DriverManager.getConnection("jdbc:sqlite:databases/yuconz.db", config.toProperties());
+            c.createStatement().execute("PRAGMA foreign_keys = ON");
+
         }
         catch (Exception e)
         {
@@ -26,7 +33,7 @@ public class DatabaseParser
      * Runs SQL code that modifies the database in any way including creating, updating and deleting records
      * @param sql the SQL String to be executed on the database
      */
-    void sqlUpdate(String sql)
+    boolean sqlUpdate(String sql)
     {
         try
         {
@@ -37,8 +44,9 @@ public class DatabaseParser
         catch (SQLException e)
         {
             e.printStackTrace();
-            System.exit(0);
+            return false;
         }
+        return true;
     }
 
     /**
@@ -326,18 +334,25 @@ public class DatabaseParser
      */
     boolean createPersonalDetailsRecord(String[] payload, String newDocumentId)
     {
-        sqlUpdate("INSERT INTO Documents " +
+        if(!sqlUpdate("INSERT INTO Documents " +
                 "(documentId, creationTimestamp, lastAccessed) " +
                 String.format("VALUES ('%s', CURRENT_TIME, CURRENT_TIME);", newDocumentId)
-        );
+        ))
+        {
+            return false;
+        }
 
-        sqlUpdate("INSERT INTO Permissions " +
+        if(!sqlUpdate("INSERT INTO Permissions " +
                 "(documentId, hr, it, sales, admin, bi, mc) " +
-                String.format("VALUES (%s, %s, %s, %s, %s, %s, %s);",
+                String.format("VALUES ('%s', %s, %s, %s, %s, %s, %s);",
                         newDocumentId, 0, null, null, null, null, null
-                ));
+                ))
+        )
+        {
+            return false;
+        }
 
-        sqlUpdate("INSERT INTO PersonalDetails" +
+        if(!sqlUpdate("INSERT INTO PersonalDetails" +
                 "(employeeId, " +
                 "surname, " +
                 "name, " +
@@ -355,7 +370,10 @@ public class DatabaseParser
                         payload[0], payload[1], payload[2], payload[3], payload[4], payload[5],
                         payload[6], payload[7], payload[8], payload[9], payload[10], payload[11], newDocumentId
                 )
-        );
+        ))
+        {
+            return false;
+        }
         return true;
     }
 
@@ -366,17 +384,17 @@ public class DatabaseParser
      */
     boolean updatePersonalDetails(String[] payload)
     {
-        sqlUpdate("UPDATE PersonalDetails" +
-                String.format("SET surname, = '%s'" +
-                                "name, = '%s'" +
-                                "dateOfBirth, = '%s'" +
-                                "address, = '%s'" +
-                                "city, = '%s'" +
-                                "county, = '%s'" +
-                                "postcode, = '%s'" +
-                                "telephoneNumber, = '%s'" +
-                                "mobileNumber, = '%s'" +
-                                "emergencyContact, = '%s'" +
+        sqlUpdate("UPDATE PersonalDetails " +
+                String.format("SET surname = '%s', " +
+                                "name= '%s', " +
+                                "dateOfBirth = '%s', " +
+                                "address = '%s', " +
+                                "city = '%s', " +
+                                "county = '%s', " +
+                                "postcode = '%s', " +
+                                "telephoneNumber = '%s', " +
+                                "mobileNumber = '%s', " +
+                                "emergencyContact = '%s', " +
                                 "emergencyContactNumber = '%s' " +
                                 "WHERE employeeId = '%s'",
                         payload[1], payload[2], payload[3], payload[4], payload[5], payload[6],

@@ -1,62 +1,64 @@
-import java.lang.reflect.Array;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class AuthoriseTest {
+    private User hrEmployee;
+    private User itEmployee;
+    private User hrManager;
 
     @org.junit.jupiter.api.BeforeEach
-    void setUp() {
+    void setUp()
+    {
+        DatabaseParser dp = new DatabaseParser();
+        dp.sqlUpdate("DELETE FROM Session");
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM AuthorisationLog");
+        dp.sqlUpdate("DELETE FROM AuthenticationLog");
+        dp.sqlUpdate("DELETE FROM User");
+
+        Authenticate.addNewUser("hre123", "password", Position.Department.HR, Position.Role.Employee);
+        Authenticate.addNewUser("ite123", "password", Position.Department.IT, Position.Role.Employee);
+        Authenticate.addNewUser("hrm123", "password", Position.Department.IT, Position.Role.Employee);
+        hrEmployee = Authenticate.login("hre123", "password");
+        itEmployee = Authenticate.login("ite123", "password");
+        hrManager = Authenticate.login("hrm123", "password");
     }
 
     @org.junit.jupiter.api.AfterEach
-    void tearDown() {
+    void tearDown()
+    {
+
     }
 
     @org.junit.jupiter.api.Test
-    Integer authorisationAttempt() {
-        int failures = 0;
-        String[] payload1 = {"hrm123","Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
-        String[] payload2 = {null, null, null, null, null, null, null, null, null, null, null, null};
-        User user = Authenticate.login("hrm123", "password");
-        DatabaseParser dp = new DatabaseParser();
-        String[] response;
-        response = dp.fetchPersonalDetailsPermissions(user.getEmployeeId());
-        Position.Department requiredDpt = Position.Department.valueOf(response[0]);
-        int minimumLevel = Integer.getInteger(response[1]);
-        String associatedEmployee = response[2];
+    void authorisationAttempt()
+    {
+        createPersonalDetails();
+    }
 
-        System.out.println("\n----- Update Contact Info Tests -----");
-        System.out.println("   Test: Update valid personal details");
-        Boolean authAttempt1 = Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", user, payload1);
-        if(authAttempt1)
-        {
-            System.out.println("     [✓]    Personal Details updated successfully");
-        }
-        else
-        {
-            if(!(associatedEmployee.equals(user.getEmployeeId())))
-            {
-                System.out.println("     [x]    Test failed. User is not associated employee");
-                failures++;
-            }
-            else if(!(user.getDepartment().equals(requiredDpt)))
-            {
-                System.out.println("     [x]    Test failed. User is not from the required department");
-                failures++;
-            }
-            else if(!(user.getRole().getLevel() >= minimumLevel))
-            {
-                System.out.println("     [x]    Test failed. User does not have the minimum level required");
-                failures++;
-            }
-        }
+    @org.junit.jupiter.api.Test
+    void createPersonalDetails()
+    {
+        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "CT2 7NF", "Canterbury", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        String[] emptyPayload = { null, null, null, null, null, null, null, null, null, null, null };
+        String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "CT2 7NF", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
 
-        System.out.println("   Test: Update performance review");
-        Boolean authAttempt2 = Authorise.AuthorisationAttempt(Authorise.Action.Update, "Performance Review", user, payload1);
-        if(authAttempt2 == null)
-        {
+        // Normal, expected use
+        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Create, "Personal Details", hrEmployee, hre123FullPayload));
 
-        }
-        return failures;
+
+        // User of wrong department
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Create, "Personal Details", itEmployee, hre123FullPayload));
+
+        // User trying to create their own personal details record
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Create, "Personal Details", itEmployee, ite123FullPayload));
+
+        // Empty record about to be submitted
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Create, "Personal Details", hrEmployee, emptyPayload));
+
+        // User not logged in
+        Authenticate.logout(hrEmployee);
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Create, "Personal Details", hrEmployee, hre123FullPayload));
     }
 }
