@@ -22,14 +22,14 @@ class AuthoriseTest {
     {
         DatabaseParser dp = new DatabaseParser();
         dp.deleteSession(hrEmployee.getSessionId());
-        dp.sqlUpdate("DELETE * FROM User WHERE employeeId = 'hre123'");
-        dp.sqlUpdate("DELETE * FROM PersonalDetails WHERE employeeId = 'hre123'");
+        dp.sqlUpdate("DELETE FROM User WHERE employeeId = 'hre123'");
+        dp.sqlUpdate("DELETE FROM PersonalDetails WHERE employeeId = 'hre123'");
         dp.deleteSession(itEmployee.getSessionId());
-        dp.sqlUpdate("DELETE * FROM User WHERE employeeId = 'ite123'");
-        dp.sqlUpdate("DELETE * FROM PersonalDetails WHERE employeeId = 'ite123'");
+        dp.sqlUpdate("DELETE FROM User WHERE employeeId = 'ite123'");
+        dp.sqlUpdate("DELETE FROM PersonalDetails WHERE employeeId = 'ite123'");
         dp.deleteSession(hrManager.getSessionId());
-        dp.sqlUpdate("DELETE * FROM User WHERE employeeId = 'hrm123'");
-        dp.sqlUpdate("DELETE * FROM PersonalDetails WHERE employeeId = 'hrm123'");
+        dp.sqlUpdate("DELETE FROM User WHERE employeeId = 'hrm123'");
+        dp.sqlUpdate("DELETE FROM PersonalDetails WHERE employeeId = 'hrm123'");
     }
 
     @org.junit.jupiter.api.Test
