@@ -78,20 +78,20 @@ class AuthoriseTest {
         Authorise.AuthorisationAttempt(Authorise.Action.Create, "Personal Details", hrManager, ite123FullPayload);
 
         // Variant 1: Expected Use, user updates their own info
-        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", itEmployee, iteFullPayload));
+        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", itEmployee, iteFullPayload)); // has ResultSet closed error
 
         // Variant 2: Expected Use, HR updates someone else's file
-        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, iteFullPayload));
+        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, iteFullPayload)); // has some sort of enum thingy error
 
         // Variant 3: Unexpected Use, user targets Invalid Target
-        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Invalid Target", hrEmployee, hreFullPayload));
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Invalid Target", hrEmployee, hreFullPayload)); // has no errors *happy test noises*
 
         // Variant 4: Unexpected Use, Try to update with empty payload
-        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, emptyPayload));
+        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, emptyPayload)); // has some sort of enum thingy error
 
 
         // Variant 5: Unexpected Use, User is neither HR or updating their own info
-        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", itEmployee, hreFullPayload));
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", itEmployee, hreFullPayload)); // has ResultSet closed error
 
         // ----------------- CURRENTLY FAULTY DUE TO ISSUE 14. THROWS SQL ERROR WHICH CAUSES THE TEST TO CRASH OUT ----------------------------
         // Variant 6: Unexpected Use, User not logged in
@@ -110,6 +110,7 @@ class AuthoriseTest {
         // Variant 2: Logged in user tries to delete from an Invalid Target
         assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Delete, "Invalid Target", hrEmployee, hreFullPayload));
 
+        // ----------------- CURRENTLY FAULTY DUE TO ISSUE 14. THROWS SQL ERROR WHICH CAUSES THE TEST TO CRASH OUT ----------------------------
         //Variant 3: logged out user tries to delete from personal details
         //Authenticate.logout(hrEmployee);
         //assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Delete, "Personal Details", hrEmployee, hreFullPayload));
