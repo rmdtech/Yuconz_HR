@@ -59,6 +59,7 @@ class AuthoriseTest {
         // Empty record about to be submitted
         assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Create, "Personal Details", hrEmployee, emptyPayload));
 
+        // ----------------- CURRENTLY FAULTY DUE TO ISSUE 14. THROWS SQL ERROR WHICH CAUSES THE TEST TO CRASH OUT ----------------------------
         // User not logged in
         Authenticate.logout(hrEmployee);
         assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Create, "Personal Details", hrEmployee, hre123FullPayload));
