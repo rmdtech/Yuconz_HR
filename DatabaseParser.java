@@ -384,17 +384,17 @@ public class DatabaseParser
      */
     boolean updatePersonalDetails(String[] payload)
     {
-        sqlUpdate("UPDATE PersonalDetails" +
-                String.format("SET surname, = '%s'" +
-                                "name, = '%s'" +
-                                "dateOfBirth, = '%s'" +
-                                "address, = '%s'" +
-                                "city, = '%s'" +
-                                "county, = '%s'" +
-                                "postcode, = '%s'" +
-                                "telephoneNumber, = '%s'" +
-                                "mobileNumber, = '%s'" +
-                                "emergencyContact, = '%s'" +
+        sqlUpdate("UPDATE PersonalDetails " +
+                String.format("SET surname = '%s', " +
+                                "name= '%s', " +
+                                "dateOfBirth = '%s', " +
+                                "address = '%s', " +
+                                "city = '%s', " +
+                                "county = '%s', " +
+                                "postcode = '%s', " +
+                                "telephoneNumber = '%s', " +
+                                "mobileNumber = '%s', " +
+                                "emergencyContact = '%s', " +
                                 "emergencyContactNumber = '%s' " +
                                 "WHERE employeeId = '%s'",
                         payload[1], payload[2], payload[3], payload[4], payload[5], payload[6],
