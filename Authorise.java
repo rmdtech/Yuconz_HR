@@ -76,6 +76,8 @@ public class Authorise
                             createPersonalDetailsRecord(payload);
                             return true;
                         }
+                        System.out.println(user.getEmployeeId() + " was not of the right department");
+                        return false;
                     }
                     // Stage 5
                     else if (target.equals("Performance Review"))

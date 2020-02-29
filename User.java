@@ -68,6 +68,7 @@ public class User{
      */
     public boolean isLoggedIn()
     {
+
         return Authenticate.isUserLoggedIn(employeeId);
     }
 
