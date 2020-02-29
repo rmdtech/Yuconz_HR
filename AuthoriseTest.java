@@ -64,4 +64,29 @@ class AuthoriseTest {
         Authenticate.logout(hrEmployee);
         assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Create, "Personal Details", hrEmployee, hre123FullPayload));
     }
+
+    @org.junit.jupiter.api.Test
+    void updatePersonalDetails()
+    {
+        String[] hreFullPayload = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
+        String[] iteFullPayload = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
+        String[] emptyPayload = {null, null, null, null, null, null, null, null, null, null, null};
+
+        // Expected Use 1, user updates their own info
+        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", itEmployee, iteFullPayload));
+
+        System.out.println("Here");
+        // Expected Use 2, HR updates someone else's file
+        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, iteFullPayload));
+
+        // User of wrong department
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", itEmployee, hreFullPayload));
+
+        // Try to update with empty payload
+        assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, emptyPayload));
+
+        // User not logged in
+        Authenticate.logout(hrEmployee);
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, hreFullPayload));
+    }
 }
