@@ -27,7 +27,7 @@ public class Authorise
     private static boolean createPersonalDetailsRecord(String[] details)
     {
         DatabaseParser dp = new DatabaseParser();
-        if (details[0].equals(null))
+        if (details[0] == null)
         {
             return false;
         }
@@ -45,7 +45,7 @@ public class Authorise
         String[] currentDetails = dp.fetchPersonalDetails(details[0]);
         for (int i = 0; i < details.length; i++)
         {
-            if (details[i].equals(null))
+            if (details[i] == null)
             {
                 details[i] = currentDetails[i];
             }
@@ -72,9 +72,12 @@ public class Authorise
                     {
                         if (user.getDepartment().equals(Position.Department.HR))
                         {
-                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
-                            createPersonalDetailsRecord(payload);
-                            return true;
+                            if (createPersonalDetailsRecord(payload))
+                            {
+                                dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
+                                return true;
+                            }
+                            return false;
                         }
                         System.out.println(user.getEmployeeId() + " was not of the right department");
                         return false;
