@@ -42,6 +42,8 @@ class AuthoriseTest {
     @org.junit.jupiter.api.Test
     void createPersonalDetails()
     {
+        setUp();
+        System.out.println("---- Test output here --- ");
         String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "CT2 7NF", "Canterbury", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
         String[] emptyPayload = { null, null, null, null, null, null, null, null, null, null, null };
         String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "CT2 7NF", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
@@ -72,20 +74,40 @@ class AuthoriseTest {
         String[] iteFullPayload = {"ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
         String[] emptyPayload = {null, null, null, null, null, null, null, null, null, null, null};
 
-        // Expected Use 1, user updates their own info
+        // Variant 1: Expected Use, user updates their own info
         assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", itEmployee, iteFullPayload));
 
-        // Expected Use 2, HR updates someone else's file
+        // Variant 2: Expected Use, HR updates someone else's file
         assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, iteFullPayload));
 
-        // User of wrong department
-        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", itEmployee, hreFullPayload));
+        // Variant 3: Unexpected Use, user targets Invalid Target
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Invalid Target", hrEmployee, hreFullPayload));
 
-        // Try to update with empty payload
+        // Variant 4: Unexpected Use, Try to update with empty payload
         assertTrue(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, emptyPayload));
 
-        // User not logged in
+        // Variant 5: Unexpected Use, User is neither HR or updating their own info
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", itEmployee, hreFullPayload));
+
+        // ----------------- CURRENTLY FAULTY DUE TO ISSUE 14. THROWS SQL ERROR WHICH CAUSES THE TEST TO CRASH OUT ----------------------------
+        // Variant 6: Unexpected Use, User not logged in
         //Authenticate.logout(hrEmployee);
         //assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Personal Details", hrEmployee, hreFullPayload));
+    }
+
+    @org.junit.jupiter.api.Test
+    void deletePersonalDetails()
+    {
+        String[] hreFullPayload = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
+
+        // Variant 1: Logged in user tries to delete from personal details
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Delete, "Personal Details", hrEmployee, hreFullPayload));
+
+        // Variant 2: Logged in user tries to delete from an Invalid Target
+        assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Delete, "Invalid Target", hrEmployee, hreFullPayload));
+
+        //Variant 3: logged out user tries to delete from personal details
+        //Authenticate.logout(hrEmployee);
+        //assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Delete, "Personal Details", hrEmployee, hreFullPayload));
     }
 }
