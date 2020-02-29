@@ -59,10 +59,8 @@ public class Authenticate{
             System.out.println("An employee with ID: "+ employeeId + " already exists");
             return false;
         }
-
-        dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password, passwordSalt), department.label, role.label);
         System.out.println("New User has been created and added to the Database");
-        return true;
+        return dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password, passwordSalt), department.label, role.label);
     }
 
     /*
