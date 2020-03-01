@@ -72,12 +72,16 @@ public class Authenticate{
     */
     /**
      * Returns a given User object based on the employeeId given
-     * @param employeeId The employeeId of the User that should be found
+     * @param user The employeeId of the User that should be found
      * @return The User with such employee ID. If not found, this is null
      */
-    public static boolean isUserLoggedIn(String employeeId)
+    public static boolean isUserLoggedIn(User user)
     {
-        return dp.checkEmployeeId(employeeId);
+        if (user.getSessionId() == null)
+        {
+            return false;
+        }
+        return dp.isLoggedIn(user.getEmployeeId(), user.getSessionId());
     }
 
     /**

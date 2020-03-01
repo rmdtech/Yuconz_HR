@@ -18,7 +18,7 @@ public class Authorise
             return label;
         }
     }
-
+    static DatabaseParser dp = new DatabaseParser();
     /**
      * This calls the similarly named function in the DatabaseParser to write any details into the database after creating a new record
      * @param details Personal details, which may be null at this point
@@ -26,7 +26,6 @@ public class Authorise
      */
     private static boolean createPersonalDetailsRecord(String[] details)
     {
-        DatabaseParser dp = new DatabaseParser();
         if (details[0] == null)
         {
             return false;
@@ -41,7 +40,6 @@ public class Authorise
      */
     private static boolean updatePersonalDetails(String[] details)
     {
-        DatabaseParser dp = new DatabaseParser();
         String[] currentDetails = dp.fetchPersonalDetails(details[0]);
         for (int i = 0; i < details.length; i++)
         {
@@ -53,6 +51,11 @@ public class Authorise
         return dp.updatePersonalDetails(details);
     }
 
+    private String[] readDatabaseUser (User user)
+    {
+        return dp.fetchPersonalDetails(user.getEmployeeId());
+    }
+
     /**
      * Any action must first be authorised by this method
      * @param action Authorise.Action Enum (CRUD)
@@ -61,8 +64,8 @@ public class Authorise
      * @param payload Any information that may be associated with this action
      * @return whether the action has been successful or not
      */
-    public static boolean AuthorisationAttempt(Action action, String target, User user, String[] payload) {
-        DatabaseParser dp = new DatabaseParser();
+    public static boolean AuthorisationAttempt(Action action, String target, User user, String[] payload)
+    {
         if (user.isLoggedIn()) {
             String[] response;
             switch(action.toString())
@@ -103,6 +106,7 @@ public class Authorise
                         if ((user.getDepartment().equals(requiredDpt) && user.getRole().getLevel() >= minimumLevel) || associatedEmployee.equals(user.getEmployeeId()))
                         {
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
+
                             return true;
                         }
                         else
@@ -132,9 +136,13 @@ public class Authorise
                         String associatedEmployee = response[2];
                         if ((user.getDepartment().equals(requiredDpt) && user.getRole().getLevel() >= minimumLevel) || associatedEmployee.equals(user.getEmployeeId()))
                         {
-                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
-                            updatePersonalDetails(payload);
-                            return true;
+                            if (updatePersonalDetails(payload))
+                            {
+                                dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, true);
+                                return true;
+                            }
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), target, false);
+                            return false;
                         }
                         else
                         {

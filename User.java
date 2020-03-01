@@ -69,7 +69,7 @@ public class User{
     public boolean isLoggedIn()
     {
 
-        return Authenticate.isUserLoggedIn(employeeId);
+        return Authenticate.isUserLoggedIn(this);
     }
 
     /**
