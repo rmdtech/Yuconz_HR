@@ -74,6 +74,9 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * creates all the tables in the database required
+     */
     void setupDatabase()
     {
         sqlUpdate("CREATE TABLE User (\n" +
@@ -563,6 +566,12 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * Checks if a user is logged in.
+     * @param employeeId the employeeId to check
+     * @param sessionId the sessionId to check
+     * @return user's logged in state (true/false)
+     */
     Boolean isLoggedIn(String employeeId, String sessionId)
     {
         sqlRead("SELECT employeeId, sessionId FROM Session " +
