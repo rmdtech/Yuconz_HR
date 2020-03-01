@@ -108,7 +108,7 @@ class AuthoriseTest {
         // assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Invalid Target", hrEmployee, hreFullPayload)); // has no errors *happy test noises*
 
         // Variant 4: Unexpected Use, Try to update with empty payload
-        assertTrue(Authorise.updatePersonalDetails(hrEmployee, emptyPayload)); // has some sort of enum thingy error
+        assertFalse(Authorise.updatePersonalDetails(hrEmployee, emptyPayload)); // has some sort of enum thingy error
 
 
         // Variant 5: Unexpected Use, User is neither HR or updating their own info
