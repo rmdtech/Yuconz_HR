@@ -46,16 +46,16 @@ class AuthoriseTest {
         String[] emptyPayload = { null, null, null, null, null, null, null, null, null, null, null };
         String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "CT2 7NF", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
 
-        // HR Employee trying to create a new Personal Details record
+        // Variant 1: HR Employee trying to create a new Personal Details record
         assertTrue(Authorise.createPersonalDetailsRecord(hrEmployee, ite123FullPayload));
 
-        // Non-HR Employee trying to create a new Personal Details record
+        // Variant 2: Non-HR Employee trying to create a new Personal Details record
         assertFalse(Authorise.createPersonalDetailsRecord(itEmployee, ite123FullPayload));
 
-        // Empty record about to be submitted
+        // Variant 3: Empty record about to be submitted
         assertFalse(Authorise.createPersonalDetailsRecord(hrEmployee, emptyPayload));
 
-        // User not logged in
+        // Variant 4: User not logged in
         Authenticate.logout(hrEmployee);
         assertFalse(Authorise.createPersonalDetailsRecord(hrEmployee, hre123FullPayload));
     }
@@ -66,7 +66,7 @@ class AuthoriseTest {
         String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "CT2 7NF", "Canterbury", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
         String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "CT2 7NF", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
 
-        // Trying to read a PersonalDetails record that doesn't exist
+        // Variant 3: Trying to read a PersonalDetails record that doesn't exist
         assertNull(Authorise.readPersonalDetails(hrEmployee, "err404"));
 
         // Populate the PersonalDetails record first
@@ -74,14 +74,18 @@ class AuthoriseTest {
         Authorise.createPersonalDetailsRecord(hrEmployee, ite123FullPayload);
         System.out.println("- ReadPersonalDetails: Created PD record in DB");
 
-        // HR Employee trying to access their own record
+        // Variant 1: HR Employee trying to access their own record
         assertArrayEquals(hre123FullPayload, Authorise.readPersonalDetails(hrEmployee, hrEmployee.getEmployeeId()));
 
-        // IT Employee trying to access their own record
+        // Variant 2: IT Employee trying to access their own record
         assertArrayEquals(ite123FullPayload, Authorise.readPersonalDetails(itEmployee, itEmployee.getEmployeeId()));
 
-        // User of wrong department trying to access another user's record
+        // Variant 4: User of wrong department trying to access another user's record
         assertNull(Authorise.readPersonalDetails(itEmployee, hrEmployee.getEmployeeId()));
+
+        // Variant 5: User that is not logged in trying to access any record
+        Authenticate.logout(hrEmployee);
+        assertNull(Authorise.readPersonalDetails(hrEmployee, hrEmployee.getEmployeeId()));
     }
 
     @org.junit.jupiter.api.Test
