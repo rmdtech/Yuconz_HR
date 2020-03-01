@@ -540,19 +540,27 @@ public class DatabaseParser
         );
         try
         {
-            result.next(); // only ever be one result, while loop not required
-            payload[0] = result.getString("employeeId");
-            payload[1] = result.getString("surname");
-            payload[2] = result.getString("name");
-            payload[3] = result.getString("dateOfBirth");
-            payload[4] = result.getString("address");
-            payload[5] = result.getString("city");
-            payload[6] = result.getString("county");
-            payload[7] = result.getString("postcode");
-            payload[8] = result.getString("telephoneNumber");
-            payload[9] = result.getString("mobileNumber");
-            payload[10] = result.getString("emergencyContact");
-            payload[11] = result.getString("emergencyContactNumber");
+            if(result.next()) // only ever be one result, while loop not required
+            {
+                payload[0] = result.getString("employeeId");
+                payload[1] = result.getString("surname");
+                payload[2] = result.getString("name");
+                payload[3] = result.getString("dateOfBirth");
+                payload[4] = result.getString("address");
+                payload[5] = result.getString("city");
+                payload[6] = result.getString("county");
+                payload[7] = result.getString("postcode");
+                payload[8] = result.getString("telephoneNumber");
+                payload[9] = result.getString("mobileNumber");
+                payload[10] = result.getString("emergencyContact");
+                payload[11] = result.getString("emergencyContactNumber");
+            }
+            else
+            {
+                result.close();
+                stmt.close();
+                return null;
+            }
             result.close();
             stmt.close();
             // if (roleEnum == null)
