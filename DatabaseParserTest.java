@@ -202,10 +202,61 @@ class DatabaseParserTest {
     }
 
     @org.junit.jupiter.api.Test
-    void fetchPersonalDetailsPermissions() {
+    void fetchPersonalDetailsPermissions()
+    {
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+
+        createDemoEmployee();
+
+        assertArrayEquals(dp.fetchPersonalDetailsPermissions("abc123"), new String[] {"0", null, null, null, null, null});
+
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
     }
 
     @org.junit.jupiter.api.Test
-    void fetchPersonalDetails() {
+    void fetchPersonalDetails()
+    {
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+
+        createDemoEmployee();
+
+        assertArrayEquals(dp.fetchPersonalDetails("abc123"), new String[] {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+                "01634289431", "07499274509", "Jane Smith", "07286308174"});
+
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+
+
+    }
+
+    @org.junit.jupiter.api.Test
+    void fetchNonExistentPersonalDetails()
+    {
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+
+        createDemoEmployee();
+
+        assertArrayEquals(dp.fetchPersonalDetails("def754"), null);
+
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+
+
     }
 }
