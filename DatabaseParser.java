@@ -482,4 +482,24 @@ public class DatabaseParser
             return null; // keep compiler happy
         }
     }
+
+    Boolean isLoggedIn(String employeeId, String sessionId)
+    {
+        sqlRead("SELECT employeeId, sessionId FROM Session " +
+                String.format("WHERE employeeId = '%s', sessionId = '%s'", employeeId, sessionId)
+        );
+
+        try
+        {
+            Boolean isPresent = result.isBeforeFirst();
+            result.close();
+            stmt.close();
+            return isPresent;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
