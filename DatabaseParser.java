@@ -74,6 +74,86 @@ public class DatabaseParser
         }
     }
 
+    void setupDatabase()
+    {
+        sqlUpdate("CREATE TABLE User (\n" +
+                "\temployeeId string PRIMARY KEY,\n" +
+                "\trole varchar NOT NULL,\n" +
+                "\tdepartment varchar NOT NULL,\n" +
+                "\thashedPassword varchar NOT NULL,\n" +
+                "\tsalt string NOT NULL\n" +
+                ");\n" +
+                "\n" +
+                "CREATE TABLE AuthenticationLog (\n" +
+                "\temployeeId string PRIMARY KEY,\n" +
+                "\ttimestamp timestamp NOT NULL,\n" +
+                "    FOREIGN KEY (employeeId) REFERENCES User (employeeId)\n" +
+                "        ON UPDATE RESTRICT\n" +
+                "        ON DELETE RESTRICT\n" +
+                ");\n" +
+                "\n" +
+                "CREATE TABLE AuthorisationLog (\n" +
+                "\temployeeId string PRIMARY KEY,\n" +
+                "\ttimestamp timestamp NOT NULL,\n" +
+                "\tactionAttempted varchar NOT NULL,\n" +
+                "\tactionTarget varchar NOT NULL,\n" +
+                "\tactionSucceeded boolean NOT NULL,\n" +
+                "    FOREIGN KEY (employeeId) REFERENCES User (employeeId)\n" +
+                "        ON UPDATE RESTRICT\n" +
+                "        ON DELETE RESTRICT\n" +
+                ");\n" +
+                "\n" +
+                "CREATE TABLE Session (\n" +
+                "\tsessionId string PRIMARY KEY,\n" +
+                "\temployeeId string NOT NULL,\n" +
+                "\ttimestamp timestamp NOT NULL,\n" +
+                "    FOREIGN KEY (employeeId) REFERENCES User (employeeId)\n" +
+                "        ON UPDATE RESTRICT\n" +
+                "        ON DELETE RESTRICT\n" +
+                ");\n" +
+                "\n" +
+                "CREATE TABLE PersonalDetails (\n" +
+                "\temployeeId string PRIMARY KEY,\n" +
+                "\tsurname varchar NOT NULL,\n" +
+                "\tname varchar NOT NULL,\n" +
+                "\tdateOfBirth date NOT NULL,\n" +
+                "\taddress varchar NOT NULL,\n" +
+                "\tcity varchar NOT NULL,\n" +
+                "\tcounty varchar NOT NULL,\n" +
+                "\tpostcode varchar NOT NULL,\n" +
+                "\ttelephoneNumber varchar NOT NULL,\n" +
+                "\tmobileNumber varchar NOT NULL,\n" +
+                "\temergencyContact varchar NOT NULL,\n" +
+                "\temergencyContactNumber varchar NOT NULL,\n" +
+                "\tdocumentId string NOT NULL,\n" +
+                "    FOREIGN KEY (employeeId) REFERENCES User (employeeId)\n" +
+                "        ON UPDATE RESTRICT\n" +
+                "        ON DELETE RESTRICT,\n" +
+                "    FOREIGN KEY (documentId) REFERENCES Documents (documentId)\n" +
+                "        ON UPDATE RESTRICT\n" +
+                "        ON DELETE RESTRICT\n" +
+                ");\n" +
+                "\n" +
+                "CREATE TABLE Documents (\n" +
+                "\tdocumentId string PRIMARY KEY,\n" +
+                "\tcreationTimestamp datetime NOT NULL,\n" +
+                "\tlastAccessed datetime NOT NULL\n" +
+                ");\n" +
+                "\n" +
+                "CREATE TABLE Permissions (\n" +
+                "\tdocumentId string PRIMARY KEY,\n" +
+                "\thr integer,\n" +
+                "\tit integer,\n" +
+                "\tsales integer,\n" +
+                "\tadmin integer,\n" +
+                "\tbi integer,\n" +
+                "\tmc integer,\n" +
+                "    FOREIGN KEY (documentId) REFERENCES Documents (documentId)\n" +
+                "        ON UPDATE RESTRICT\n" +
+                "        ON DELETE RESTRICT\n" +
+                ");\n");
+    }
+
     /**
      * Creates a new record in the User table for a new employee
      * @param employeeId the employeeId of the new user to be stored in the database
