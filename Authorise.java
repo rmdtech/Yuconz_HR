@@ -50,11 +50,6 @@ public class Authorise
 
     public static boolean updatePersonalDetails(User user, String[] details)
     {
-        if (details[0] == null)
-        {
-            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", true);
-            return false;
-        }
         String[] currentDetails = dp.fetchPersonalDetails(details[0]);
         for (int i = 0; i < details.length; i++)
         {
@@ -143,8 +138,9 @@ public class Authorise
                 case("Update"):
                     if (target.equals("Personal Details"))
                     {
+                        response = dp.fetchPersonalDetailsPermissions(user.getEmployeeId());
                         Position.Department requiredDpt = Position.Department.HR;
-                        String associatedEmployee = payload[0];
+                        String associatedEmployee = response[2];
 
                         if (user.getDepartment().equals(requiredDpt) || associatedEmployee.equals(user.getEmployeeId()))
                         {
