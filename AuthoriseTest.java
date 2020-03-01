@@ -29,7 +29,7 @@ class AuthoriseTest {
     void authorisationAttemptWrongDepartment()
     {
         Authenticate.addNewUser("abc123", "password", Position.Department.BI, Position.Role.Employee);
-        User testUser = Authenticate.login("abc456", "password");
+        User testUser = Authenticate.login("abc123", "password");
         assertFalse(Authorise.AuthorisationAttempt("Read", "abc456 - Personal Details", Position.Department.HR, Position.Role.Employee, testUser));
     }
 
