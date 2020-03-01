@@ -486,7 +486,7 @@ public class DatabaseParser
     Boolean isLoggedIn(String employeeId, String sessionId)
     {
         sqlRead("SELECT employeeId, sessionId FROM Session " +
-                String.format("WHERE employeeId = '%s', sessionId = '%s'", employeeId, sessionId)
+                String.format("WHERE employeeId = '%s' AND sessionId = '%s'", employeeId, sessionId)
         );
 
         try
