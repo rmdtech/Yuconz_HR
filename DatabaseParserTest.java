@@ -256,7 +256,93 @@ class DatabaseParserTest {
         dp.sqlUpdate("DELETE FROM Permissions");
         dp.sqlUpdate("DELETE FROM Documents");
         dp.sqlUpdate("DELETE FROM User");
+    }
 
+    @org.junit.jupiter.api.Test
+    void isLoggedInTrue()
+    {
+        dp.sqlUpdate("DELETE FROM Session");
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
 
+        createDemoEmployee();
+        dp.createSession("abc123", "9d33cb975ff14580a3fb405efbc2cf22");
+
+        assertTrue(dp.isLoggedIn("abc123", "9d33cb975ff14580a3fb405efbc2cf22"));
+
+        dp.sqlUpdate("DELETE FROM Session");
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+    }
+
+    @org.junit.jupiter.api.Test
+    void isLoggedInFalse()
+    {
+        dp.sqlUpdate("DELETE FROM Session");
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+
+        createDemoEmployee();
+        dp.createSession("abc123", "9d33cb975ff14580a3fb405efbc2cf22");
+
+        assertFalse(dp.isLoggedIn("def456", "9d33cb975ff14580a3fb405efbc2cf22"));
+
+        dp.sqlUpdate("DELETE FROM Session");
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+    }
+
+    @org.junit.jupiter.api.Test
+    void isLoggedInAfterLogout()
+    {
+        dp.sqlUpdate("DELETE FROM Session");
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+
+        createDemoEmployee();
+        dp.createSession("abc123", "9d33cb975ff14580a3fb405efbc2cf22");
+
+        dp.deleteSession("9d33cb975ff14580a3fb405efbc2cf22");
+
+        assertFalse(dp.isLoggedIn("abc123", "9d33cb975ff14580a3fb405efbc2cf22"));
+
+        dp.sqlUpdate("DELETE FROM Session");
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
+    }
+
+    @org.junit.jupiter.api.Test
+    void setupDatabase()
+    {
+        dp.sqlUpdate("DROP TABLE AuthorisationLog");
+        dp.sqlUpdate("DROP TABLE AuthenticationLog");
+        dp.sqlUpdate("DROP TABLE Session");
+        dp.sqlUpdate("DROP TABLE PersonalDetails");
+        dp.sqlUpdate("DROP TABLE Permissions");
+        dp.sqlUpdate("DROP TABLE Documents");
+        dp.sqlUpdate("DROP TABLE User");
+
+        dp.setupDatabase();
+        createDemoEmployee();
+
+        assertTrue(dp.checkEmployeeId("abc123"));
+
+        dp.sqlUpdate("DELETE FROM Session");
+        dp.sqlUpdate("DELETE FROM PersonalDetails");
+        dp.sqlUpdate("DELETE FROM Permissions");
+        dp.sqlUpdate("DELETE FROM Documents");
+        dp.sqlUpdate("DELETE FROM User");
     }
 }
