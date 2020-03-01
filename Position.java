@@ -27,19 +27,27 @@ public class Position {
         public final int level;
         public final String label;
 
-        Role(int level, String label)
-
-        {
+        Role(int level, String label) {
             this.level = level;
             this.label = label;
         }
-        public String toString()
-        {
+
+        public String toString() {
             return label;
         }
-        public int getLevel()
-        {
+
+        public int getLevel() {
             return level;
+        }
+
+        public Role getFromLevel(int level)
+        {
+            for (Role pos : Position.Role.values()) {
+                if (pos.level == level) {
+                    return pos;
+                }
+            }
+            return null;
         }
     }
 }
