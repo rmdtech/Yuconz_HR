@@ -20,7 +20,7 @@ class AuthoriseTest {
 
         Authenticate.addNewUser("hre123", "password", Position.Department.HR, Position.Role.Employee);
         Authenticate.addNewUser("ite123", "password", Position.Department.IT, Position.Role.Employee);
-        Authenticate.addNewUser("hrm123", "password", Position.Department.IT, Position.Role.Employee);
+        Authenticate.addNewUser("hrm123", "password", Position.Department.HR, Position.Role.Employee);
         hrEmployee = Authenticate.login("hre123", "password");
         itEmployee = Authenticate.login("ite123", "password");
         hrManager = Authenticate.login("hrm123", "password");
@@ -93,7 +93,9 @@ class AuthoriseTest {
         String[] emptyPayload = {null, null, null, null, null, null, null, null, null, null, null};
 
         Authorise.createPersonalDetailsRecord(hrEmployee, hre123FullPayload);
+        System.out.println("Written PD for hre123");
         Authorise.createPersonalDetailsRecord(hrManager, iteFullPayload);
+        System.out.println("Written PD for ite123");
 
         // Variant 1: Expected Use, user updates their own info
         assertTrue(Authorise.updatePersonalDetails(itEmployee, iteFullPayload)); // has ResultSet closed error
