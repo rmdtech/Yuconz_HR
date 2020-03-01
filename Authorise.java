@@ -3,26 +3,43 @@
  */
 public class Authorise
 {
+    /**
+     * Each CRUD operation is stored as an Enum to eliminate human error
+     */
     public enum Action{
         Create("Create"),
         Read("Read"),
         Update("Update"),
         Delete("Delete");
+
         public final String label;
+
+        /**
+         * Constructor for an operation Enum
+         * @param label The label with which this Enum is to be initialised with
+         */
         Action (String label)
         {
             this.label = label;
         }
+
+        /**
+         * Get the String value of an operation
+         * @return the String value of an operation
+         */
         public String toString()
         {
             return label;
         }
     }
+
     static DatabaseParser dp = new DatabaseParser();
+
     /**
-     * This calls the similarly named function in the DatabaseParser to write any details into the database after creating a new record
-     * @param details Personal details, which may be null at this point
-     * @return whether the action has been successful or not
+     * Creates a new Personal Details record for a member of Staff
+     * @param user the user performing the action
+     * @param details the information that is to be written into the Personal Details record [employeeID, surname, name, date of birth, address, city, postcode, telephoneNumber, mobileNumber, emergency contact, emergency contact number]
+     * @return whether or not the action has been successful
      */
     public static boolean createPersonalDetailsRecord(User user, String[] details)
     {
@@ -37,6 +54,12 @@ public class Authorise
         return false;
     }
 
+    /**
+     * Read the Personal Details record of a certain member of Staff
+     * @param user the user that is performing the action
+     * @param pdEmpId the employeeId of which the user is accessing the Personal Details record from
+     * @return a String array containing the Personal Details record [employeeID, surname, name, date of birth, address, city, postcode, telephoneNumber, mobileNumber, emergency contact, emergency contact number]
+     */
     public static String[] readPersonalDetails (User user, String pdEmpId)
     {
         if (AuthorisationAttempt(Action.Read, "Personal Details", user, new String[] { pdEmpId } ))
@@ -48,6 +71,12 @@ public class Authorise
         return null;
     }
 
+    /**
+     * Updates the Personal Details record for a User.
+     * @param user the user that performs the operation
+     * @param details the payload that is to be sent to the Database. [employeeID, surname, name, date of birth, address, city, postcode, telephoneNumber, mobileNumber, emergency contact, emergency contact number]
+     * @return whether or not the operation has been successful
+     */
     public static boolean updatePersonalDetails(User user, String[] details)
     {
         if (details == null || details[0] == null)
@@ -55,7 +84,9 @@ public class Authorise
             dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", true);
             return false;
         }
+
         String[] currentDetails = dp.fetchPersonalDetails(details[0]);
+
         for (int i = 0; i < details.length; i++)
         {
             if (details[i] == null)
@@ -69,10 +100,16 @@ public class Authorise
             dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", true);
             return dp.updatePersonalDetails(details);
         }
+
         dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", false);
         return false;
     }
 
+    /**
+     * Records that a User attempted to delete a Document
+     * @param user the user attemping the operation
+     * @return whether or not the operation has been successful
+     */
     public static boolean deletePersonalDetails(User user)
     {
         AuthorisationAttempt(Action.Delete, "Personal Details", user,null );
@@ -89,8 +126,8 @@ public class Authorise
      */
     private static boolean AuthorisationAttempt(Action action, String target, User user, String[] payload)
     {
-        if (user.isLoggedIn()) {
-            String[] response;
+        if (user.isLoggedIn())
+        {
             switch(action.toString())
             {
                 case("Create"):
@@ -114,11 +151,13 @@ public class Authorise
                         return false;
                     }
                     break;
+
                 case("Read"):
                     if (target.equals("Personal Details"))
                     {
                         String associatedEmployee = payload[0];
                         Position.Department requiredDpt = Position.Department.HR;
+
                         if (user.getDepartment().equals(requiredDpt)  || associatedEmployee.equals(user.getEmployeeId()))
                         {
                             return true;
@@ -166,6 +205,7 @@ public class Authorise
                         return false;
                     }
                     break;
+
                 case("Delete"):
                     if (target.equals("Personal Details"))
                     {
@@ -182,7 +222,9 @@ public class Authorise
                         return false;
                     }
                     break;
+
                 default:
+                    System.out.println("The given operation was not recognised");
                     break;
             }
         }
