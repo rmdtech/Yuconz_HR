@@ -66,9 +66,13 @@ class AuthoriseTest {
         String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "CT2 7NF", "Canterbury", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
         String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "CT2 7NF", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
 
+        // Trying to read a PersonalDetails record that doesn't exist
+        assertNull(Authorise.readPersonalDetails(hrEmployee, "err404"));
+
         // Populate the PersonalDetails record first
+        Authorise.createPersonalDetailsRecord(hrEmployee, hre123FullPayload);
         Authorise.createPersonalDetailsRecord(hrEmployee, ite123FullPayload);
-        System.out.println("~ ReadPersonalDetails: Created PD record in DB");
+        System.out.println("- ReadPersonalDetails: Created PD record in DB");
 
         // HR Employee trying to access their own record
         assertArrayEquals(hre123FullPayload, Authorise.readPersonalDetails(hrEmployee, hrEmployee.getEmployeeId()));
@@ -78,8 +82,6 @@ class AuthoriseTest {
 
         // User of wrong department trying to access another user's record
         assertNull(Authorise.readPersonalDetails(itEmployee, hrEmployee.getEmployeeId()));
-
-
     }
 
     @org.junit.jupiter.api.Test
