@@ -42,9 +42,9 @@ class AuthoriseTest {
     @org.junit.jupiter.api.Test
     void createPersonalDetails()
     {
-        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "CT2 7NF", "Canterbury", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
         String[] emptyPayload = { null, null, null, null, null, null, null, null, null, null, null };
-        String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "CT2 7NF", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
 
         // Variant 1: HR Employee trying to create a new Personal Details record
         assertTrue(Authorise.createPersonalDetailsRecord(hrEmployee, ite123FullPayload));
@@ -63,8 +63,8 @@ class AuthoriseTest {
     @org.junit.jupiter.api.Test
     void readPersonalDetails()
     {
-        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "CT2 7NF", "Canterbury", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
-        String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "CT2 7NF", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
 
         // Variant 3: Trying to read a PersonalDetails record that doesn't exist
         assertNull(Authorise.readPersonalDetails(hrEmployee, "err404"));
@@ -91,34 +91,30 @@ class AuthoriseTest {
     @org.junit.jupiter.api.Test
     void  updatePersonalDetails()
     {
-        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "CT2 7NF", "Canterbury", "Kent", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        String[] hre123FullPayload = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        String[] ite123FullPayload = {"ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
         String[] hreFullPayload = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
         String[] iteFullPayload = {"ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
         String[] emptyPayload = {null, null, null, null, null, null, null, null, null, null, null};
 
         Authorise.createPersonalDetailsRecord(hrEmployee, hre123FullPayload);
         System.out.println("Written PD for hre123");
-        Authorise.createPersonalDetailsRecord(hrManager, iteFullPayload);
+        Authorise.createPersonalDetailsRecord(hrManager, ite123FullPayload);
         System.out.println("Written PD for ite123");
 
         // Variant 1: Expected Use, user updates their own info
-        assertTrue(Authorise.updatePersonalDetails(itEmployee, iteFullPayload)); // has ResultSet closed error
+        assertTrue(Authorise.updatePersonalDetails(itEmployee, iteFullPayload));
 
         // Variant 2: Expected Use, HR updates someone else's file
-        assertTrue(Authorise.updatePersonalDetails(hrEmployee, iteFullPayload)); // has some sort of enum thingy error
-
-        // Made redundent by refacture
-        // Variant 3: Unexpected Use, user targets Invalid Target
-        // assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Update, "Invalid Target", hrEmployee, hreFullPayload)); // has no errors *happy test noises*
+        assertTrue(Authorise.updatePersonalDetails(hrEmployee, iteFullPayload));
 
         // Variant 4: Unexpected Use, Try to update with empty payload
-        assertFalse(Authorise.updatePersonalDetails(hrEmployee, emptyPayload)); // has some sort of enum thingy error
+        assertFalse(Authorise.updatePersonalDetails(hrEmployee, emptyPayload));
 
 
         // Variant 5: Unexpected Use, User is neither HR or updating their own info
-        assertFalse(Authorise.updatePersonalDetails(itEmployee, hreFullPayload)); // has ResultSet closed error
+        assertFalse(Authorise.updatePersonalDetails(itEmployee, hreFullPayload));
 
-        // ----------------- CURRENTLY FAULTY DUE TO ISSUE 14. THROWS SQL ERROR WHICH CAUSES THE TEST TO CRASH OUT ----------------------------
         // Variant 6: Unexpected Use, User not logged in
         Authenticate.logout(hrEmployee);
         assertFalse(Authorise.updatePersonalDetails(hrEmployee, hreFullPayload));
@@ -127,17 +123,14 @@ class AuthoriseTest {
     @org.junit.jupiter.api.Test
     void deletePersonalDetails()
     {
-        String[] hreFullPayload = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
-
         // Variant 1: Logged in user tries to delete from personal details
         assertFalse(Authorise.deletePersonalDetails(hrEmployee));
 
         // Variant 2: Logged in user tries to delete from an Invalid Target
         assertFalse(Authorise.deletePersonalDetails(hrEmployee));
 
-        // ----------------- CURRENTLY FAULTY DUE TO ISSUE 14. THROWS SQL ERROR WHICH CAUSES THE TEST TO CRASH OUT ----------------------------
         //Variant 3: logged out user tries to delete from personal details
-        //Authenticate.logout(hrEmployee);
-        //assertFalse(Authorise.AuthorisationAttempt(Authorise.Action.Delete, "Personal Details", hrEmployee, hreFullPayload));
+        Authenticate.logout(hrEmployee);
+        assertFalse(Authorise.deletePersonalDetails(hrEmployee));
     }
 }
