@@ -54,6 +54,44 @@ public class Authorise
         return false;
     }
 
+
+    public static boolean createPerformanceReview(User user, String[] content)
+    {
+        /*
+        0: revieweeId           [String]
+        1: dueBy                [Date]
+        2: meetingDate          [Date]
+        3: firstReviewerId      [String, empId]
+        4: secondReviewerId     [String, empId]
+        5: revieweeSigned       [Boolean]
+        6: firstReviewerSigned  [Boolean]
+        7: secondReviewerSigned [Boolean]
+        8: performanceSurvey    [String]
+        9: reviewerComments    [String]
+        10: recommendations     [String]
+        11: documentId          [String]
+         */
+        if (AuthorisationAttempt(Action.Create, "Performance Review", user, content))
+        {
+            // Report back when a date has been set to be in the past? Might be a test case
+            // Generate a documentID for this review
+            content[11] = User.generateSalt();
+
+            return dp.createReview(content);
+        }
+        return false;
+    }
+
+    public static String[] readPerformanceReview(User user, String revieweeId, String year)
+    {
+        String docId = dp.fetchDocumentId(revieweeId, year);
+        if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
+        {
+
+        }
+        return null;
+    }
+
     /**
      * Read the Personal Details record of a certain member of Staff
      * @param user the user that is performing the action
@@ -140,10 +178,19 @@ public class Authorise
                         System.out.println(user.getEmployeeId() + " was not of the right department");
                         return false;
                     }
-                    // Stage 5
                     else if (target.equals("Performance Review"))
                     {
-
+                        if (user.getDepartment().equals(...)  )
+                        {
+                            if (payload[0] != null && dp.checkEmployeeId(payload[3]) && dp.checkEmployeeId(payload[4]))
+                            {
+                                return true;
+                            }
+                            System.out.println("Invalid employeeIds were provided for either the reviewee or one of the reviewers");
+                            return false;
+                        }
+                        System.out.println(user.getEmployeeId() + " did not have the required permissions");
+                        return false;
                     }
                     else
                     {
@@ -167,10 +214,18 @@ public class Authorise
                             return false;
                         }
                     }
-                    // Stage 5
                     else if (target.equals("Performance Review"))
                     {
+                        // docID = payload[0]
+                        if (payload[0] != null)
+                        {
+                            // If this user has write access on the requested document
+                            if (dp.isReviewee(payload[0], user.getEmployeeId()) || dp.isReviewer(payload[0], user.getEmployeeId()))
+                            {
 
+                            }
+                        }
+                        return false;
                     }
                     else
                     {
