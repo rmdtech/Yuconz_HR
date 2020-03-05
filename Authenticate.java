@@ -7,14 +7,14 @@ import java.util.ArrayList;
 
 public class Authenticate{
     private static DatabaseParser dp = new DatabaseParser();
-    private static ArrayList<User> activeUsers = new ArrayList<User>();
 
     /**
      * This will create a sessionID for this user and add it to the local memory of logged in users
-     * @param employeeId The employeeID of the User that is to be logged in
-     * @param password The password of the User that is to be logged in
+     * @param employeeId the employeeID of the User that is to be logged in
+     * @param password the password of the User that is to be logged in
+     * @return the user object of them who is now logged in
      */
-    public static void login(String employeeId, String password)
+    public static User login(String employeeId, String password)
     {
         if (dp.checkEmployeeId(employeeId))
         {
@@ -23,14 +23,16 @@ public class Authenticate{
                 User newUser = new User(employeeId, UUID.randomUUID().toString().replace("-", ""));
                 newUser.setDepartment(dp.fetchDepartment(employeeId));
                 newUser.setRole(dp.fetchRole(employeeId));
-                activeUsers.add(newUser);
                 dp.createSession(employeeId, newUser.getSessionId());
+                return newUser;
             }
         }
+        return null;
     }
 
     /**
      * This will log the user out of the system
+     * @param user the user object that is to be logged out
      */
     public static void logout(User user)
     {
@@ -66,13 +68,6 @@ public class Authenticate{
         return true;
     }
 
-    /*
-    public static boolean updatePassword(String employeeId, String updatedPassword, String passwordSalt)
-    {
-        dp.updatePassword(employeeId, Authenticate.sha512Encrypt(updatedPassword, passwordSalt), passwordSalt);
-        return true;
-    }
-    */
     /**
      * Returns a given User object based on the employeeId given
      * @param employeeId The employeeId of the User that should be found
@@ -115,6 +110,8 @@ public class Authenticate{
 
     /**
      * This verifies the password given in the constructor with the salt stored in the Database.
+     * @param employeeId the employeeId of the user that is to in logged in
+     * @param password the password of the user that is to be logged in
      * @return If the passwords match
      */
     private static boolean verifyPassword(String employeeId, String password)
