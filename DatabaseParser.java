@@ -623,7 +623,7 @@ public class DatabaseParser
         try
         {
             result.next(); // only ever be one result, while loop not required
-            String documentId = result.getString("role");
+            String documentId = result.getString("documentId");
             result.close();
             stmt.close();
             return documentId;
