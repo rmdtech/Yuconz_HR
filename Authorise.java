@@ -54,7 +54,12 @@ public class Authorise
         return false;
     }
 
-
+    /**
+     * Creates a Review record. revieweeId and reviewers are mandatory fields
+     * @param user the user logged in and trying to perform the action
+     * @param content the initial, mandatory content for this review
+     * @return whether the operation has been successful or not
+     */
     public static boolean createPerformanceReview(User user, String[] content)
     {
         /*
@@ -82,12 +87,19 @@ public class Authorise
         return false;
     }
 
+    /**
+     * Returns an array containing the information stored in a Review record
+     * @param user the user logged in and performing the action
+     * @param revieweeId the employeeId of the user who's review is trying to be accessed (makes composite key)
+     * @param year the year of the review for that employeeId that is trying to be accessed (makes composite key)
+     * @return a string array containing the full review as at current point
+     */
     public static String[] readPerformanceReview(User user, String revieweeId, String year)
     {
         String docId = dp.fetchDocumentId(revieweeId, year);
         if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
         {
-
+            return dp.readReview(docId);
         }
         return null;
     }
@@ -159,7 +171,14 @@ public class Authorise
      * @param action Authorise.Action Enum (CRUD)
      * @param target The target document ("Personal Details" or "Performance Review")
      * @param user The User that is trying to perform this action
-     * @param payload Any information that may be associated with this action
+     * @param payload Any information that may be associated with this action.
+     *                Create Personal Details - null
+     *                Create Performance Review - full structure with Reviewee [0] and Reviewers in [3 and 4]
+     *                Read Personal Details - Associated Employee in position 0
+     *                Read Performance Review - Document ID in position 0
+     *                Update Personal Details - Associated Employee in position 0
+     *                Update Performance Review -
+     *                Delete * - null
      * @return whether the action has been successful or not
      */
     private static boolean AuthorisationAttempt(Action action, String target, User user, String[] payload)
@@ -219,12 +238,15 @@ public class Authorise
                         // docID = payload[0]
                         if (payload[0] != null)
                         {
-                            // If this user has write access on the requested document
-                            if (dp.isReviewee(payload[0], user.getEmployeeId()) || dp.isReviewer(payload[0], user.getEmployeeId()))
+                            // If this user has read access on the requested document
+                            if (dp.isReviewee(payload[0], user.getEmployeeId()) || dp.isReviewer(payload[0], user.getEmployeeId()) || user.getDepartment().equals(Position.Department.HR)))
                             {
-
+                                return true;
                             }
+                            System.out.println("You don not have the required permissions to access this file");
+                            return false;
                         }
+                        System.out.println("Internal Error: No document has been selected when requesting access permission");
                         return false;
                     }
                     else
@@ -252,7 +274,10 @@ public class Authorise
                     // Stage 5
                     else if (target.equals("Performance Review"))
                     {
-
+                        // If HR, or if reviewee at any point BEFORE sign-off
+                        // If reviewer DURING meeting
+                        //
+                        if (user.getDepartment().equals(Position.Department.HR) || )
                     }
                     else
                     {
