@@ -87,22 +87,6 @@ public class Authorise
         return false;
     }
 
-    /**
-     * Returns an array containing the information stored in a Review record
-     * @param user the user logged in and performing the action
-     * @param revieweeId the employeeId of the user who's review is trying to be accessed (makes composite key)
-     * @param year the year of the review for that employeeId that is trying to be accessed (makes composite key)
-     * @return a string array containing the full review as at current point
-     */
-    public static String[] readPerformanceReview(User user, String revieweeId, String year)
-    {
-        String docId = dp.fetchDocumentId(revieweeId, year);
-        if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
-        {
-            return dp.readReview(docId);
-        }
-        return null;
-    }
 
     /**
      * Read the Personal Details record of a certain member of Staff
@@ -118,6 +102,23 @@ public class Authorise
             return dp.fetchPersonalDetails(pdEmpId);
         }
         dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Update.label, "Personal Details", false);
+        return null;
+    }
+
+    /**
+     * Returns an array containing the information stored in a Review record
+     * @param user the user logged in and performing the action
+     * @param revieweeId the employeeId of the user who's review is trying to be accessed (makes composite key)
+     * @param dueBy the year of the review for that employeeId that is trying to be accessed (makes composite key)
+     * @return a string array containing the full review as at current point
+     */
+    public static String[] readPerformanceReview(User user, String revieweeId, String dueBy)
+    {
+        String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
+        if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
+        {
+            return dp.readReview(docId);
+        }
         return null;
     }
 
@@ -154,6 +155,28 @@ public class Authorise
         dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", false);
         return false;
     }
+
+    public static boolean updatePerformanceReview(User user, String[] content)
+    {
+        String docId = dp.fetchReviewDocumentId(content[0], content[1]);
+        String[] currentDoc = dp.readReview(docId);
+
+        // Currently does not update past and future performance notes
+        currentDoc[2] = content[2]; // Meeting Date
+        currentDoc[5] = content[5]; // reviewee Signed
+        currentDoc[6] = content[6]; // 1st Reviewer Signed
+        currentDoc[7] = content[7]; // 2nd Reviewer Signed
+        currentDoc[8] = content[8]; // Performance Survey
+        currentDoc[9] = content[9]; // Reviewer comments
+        currentDoc[10] = content[10]; // Recommendations
+
+        if (AuthorisationAttempt(Action.Update, "Performance Review", user, content))
+        {
+            return dp.updateReview(docId, currentDoc);
+        }
+        return false;
+    }
+    // yyyy-mm-dd
 
     /**
      * Records that a User attempted to delete a Document
@@ -192,8 +215,10 @@ public class Authorise
                     {
                         if (user.getDepartment().equals(Position.Department.HR))
                         {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", true);
                             return true;
                         }
+                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", false);
                         System.out.println(user.getEmployeeId() + " was not of the right department");
                         return false;
                     }
@@ -203,17 +228,21 @@ public class Authorise
                         {
                             if (payload[0] != null && dp.checkEmployeeId(payload[3]) && dp.checkEmployeeId(payload[4]))
                             {
+                                dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
                             }
                             System.out.println("Invalid employeeIds were provided for either the reviewee or one of the reviewers");
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                             return false;
                         }
                         System.out.println(user.getEmployeeId() + " did not have the required permissions");
+                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                         return false;
                     }
                     else
                     {
                         System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
+                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", null);
                         return false;
                     }
                     break;
@@ -226,10 +255,12 @@ public class Authorise
 
                         if (user.getDepartment().equals(requiredDpt)  || associatedEmployee.equals(user.getEmployeeId()))
                         {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", true);
                             return true;
                         }
                         else
                         {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", false);
                             return false;
                         }
                     }
@@ -241,17 +272,21 @@ public class Authorise
                             // If this user has read access on the requested document
                             if (dp.isReviewee(payload[0], user.getEmployeeId()) || dp.isReviewer(payload[0], user.getEmployeeId()) || user.getDepartment().equals(Position.Department.HR)))
                             {
+                                dp.recordAuthorisationAttempt(user.getEmployeeId(), "Update", "Performance Review", true);
                                 return true;
                             }
                             System.out.println("You don not have the required permissions to access this file");
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                             return false;
                         }
                         System.out.println("Internal Error: No document has been selected when requesting access permission");
+                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", null);
                         return false;
                     }
                     else
                     {
                         System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
+                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), null, null);
                         return false;
                     }
                     break;
@@ -264,24 +299,43 @@ public class Authorise
 
                         if (user.getDepartment().equals(requiredDpt) || associatedEmployee.equals(user.getEmployeeId()))
                         {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", true);
                             return true;
                         }
                         else
                         {
+                            dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", false);
                             return false;
                         }
                     }
-                    // Stage 5
                     else if (target.equals("Performance Review"))
                     {
-                        // If HR, or if reviewee at any point BEFORE sign-off
-                        // If reviewer DURING meeting
-                        //
-                        if (user.getDepartment().equals(Position.Department.HR) || )
+                        // String docId = payload[0];
+                        if (payload[0] != null)
+                        {
+                            // Is the user a review participant or from HR?
+                            if (dp.isReviewee(payload[0], user.getEmployeeId()) || dp.isReviewer(payload[0], user.getEmployeeId()) || user.getDepartment().equals(Position.Department.HR))
+                            {
+                                String[] content = dp.readReview(payload[0]);
+                                // Has this already been signed off?
+                                if (content[5].equals("true") && content[6].equals("true") && content[7].equals("true"))
+                                {
+                                    System.out.println("Changes to this review are not allowed as it has been signed off already");
+                                    dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
+                                    return false;
+                                }
+                                dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
+                                return true;
+                            }
+                        }
+                        System.out.println("Internal Error: No documentId provided when attempting to update review");
+                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", null);
+                        return false;
                     }
                     else
                     {
                         System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
+                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), null, null);
                         return false;
                     }
                     break;
@@ -299,16 +353,19 @@ public class Authorise
                     else
                     {
                         System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
+                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), null, null);
                         return false;
                     }
                     break;
 
                 default:
                     System.out.println("The given operation was not recognised");
+                    dp.recordAuthorisationAttempt(user.getEmployeeId(), null, null, null);
                     break;
             }
         }
         System.out.println(user.getEmployeeId() + " was not logged in");
+        dp.recordAuthorisationAttempt("User that was not logged in", action.toString(), null, null);
         return false;
     }
 }
