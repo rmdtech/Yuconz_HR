@@ -614,4 +614,24 @@ public class DatabaseParser
                 "(revieweeId, dueBy, firstReviewerId, secondReviewerId, documentId)" +
                 String.format("'%s', %s, '%s', '%s', '%s'", payload[0], payload[1], payload[2], payload[3], payload[4]));
     }
+
+    String fetchReviewDocumentId(String revieweeId, String dueBy)
+    {
+        sqlRead("SELECT documentId FROM Review " +
+                String.format("WHERE revieweeId = '%s' AND dueBy = '%s'", revieweeId, dueBy)
+        );
+        try
+        {
+            result.next(); // only ever be one result, while loop not required
+            String documentId = result.getString("role");
+            result.close();
+            stmt.close();
+            return documentId;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null; // keep compiler happy
+        }
+    }
 }
