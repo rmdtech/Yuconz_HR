@@ -157,27 +157,49 @@ public class Authorise
     }
 
     public static boolean updatePerformanceReview(User user, String[] content)
+{
+    String docId = dp.fetchReviewDocumentId(content[0], content[1]);
+    String[] currentDoc = dp.readReview(docId);
+
+    // If there are any signatures on this document, remove them as it will be updated and need to be reviewed again
+    if (currentDoc[5] != null || currentDoc[6] != null || currentDoc[7] != null)
     {
-        String docId = dp.fetchReviewDocumentId(content[0], content[1]);
-        String[] currentDoc = dp.readReview(docId);
-
-        // Currently does not update past and future performance notes
-        currentDoc[2] = content[2]; // Meeting Date
-        currentDoc[5] = content[5]; // reviewee Signed
-        currentDoc[6] = content[6]; // 1st Reviewer Signed
-        currentDoc[7] = content[7]; // 2nd Reviewer Signed
-        currentDoc[8] = content[8]; // Performance Survey
-        currentDoc[9] = content[9]; // Reviewer comments
-        currentDoc[10] = content[10]; // Recommendations
-
-        if (AuthorisationAttempt(Action.Update, "Performance Review", user, content))
-        {
-            return dp.updateReview(docId, currentDoc);
-        }
-        return false;
+        currentDoc[5] = null;
+        currentDoc[6] = null;
+        currentDoc[7] = null;
     }
-    // yyyy-mm-dd
 
+    // Only allow users to sign their own signature box
+    if (dp.isReviewee(user.getEmployeeId()) && content[5] != null)
+    {
+        currentDoc[5] = content[5];
+    }
+    else if (dp.isReviewer(user.getEmployeeId()) && ... && content[6] != null)
+    {
+        // need a way of finding out if this is the line manager or not
+        currentDoc[6] = content[6];
+    }
+    else if (dp.isReviewer(user.getEmployeeId()) && content[7] != null)
+    {
+    // 2nd Reviewer as they are not a line manager
+    currentDoc[7] = content[7];
+    }
+
+    // Overwrite any changes
+    for (int i = NUMBER; i < currentDoc.length - 1; i++)
+    {
+        if (content[i] != null)
+        {
+            currentDoc[i] = content[i];
+        }
+    }
+
+    if (AuthorisationAttempt(Action.Update, "Performance Review", user, docId))
+    {
+        return dp.updateReview(docId, currentDoc);
+    }
+    return false;
+}
     /**
      * Records that a User attempted to delete a Document
      * @param user the user attemping the operation
@@ -324,6 +346,8 @@ public class Authorise
                                     dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                                     return false;
                                 }
+
+
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
                             }
