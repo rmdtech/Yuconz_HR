@@ -744,4 +744,30 @@ public class DatabaseParser
             return null;
         }
     }
+
+    ArrayList<String> fetchFuturePerformance(String documentId)
+    {
+        ArrayList<String> payload = new ArrayList<>();
+
+        sqlRead("SELECT * FROM FuturePerformance " +
+                String.format("WHERE documentId = '%s' ", documentId) +
+                "ORDER BY num"
+        );
+
+        try
+        {
+            while(result.next())
+            {
+                payload.add(result.getString("objective"));
+            }
+            result.close();
+            stmt.close();
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
