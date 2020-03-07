@@ -653,5 +653,26 @@ public class DatabaseParser
         }
     }
 
+    boolean isReviewee(String documentId, String employeeId)
+    {
+        sqlRead("SELECT documentId FROM Review " +
+                String.format("WHERE documentId = '%s' " +
+                        "AND revieweeId = '%s'", documentId, employeeId)
+        );
+
+        try
+        {
+            boolean isPresent = result.isBeforeFirst();
+            result.close();
+            stmt.close();
+            return isPresent;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }
