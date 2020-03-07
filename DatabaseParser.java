@@ -183,7 +183,7 @@ public class DatabaseParser
     }
 
 
-    /**
+    /*
      * Updates the hashed password and salt stored in the database for a given employee
      * @param employeeId the user's employeeId
      * @param newPassword the user's new password
@@ -207,6 +207,7 @@ public class DatabaseParser
         }
     }
 */
+
     /**
      * Checks to see if an employeeId exists in the User table
      * @param employeeId the employeeId to check
@@ -392,22 +393,22 @@ public class DatabaseParser
         );
     }
 
-    /**
-     * Payload:
-     * [0] employeeId
-     * [1] surname
-     * [2] name
-     * [3] dateOfBirth
-     * [4] address
-     * [5] city
-     * [6] county
-     * [7] postcode
-     * [8] telephoneNumber
-     * [9] mobileNumber
-     * [10] emergencyContact
-     * [11] emergencyContactNumber
-     * Full payload to be expected on Update
-     **/
+    /*
+      Payload:
+      [0] employeeId
+      [1] surname
+      [2] name
+      [3] dateOfBirth
+      [4] address
+      [5] city
+      [6] county
+      [7] postcode
+      [8] telephoneNumber
+      [9] mobileNumber
+      [10] emergencyContact
+      [11] emergencyContactNumber
+      Full payload to be expected on Update
+     */
 
     /**
      * creates a new record in the PersonalDetails table
@@ -435,7 +436,7 @@ public class DatabaseParser
             return false;
         }
 
-        if(!sqlUpdate("INSERT INTO PersonalDetails" +
+        return sqlUpdate("INSERT INTO PersonalDetails" +
                 "(employeeId, " +
                 "surname, " +
                 "name, " +
@@ -453,11 +454,7 @@ public class DatabaseParser
                         payload[0], payload[1], payload[2], payload[3], payload[4], payload[5],
                         payload[6], payload[7], payload[8], payload[9], payload[10], payload[11], newDocumentId
                 )
-        ))
-        {
-            return false;
-        }
-        return true;
+        );
     }
 
     /**
@@ -644,7 +641,7 @@ public class DatabaseParser
 
         try
         {
-            Boolean isPresent = result.isBeforeFirst();
+            boolean isPresent = result.isBeforeFirst();
             result.close();
             stmt.close();
             return isPresent;
