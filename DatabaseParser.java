@@ -1,6 +1,7 @@
 import org.sqlite.SQLiteConfig;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DatabaseParser
 {
@@ -711,6 +712,36 @@ public class DatabaseParser
         {
             e.printStackTrace();
             return null; // keep compiler happy
+        }
+    }
+
+    ArrayList<String[]> fetchPastPerformance(String documentId)
+    {
+        ArrayList<String[]> payload = new ArrayList<>();
+
+        sqlRead("SELECT * FROM PastPerformance " +
+                String.format("WHERE documentId = '%s' ", documentId) +
+                "ORDER BY num"
+        );
+
+        try
+        {
+            while(result.next())
+            {
+                String[] pair = new String[2];
+
+                pair[0] = result.getString("objective");
+                pair[1] = result.getString("achievement");
+                payload.add(pair);
+            }
+            result.close();
+            stmt.close();
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
         }
     }
 }
