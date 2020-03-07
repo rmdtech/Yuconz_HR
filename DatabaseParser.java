@@ -674,5 +674,43 @@ public class DatabaseParser
         }
     }
 
+    String[] fetchReview(String documentId)
+    {
+        String[] payload = new String[11];
 
+        sqlRead("SELECT * FROM Review " +
+                String.format("WHERE documentId = '%s'", documentId)
+        );
+        try
+        {
+            if(result.next()) // only ever be one result, while loop not required
+            {
+                payload[0] = result.getString("revieweeId");
+                payload[1] = result.getString("dueBy");
+                payload[2] = result.getString("meetingDate");
+                payload[3] = result.getString("firstReviewerId");
+                payload[4] = result.getString("secondReviewerId");
+                payload[5] = result.getString("revieweeSigned");
+                payload[6] = result.getString("firstReviewerSigned");
+                payload[7] = result.getString("secondReviewerSigned");
+                payload[8] = result.getString("performanceSummary");
+                payload[9] = result.getString("reviewerComments");
+                payload[10] = result.getString("recommendation");
+            }
+            else
+            {
+                result.close();
+                stmt.close();
+                return null;
+            }
+            result.close();
+            stmt.close();
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null; // keep compiler happy
+        }
+    }
 }
