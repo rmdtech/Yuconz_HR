@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +50,11 @@ public class Authorise
     static int reviewer1SignatureIndex = 6;
     static int reviewer2SignatureIndex = 7;
     static int meetingDateIndex = 8;
+    static int performanceSummaryIndex = 9;
+    static int reviewerCommentsIndex = 10;
+    static int recommendationsIndex = 11;
+    static HashMap<Integer, String[]> pastPerformance = new HashMap<>();
+    static ArrayList<String> futurePerformance = new ArrayList<>();
 
     /**
      * Creates a new Personal Details record for a member of Staff
@@ -184,18 +192,43 @@ public class Authorise
         return false;
     }
 
-    public static boolean updatePerformanceReview(User user, String[] updatedDocument)
+    public static boolean updatePerformanceReview(User user, String[] updatedDocument, HashMap<Integer, String[]> updatedPastPerformance, ArrayList<String> updatedFuturePerformance)
     {
         String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
         String[] currentDocument = dp.readReview(docId);
+        pastPerformance = dp.readPastPerformance(docId);
+        futurePerformance = dp.readFuturePerformance(docId);
+        int pastSize = pastPerformance.size();
+        int futureSize = futurePerformance.size();
+
 
         boolean justSigning = true;
         for (int i = meetingDateIndex; i < currentDocument.length-1; i++)
         {
-            if (updatedDocument[i] != null)
+            // Are there differences in the main document?
+            if (!currentDocument[i].equals(updatedDocument[i]))
             {
                 justSigning = false;
                 break;
+            }
+            // Are there differences in the future Performance section?
+            if (!futurePerformance.equals(updatedFuturePerformance))
+            {
+                justSigning = false;
+                break;
+            }
+        }
+
+        if (justSigning)
+        {
+            // Are there differences in the past Performance section?
+            for (int i = 0; i < pastSize; i++)
+            {
+                if (Arrays.equals(pastPerformance.get(i), updatedPastPerformance.get(i)))
+                {
+                    justSigning = false;
+                    break;
+                }
             }
         }
 
