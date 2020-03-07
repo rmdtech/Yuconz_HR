@@ -634,4 +634,25 @@ public class DatabaseParser
             return null; // keep compiler happy
         }
     }
+
+    boolean isReviewer(String documentId, String employeeId)
+    {
+        sqlRead("SELECT documentId, firstReviewerId FROM Review " +
+                String.format("WHERE documentId = '%s' " +
+                        "AND (firstReviewerId = '%s' OR secondReviewerId = '%s')", documentId, employeeId, employeeId)
+        );
+
+        try
+        {
+            Boolean isPresent = result.isBeforeFirst();
+            result.close();
+            stmt.close();
+            return isPresent;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
