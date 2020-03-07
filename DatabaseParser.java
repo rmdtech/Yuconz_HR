@@ -634,7 +634,7 @@ public class DatabaseParser
 
     boolean isReviewer(String documentId, String employeeId)
     {
-        sqlRead("SELECT documentId, firstReviewerId FROM Review " +
+        sqlRead("SELECT documentId FROM Review " +
                 String.format("WHERE documentId = '%s' " +
                         "AND (firstReviewerId = '%s' OR secondReviewerId = '%s')", documentId, employeeId, employeeId)
         );
@@ -652,4 +652,6 @@ public class DatabaseParser
             return false;
         }
     }
+
+
 }
