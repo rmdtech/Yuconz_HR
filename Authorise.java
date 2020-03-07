@@ -1,3 +1,9 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Constructor for class Authorise
  */
@@ -35,6 +41,21 @@ public class Authorise
 
     static DatabaseParser dp = new DatabaseParser();
 
+    static int revieweeIdIndex = 0;
+    static int dueByIndex = 1;
+    static int firstReviewerIdIndex = 2;
+    static int secondReviewerIdIndex = 3;
+    static int documentIdIndex = 4;
+    static int revieweeSignatureIndex = 5;
+    static int reviewer1SignatureIndex = 6;
+    static int reviewer2SignatureIndex = 7;
+    static int meetingDateIndex = 8;
+    static int performanceSummaryIndex = 9;
+    static int reviewerCommentsIndex = 10;
+    static int recommendationsIndex = 11;
+    static HashMap<Integer, String[]> pastPerformance = new HashMap<>();
+    static ArrayList<String> futurePerformance = new ArrayList<>();
+
     /**
      * Creates a new Personal Details record for a member of Staff
      * @param user the user performing the action
@@ -62,26 +83,41 @@ public class Authorise
      */
     public static boolean createPerformanceReview(User user, String[] content)
     {
-        /*
-        0: revieweeId           [String]
-        1: dueBy                [Date]
-        2: meetingDate          [Date]
-        3: firstReviewerId      [String, empId]
-        4: secondReviewerId     [String, empId]
-        5: revieweeSigned       [Boolean]
-        6: firstReviewerSigned  [Boolean]
-        7: secondReviewerSigned [Boolean]
-        8: performanceSurvey    [String]
-        9: reviewerComments    [String]
-        10: recommendations     [String]
-        11: documentId          [String]
-         */
+        //0: revieweeId           		[String]
+        //1: dueBy                		[Date]
+        //2: firstReviewerId      		[String, empId]
+        //3: secondReviewerId     	[String, empId]
+        //4: documentId          		[String]
+        if (!dp.checkEmployeeId(content[0]))
+        {
+            System.out.println("Invalid employeeId provided");
+            return false;
+        }
+
+        Pattern dateRegex = Pattern.compile("[2][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]-*");
+        Matcher dateMatch = dateRegex.matcher(content[1]);
+        if (!dateMatch.matches())
+        {
+            System.out.println("Date format provided is not valid\n   Use 'yyyy-mm-dd");
+            return false;
+        }
+
+        // Need to check that these are on a higher level than employee
+        if (!dp.checkEmployeeId(content[2]))
+        {
+            System.out.println("Invalid employeeId given for the first reviewer");
+            return false;
+        }
+        if (!dp.checkEmployeeId(content[3]))
+        {
+            System.out.println("Invalid employeeId given for the second reviewer");
+            return false;
+        }
+
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, content))
         {
-            // Report back when a date has been set to be in the past? Might be a test case
             // Generate a documentID for this review
-            content[11] = User.generateSalt();
-
+            content[4] = User.generateSalt();
             return dp.createReview(content);
         }
         return false;
@@ -156,49 +192,84 @@ public class Authorise
         return false;
     }
 
-    public static boolean updatePerformanceReview(User user, String[] content)
-{
-    String docId = dp.fetchReviewDocumentId(content[0], content[1]);
-    String[] currentDoc = dp.readReview(docId);
+    public static boolean updatePerformanceReview(User user, String[] updatedDocument, HashMap<Integer, String[]> updatedPastPerformance, ArrayList<String> updatedFuturePerformance)
+    {
+        String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
+        String[] currentDocument = dp.readReview(docId);
+        pastPerformance = dp.readPastPerformance(docId);
+        futurePerformance = dp.readFuturePerformance(docId);
+        int pastSize = pastPerformance.size();
+        int futureSize = futurePerformance.size();
 
-    // If there are any signatures on this document, remove them as it will be updated and need to be reviewed again
-    if (currentDoc[5] != null || currentDoc[6] != null || currentDoc[7] != null)
-    {
-        currentDoc[5] = null;
-        currentDoc[6] = null;
-        currentDoc[7] = null;
-    }
 
-    // Only allow users to sign their own signature box
-    if (dp.isReviewee(user.getEmployeeId()) && content[5] != null)
-    {
-        currentDoc[5] = content[5];
-    }
-    else if (dp.isReviewer(user.getEmployeeId()) && ... && content[6] != null)
-    {
-        // need a way of finding out if this is the line manager or not
-        currentDoc[6] = content[6];
-    }
-    else if (dp.isReviewer(user.getEmployeeId()) && content[7] != null)
-    {
-    // 2nd Reviewer as they are not a line manager
-    currentDoc[7] = content[7];
-    }
-
-    // Overwrite any changes
-    for (int i = NUMBER; i < currentDoc.length - 1; i++)
-    {
-        if (content[i] != null)
+        boolean justSigning = true;
+        for (int i = meetingDateIndex; i < currentDocument.length-1; i++)
         {
-            currentDoc[i] = content[i];
+            // Are there differences in the main document?
+            if (!currentDocument[i].equals(updatedDocument[i]))
+            {
+                justSigning = false;
+                break;
+            }
+            // Are there differences in the future Performance section?
+            if (!futurePerformance.equals(updatedFuturePerformance))
+            {
+                justSigning = false;
+                break;
+            }
         }
-    }
 
-    if (AuthorisationAttempt(Action.Update, "Performance Review", user, docId))
-    {
-        return dp.updateReview(docId, currentDoc);
-    }
-    return false;
+        if (justSigning)
+        {
+            // Are there differences in the past Performance section?
+            for (int i = 0; i < pastSize; i++)
+            {
+                if (Arrays.equals(pastPerformance.get(i), updatedPastPerformance.get(i)))
+                {
+                    justSigning = false;
+                    break;
+                }
+            }
+        }
+
+        // If there are any signatures on this document, remove them as it will be updated and need to be reviewed again
+        if (!justSigning)
+        {
+            currentDocument[revieweeSignatureIndex] = null;
+            currentDocument[reviewer1SignatureIndex] = null;
+            currentDocument[reviewer2SignatureIndex] = null;
+        }
+
+        // Only allow users to sign their own signature box
+        if (dp.isReviewee(user.getEmployeeId()) && updatedDocument[revieweeSignatureIndex] != null)
+        {
+            currentDocument[revieweeSignatureIndex] = updatedDocument[revieweeSignatureIndex];
+        }
+        else if (dp.isReviewer(user.getEmployeeId()) && ... && updatedDocument[reviewer1SignatureIndex] != null)
+        {
+            // need a way of finding out if this is the line manager or not
+            currentDocument[reviewer1SignatureIndex] = updatedDocument[reviewer1SignatureIndex];
+        }
+        else if (dp.isReviewer(user.getEmployeeId()) && updatedDocument[reviewer2SignatureIndex] != null)
+        {
+            // 2nd Reviewer as they are not a line manager
+            currentDocument[reviewer2SignatureIndex] = updatedDocument[reviewer2SignatureIndex];
+        }
+
+        // Overwrite any changes
+        if (!justSigning)
+        {
+            for (int i = meetingDateIndex; i < currentDocument.length - 1; i++)
+            {
+                currentDocument[i] = updatedDocument[i];
+            }
+        }
+
+        if (AuthorisationAttempt(Action.Update, "Performance Review", user, docId))
+        {
+            return dp.updateReview(docId, currentDocument);
+        }
+        return false;
 }
     /**
      * Records that a User attempted to delete a Document
@@ -218,7 +289,7 @@ public class Authorise
      * @param user The User that is trying to perform this action
      * @param payload Any information that may be associated with this action.
      *                Create Personal Details - null
-     *                Create Performance Review - full structure with Reviewee [0] and Reviewers in [3 and 4]
+     *                Create Performance Review - [revieweeId, dueBy, reviewer1, reviewer2, documentId]
      *                Read Personal Details - Associated Employee in position 0
      *                Read Performance Review - Document ID in position 0
      *                Update Personal Details - Associated Employee in position 0
@@ -248,12 +319,12 @@ public class Authorise
                     {
                         if (user.getDepartment().equals(...)  )
                         {
-                            if (payload[0] != null && dp.checkEmployeeId(payload[3]) && dp.checkEmployeeId(payload[4]))
+                            if (payload[0] != null && dp.checkEmployeeId(payload[2]) && dp.checkEmployeeId(payload[3]))
                             {
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
                             }
-                            System.out.println("Invalid employeeIds were provided for either the reviewee or one of the reviewers");
+                            System.out.println("Interal error: Invalid employeeIds were passed from Authorise.createPerformanceReview");
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                             return false;
                         }
@@ -294,10 +365,10 @@ public class Authorise
                             // If this user has read access on the requested document
                             if (dp.isReviewee(payload[0], user.getEmployeeId()) || dp.isReviewer(payload[0], user.getEmployeeId()) || user.getDepartment().equals(Position.Department.HR)))
                             {
-                                dp.recordAuthorisationAttempt(user.getEmployeeId(), "Update", "Performance Review", true);
+                                dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
                             }
-                            System.out.println("You don not have the required permissions to access this file");
+                            System.out.println("You do not have the required permissions to access this file");
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                             return false;
                         }
