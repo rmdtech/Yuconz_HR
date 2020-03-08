@@ -332,7 +332,7 @@ public class DatabaseParser
         }
     }
 
-    String fetchSupervisor(String employeeId)
+    String fetchDirectSupervisor(String employeeId)
     {
         sqlRead("SELECT directSupervisor FROM User " +
                 String.format("WHERE employeeId = '%s'", employeeId)
