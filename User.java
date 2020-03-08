@@ -5,7 +5,7 @@ public class User{
     private String sessionId;
     private Position.Department department;
     private Position.Role role;
-    private String directManager;
+    private String directSupervisor;
     private DatabaseParser dp;
 
     /**
@@ -18,7 +18,7 @@ public class User{
         dp = new DatabaseParser();
         this.employeeId= employeeId;
         this.sessionId = sessionId;
-        this.directManager = null;
+        this.directSupervisor = null;
         department = null;
         role = null;
     }
@@ -54,9 +54,9 @@ public class User{
      * Mutator method for the Direct Manager
      * @param managerId the employeeId of their Manager
      */
-    public void setDirectManager(String managerId)
+    public void setDirectSupervisor(String managerId)
     {
-        directManager = managerId;
+        directSupervisor = managerId;
     }
 
 
@@ -121,8 +121,8 @@ public class User{
      * Accessor method for the directManagerID
      * @return The employeeId of the direct manager
      */
-    public String getDirectManager()
+    public String getDirectSupervisor()
     {
-        return directManager;
+        return directSupervisor;
     }
 }
