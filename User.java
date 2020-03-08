@@ -5,7 +5,7 @@ public class User{
     private String sessionId;
     private Position.Department department;
     private Position.Role role;
-
+    private String directManager;
     private DatabaseParser dp;
 
     /**
@@ -18,6 +18,7 @@ public class User{
         dp = new DatabaseParser();
         this.employeeId= employeeId;
         this.sessionId = sessionId;
+        this.directManager = null;
         department = null;
         role = null;
     }
@@ -33,7 +34,7 @@ public class User{
 
     /**
      * Mutator method for the Department Enum
-     * @param department Enum of Position.Department
+     * @param department enum of Position.Department
      */
     public void setDepartment(Position.Department department)
     {
@@ -42,11 +43,20 @@ public class User{
 
     /**
      * Mutator method for the Role Enum
-     * @param role Enum of Position.Role
+     * @param role enum of Position.Role
      */
     public void setRole(Position.Role role)
     {
         this.role = role;
+    }
+
+    /**
+     * Mutator method for the Direct Manager
+     * @param managerId the employeeId of their Manager
+     */
+    public void setDirectManager(String managerId)
+    {
+        directManager = managerId;
     }
 
 
@@ -105,5 +115,14 @@ public class User{
     public String getSessionId()
     {
         return sessionId;
+    }
+
+    /**
+     * Accessor method for the directManagerID
+     * @return The employeeId of the direct manager
+     */
+    public String getDirectManager()
+    {
+        return directManager;
     }
 }
