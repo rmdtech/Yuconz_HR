@@ -770,4 +770,66 @@ public class DatabaseParser
             return null;
         }
     }
+
+    boolean updateReview(String documentId, String[] payload, ArrayList<String[]> updatedPastPerformance, ArrayList<String> updatedFuturePerformance)
+    {
+        if(!sqlUpdate("UPDATE Review " +
+                String.format("SET firstReviewerId = '%s', " +
+                                "secondReviewerId= '%s', " +
+                                "revieweeSigned = '%s', " +
+                                "firstReviewerSigned = '%s', " +
+                                "secondReviewerSigned = '%s', " +
+                                "meetingDate = '%s', " +
+                                "performanceSummary = '%s', " +
+                                "reviewerComments = '%s', " +
+                                "recommendation = '%s' " +
+                                "WHERE documentId = '%s'",
+                        payload[0], payload[1], payload[2], payload[3], payload[4], payload[5],
+                        payload[6], payload[7], payload[8], documentId
+                )
+        ))
+        {
+            return false;
+        }
+
+        if(!sqlUpdate("DELETE * FROM PastPerformance " +
+                String.format("WHERE documentId = '%s'", documentId))
+        ) // records must be deleted before being updated as row may be removed during editing
+        {
+            return false;
+        }
+
+        int i = 0;
+        for(String[] record : updatedPastPerformance)
+        {
+            if(!sqlUpdate("INSERT INTO PastPerformance " +
+                    "(documentId, num, objective, achievement) " +
+                    String.format("VALUES ('%s', %d, '%s', '%s')", documentId, i, record[0], record[1])))
+            {
+                return false;
+            }
+            i++;
+        }
+
+        if(!sqlUpdate("DELETE * FROM FuturePerformance " +
+                String.format("WHERE documentId = '%s'", documentId))
+        ) // records must be deleted before being updated as row may be removed during editing
+        {
+            return false;
+        }
+
+        i = 0;
+        for(String record : updatedFuturePerformance)
+        {
+            if(!sqlUpdate("INSERT INTO PastPerformance " +
+                    "(documentId, num, objective) " +
+                    String.format("VALUES ('%s', %d, '%s')", documentId, i, record)))
+            {
+                return false;
+            }
+            i++;
+        }
+
+        return true;
+    }
 }
