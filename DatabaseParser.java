@@ -160,7 +160,7 @@ public class DatabaseParser
                 "CREATE TABLE Review (\n" +
                 "    revieweeId string,\n" +
                 "    dueBy date,\n" +
-                "    documentId string NOT NULL,\n" +
+                "    documentId string NOT NULL UNIQUE,\n" +
                 "    firstReviewerId string NOT NULL,\n" +
                 "    secondReviewerId string NOT NULL,\n" +
                 "    revieweeSigned boolean DEFAULT FALSE,\n" +
@@ -739,6 +739,20 @@ public class DatabaseParser
         }
     }
 
+    /*
+    0: revieweeId[String]
+    1: dueBy [Date]
+    2: documentId [String]
+    3: firstReviewerId [String, empId]
+    4: secondReviewerId [String, empId]
+    5: revieweeSigned [Boolean]
+    6: firstReviewerSigned [Boolean]
+    7: secondReviewerSigned	[Boolean]
+    8: meetingDate [Date]
+    9: performanceSummary [String]
+    10: reviewerComments [String]
+    11: recommendations [String]
+    */
     boolean updateReview(String documentId, String[] payload, ArrayList<String[]> updatedPastPerformance, ArrayList<String> updatedFuturePerformance)
     {
         if(!sqlUpdate("UPDATE Review " +
@@ -752,8 +766,8 @@ public class DatabaseParser
                                 "reviewerComments = '%s', " +
                                 "recommendation = '%s' " +
                                 "WHERE documentId = '%s'",
-                        payload[0], payload[1], payload[2], payload[3], payload[4], payload[5],
-                        payload[6], payload[7], payload[8], documentId
+                        payload[3], payload[4], payload[5], payload[6], payload[7], payload[8],
+                        payload[9], payload[10], payload[11], documentId
                 )
         ))
         {
