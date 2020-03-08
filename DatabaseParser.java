@@ -203,32 +203,6 @@ public class DatabaseParser
         }
     }
 
-
-    /*
-     * Updates the hashed password and salt stored in the database for a given employee
-     * @param employeeId the user's employeeId
-     * @param newPassword the user's new password
-     * @param salt the newly generated salt used when hashing the user's password
-     * @return whether or not the operation has been successful
-     */
-    /*
-    boolean updatePassword(String employeeId, String newPassword, String salt)
-    {
-        if (checkEmployeeId(employeeId) == true)
-        {
-            sqlUpdate("UPDATE User " +
-                    String.format("SET hashedPassword = '%s', salt = '%s' " , newPassword, salt) +
-                    String.format("WHERE employeeId = '%s';", employeeId)
-            );
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-*/
-
     /**
      * Checks to see if an employeeId exists in the User table
      * @param employeeId the employeeId to check
