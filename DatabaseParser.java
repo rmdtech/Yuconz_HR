@@ -81,80 +81,100 @@ public class DatabaseParser
     void setupDatabase()
     {
         sqlUpdate("CREATE TABLE User (\n" +
-                "\temployeeId string PRIMARY KEY,\n" +
-                "\trole varchar NOT NULL,\n" +
-                "\tdepartment varchar NOT NULL,\n" +
-                "\thashedPassword varchar NOT NULL,\n" +
-                "\tsalt string NOT NULL\n" +
+                "    employeeId string PRIMARY KEY,\n" +
+                "    role varchar NOT NULL,\n" +
+                "    department varchar,\n" +
+                "    hashedPassword varchar NOT NULL,\n" +
+                "    salt string NOT NULL,\n" +
+                "    directSupervisor string,\n" +
+                "    FOREIGN KEY (directSupervisor) REFERENCES User(employeeId),\n" +
+                "    CHECK (length(employeeId) = 6)\n" +
                 ");\n" +
                 "\n" +
                 "CREATE TABLE AuthenticationLog (\n" +
-                "\temployeeId string PRIMARY KEY,\n" +
-                "\ttimestamp timestamp NOT NULL,\n" +
-                "    FOREIGN KEY (employeeId) REFERENCES User (employeeId)\n" +
-                "        ON UPDATE RESTRICT\n" +
-                "        ON DELETE RESTRICT\n" +
+                "    employeeId string,\n" +
+                "    timestamp timestamp,\n" +
+                "    PRIMARY KEY (employeeId, timestamp),\n" +
+                "    FOREIGN KEY (employeeId) REFERENCES User(employeeId)\n" +
                 ");\n" +
                 "\n" +
                 "CREATE TABLE AuthorisationLog (\n" +
-                "\temployeeId string PRIMARY KEY,\n" +
-                "\ttimestamp timestamp NOT NULL,\n" +
-                "\tactionAttempted varchar NOT NULL,\n" +
-                "\tactionTarget varchar NOT NULL,\n" +
-                "\tactionSucceeded boolean NOT NULL,\n" +
-                "    FOREIGN KEY (employeeId) REFERENCES User (employeeId)\n" +
-                "        ON UPDATE RESTRICT\n" +
-                "        ON DELETE RESTRICT\n" +
+                "    employeeId string,\n" +
+                "    timestamp timestamp,\n" +
+                "    actionAttempted varchar NOT NULL,\n" +
+                "    actionTarget varchar NOT NULL,\n" +
+                "    actionSucceeded boolean NOT NULL,\n" +
+                "    PRIMARY KEY(employeeId, timestamp),\n" +
+                "    FOREIGN KEY (employeeId) REFERENCES User(employeeId)\n" +
                 ");\n" +
                 "\n" +
                 "CREATE TABLE Session (\n" +
-                "\tsessionId string PRIMARY KEY,\n" +
-                "\temployeeId string NOT NULL,\n" +
-                "\ttimestamp timestamp NOT NULL,\n" +
-                "    FOREIGN KEY (employeeId) REFERENCES User (employeeId)\n" +
-                "        ON UPDATE RESTRICT\n" +
-                "        ON DELETE RESTRICT\n" +
+                "    sessionId string PRIMARY KEY,\n" +
+                "    employeeId string NOT NULL,\n" +
+                "    timestamp timestamp NOT NULL,\n" +
+                "    FOREIGN KEY (employeeId) REFERENCES User(employeeId),\n" +
+                "    CHECK (length(sessionId) = 32)\n" +
                 ");\n" +
                 "\n" +
                 "CREATE TABLE PersonalDetails (\n" +
-                "\temployeeId string PRIMARY KEY,\n" +
-                "\tsurname varchar NOT NULL,\n" +
-                "\tname varchar NOT NULL,\n" +
-                "\tdateOfBirth date NOT NULL,\n" +
-                "\taddress varchar NOT NULL,\n" +
-                "\tcity varchar NOT NULL,\n" +
-                "\tcounty varchar NOT NULL,\n" +
-                "\tpostcode varchar NOT NULL,\n" +
-                "\ttelephoneNumber varchar NOT NULL,\n" +
-                "\tmobileNumber varchar NOT NULL,\n" +
-                "\temergencyContact varchar NOT NULL,\n" +
-                "\temergencyContactNumber varchar NOT NULL,\n" +
-                "\tdocumentId string NOT NULL,\n" +
-                "    FOREIGN KEY (employeeId) REFERENCES User (employeeId)\n" +
-                "        ON UPDATE RESTRICT\n" +
-                "        ON DELETE RESTRICT,\n" +
-                "    FOREIGN KEY (documentId) REFERENCES Documents (documentId)\n" +
-                "        ON UPDATE RESTRICT\n" +
-                "        ON DELETE RESTRICT\n" +
+                "    employeeId string PRIMARY KEY,\n" +
+                "    surname varchar NOT NULL,\n" +
+                "    name varchar NOT NULL,\n" +
+                "    dateOfBirth date NOT NULL,\n" +
+                "    address varchar NOT NULL,\n" +
+                "    city varchar NOT NULL,\n" +
+                "    county varchar NOT NULL,\n" +
+                "    postcode varchar NOT NULL,\n" +
+                "    telephoneNumber varchar NOT NULL,\n" +
+                "    mobileNumber varchar NOT NULL,\n" +
+                "    emergencyContact varchar NOT NULL,\n" +
+                "    emergencyContactNumber varchar NOT NULL,\n" +
+                "    documentId string NOT NULL UNIQUE,\n" +
+                "    FOREIGN KEY (employeeId) REFERENCES User(employeeId),\n" +
+                "    FOREIGN KEY (documentId) REFERENCES Documents(documentId)\n" +
                 ");\n" +
                 "\n" +
                 "CREATE TABLE Documents (\n" +
-                "\tdocumentId string PRIMARY KEY,\n" +
-                "\tcreationTimestamp datetime NOT NULL,\n" +
-                "\tlastAccessed datetime NOT NULL\n" +
+                "    documentId string PRIMARY KEY,\n" +
+                "    creationTimestamp datetime NOT NULL,\n" +
+                "    CHECK (length(documentId) = 32)\n" +
                 ");\n" +
                 "\n" +
-                "CREATE TABLE Permissions (\n" +
-                "\tdocumentId string PRIMARY KEY,\n" +
-                "\thr integer,\n" +
-                "\tit integer,\n" +
-                "\tsales integer,\n" +
-                "\tadmin integer,\n" +
-                "\tbi integer,\n" +
-                "\tmc integer,\n" +
-                "    FOREIGN KEY (documentId) REFERENCES Documents (documentId)\n" +
-                "        ON UPDATE RESTRICT\n" +
-                "        ON DELETE RESTRICT\n" +
+                "CREATE TABLE FuturePerformance (\n" +
+                "    documentId string,\n" +
+                "    num integer,\n" +
+                "    objective text NOT NULL,\n" +
+                "    PRIMARY KEY (documentId, num),\n" +
+                "    FOREIGN KEY (documentId) REFERENCES Documents(documentId)\n" +
+                ");\n" +
+                "\n" +
+                "CREATE TABLE PastPerformance (\n" +
+                "    documentId string,\n" +
+                "    num integer,\n" +
+                "    objective text NOT NULL,\n" +
+                "    achievement text NOT NULL,\n" +
+                "    PRIMARY KEY (documentId, num),\n" +
+                "    FOREIGN KEY (documentId) REFERENCES Documents(documentId)\n" +
+                ");\n" +
+                "\n" +
+                "CREATE TABLE Review (\n" +
+                "    revieweeId string,\n" +
+                "    dueBy date,\n" +
+                "    documentId string NOT NULL,\n" +
+                "    firstReviewerId string NOT NULL,\n" +
+                "    secondReviewerId string NOT NULL,\n" +
+                "    revieweeSigned boolean DEFAULT FALSE,\n" +
+                "    firstReviewerSigned boolean DEFAULT FALSE,\n" +
+                "    secondReviewerSigned boolean DEFAULT FALSE,\n" +
+                "    meetingDate date,\n" +
+                "    performanceSummary text,\n" +
+                "    reviewerComments text,\n" +
+                "    recommendation string,\n" +
+                "    PRIMARY KEY (revieweeId, dueBy),\n" +
+                "    FOREIGN KEY (revieweeId) REFERENCES User(UserId),\n" +
+                "    FOREIGN KEY (firstReviewerId) REFERENCES User(UserId),\n" +
+                "    FOREIGN KEY (secondReviewerId) REFERENCES User(UserId),\n" +
+                "    FOREIGN KEY (documentId) REFERENCES Documents(documentId)\n" +
                 ");\n");
     }
 
