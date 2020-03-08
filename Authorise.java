@@ -43,9 +43,9 @@ public class Authorise
 
     static int revieweeIdIndex = 0;
     static int dueByIndex = 1;
-    static int firstReviewerIdIndex = 2;
-    static int secondReviewerIdIndex = 3;
-    static int documentIdIndex = 4;
+    static int documentIdIndex = 2;
+    static int firstReviewerIdIndex = 3;
+    static int secondReviewerIdIndex = 4;
     static int revieweeSignatureIndex = 5;
     static int reviewer1SignatureIndex = 6;
     static int reviewer2SignatureIndex = 7;
@@ -102,7 +102,7 @@ public class Authorise
             return false;
         }
 
-        content[2] = user.getDirectManager();
+        content[2] = user.getDirectSupervisor();
         if (!dp.checkEmployeeId(content[2]))
         {
             System.out.println(content[2] + " is no longer registered on the system");
@@ -260,7 +260,7 @@ public class Authorise
             currentMainDocument[revieweeSignatureIndex] = updatedDocument[revieweeSignatureIndex];
         }
         // If this Reviewer is the reviewee's Line Manager -> first reviewer
-        else if (dp.isReviewer(docId, user.getEmployeeId()) && dp.fetchDirectManager(currentMainDocument[revieweeIdIndex]) && updatedDocument[reviewer1SignatureIndex] != null)
+        else if (dp.isReviewer(docId, user.getEmployeeId()) && dp.fetchDirectSupervisor(currentMainDocument[revieweeIdIndex]) && updatedDocument[reviewer1SignatureIndex] != null)
         {
             currentMainDocument[reviewer1SignatureIndex] = updatedDocument[reviewer1SignatureIndex];
         }

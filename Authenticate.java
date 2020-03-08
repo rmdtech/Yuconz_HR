@@ -23,6 +23,7 @@ public class Authenticate{
                 User newUser = new User(employeeId, UUID.randomUUID().toString().replace("-", ""));
                 newUser.setDepartment(dp.fetchDepartment(employeeId));
                 newUser.setRole(dp.fetchRole(employeeId));
+                newUser.setDirectSupervisor(dp.fetchDirectSupervisor(newUser.getEmployeeId()));
                 dp.createSession(employeeId, newUser.getSessionId());
                 return newUser;
             }
