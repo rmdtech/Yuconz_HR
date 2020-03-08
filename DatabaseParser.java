@@ -421,16 +421,6 @@ public class DatabaseParser
             return false;
         }
 
-        if(!sqlUpdate("INSERT INTO Permissions " +
-                "(documentId, hr, it, sales, admin, bi, mc) " +
-                String.format("VALUES ('%s', %s, %s, %s, %s, %s, %s);",
-                        newDocumentId, 0, null, null, null, null, null
-                ))
-        )
-        {
-            return false;
-        }
-
         return sqlUpdate("INSERT INTO PersonalDetails" +
                 "(employeeId, " +
                 "surname, " +
@@ -477,44 +467,6 @@ public class DatabaseParser
                 )
         );
         return true;
-    }
-
-    /**
-     * fetches personal details permissions from the database for a given employee
-     * @param employeeId the employee to fetch permissions about
-     * @return perms array
-     */
-    String[] fetchPersonalDetailsPermissions(String employeeId)
-    {
-
-        String[] perms = new String[6];
-
-        sqlRead("SELECT * FROM Permissions " +
-                "WHERE Permissions.documentId = ( " +
-                "SELECT PersonalDetails.documentId " +
-                "FROM PersonalDetails " +
-                String.format("WHERE PersonalDetails.employeeId = '%s')", employeeId)
-        );
-        try
-        {
-            result.next(); // only ever be one result, while loop not required
-            perms[0] = result.getString("hr");
-            perms[1] = result.getString("it");
-            perms[2] = result.getString("sales");
-            perms[3] = result.getString("admin");
-            perms[4] = result.getString("bi");
-            perms[5] = result.getString("mc");
-            result.close();
-            stmt.close();
-            // if (roleEnum == null)
-            // This means there is a typo in the Database
-            return perms;
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            return null; // keep compiler happy
-        }
     }
 
     /**
