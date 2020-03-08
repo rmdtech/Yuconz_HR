@@ -332,6 +332,28 @@ public class DatabaseParser
         }
     }
 
+    String fetchSupervisor(String employeeId)
+    {
+        sqlRead("SELECT directSupervisor FROM User " +
+                String.format("WHERE employeeId = '%s'", employeeId)
+        );
+        try
+        {
+            result.next(); // only ever be one result, while loop not required
+            String supervisor = result.getString("directSupervisor");
+            result.close();
+            stmt.close();
+            // if (roleEnum == null)
+            // This means there is a typo in the Database
+            return supervisor;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null; // keep compiler happy
+        }
+    }
+
     /**
      * creates a session for a newly logged in user
      * @param employeeId the employeeId of the user who's creating a session
