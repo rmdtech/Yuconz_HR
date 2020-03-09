@@ -332,6 +332,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * fetches the directSupervisor of a given user from the database
+     * @param employeeId the employeeId to get the supervisor of
+     * @return the supervisor requested
+     */
     String fetchDirectSupervisor(String employeeId)
     {
         sqlRead("SELECT directSupervisor FROM User " +
@@ -566,6 +571,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * creates a new, blank review document in the database
+     * @param payload the payload of data to insert
+     * @return successful (true/false)
+     */
     Boolean createReview(String[] payload)
     {
         if(!sqlUpdate("INSERT INTO Documents " +
@@ -581,6 +591,12 @@ public class DatabaseParser
                 String.format("'%s', %s, '%s', '%s', '%s'", payload[0], payload[1], payload[2], payload[3], payload[4]));
     }
 
+    /**
+     * fetches the documentId of a given review
+     * @param revieweeId the reviewee of the review
+     * @param dueBy the due date the review should be completed by
+     * @return the requested documentId
+     */
     String fetchReviewDocumentId(String revieweeId, String dueBy)
     {
         sqlRead("SELECT documentId FROM Review " +
@@ -601,6 +617,12 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * checks if a given employee is  a reviewer on a given review
+     * @param documentId the review document to check
+     * @param employeeId the employeeId to check for the given review
+     * @return whether the employee is a reviewer (true/false)
+     */
     boolean isReviewer(String documentId, String employeeId)
     {
         sqlRead("SELECT documentId FROM Review " +
@@ -622,6 +644,12 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * checks if a given employee is  a reviewee on a given review
+     * @param documentId the review document to check
+     * @param employeeId the employeeId to check for the given review
+     * @return whether the employee is a reviewee (true/false)
+     */
     boolean isReviewee(String documentId, String employeeId)
     {
         sqlRead("SELECT documentId FROM Review " +
@@ -643,6 +671,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * fetches the content of an entire review
+     * @param documentId the documentId of the review to fetch
+     * @return payload containing the data of the review
+     */
     String[] fetchReview(String documentId)
     {
         String[] payload = new String[11];
@@ -683,6 +716,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * fetches the associated pastPerformance records for a given review
+     * @param documentId the documentId of the review to fetch
+     * @return pastPerformance records for the given review
+     */
     ArrayList<String[]> fetchPastPerformance(String documentId)
     {
         ArrayList<String[]> payload = new ArrayList<>();
@@ -713,6 +751,11 @@ public class DatabaseParser
         }
     }
 
+    /**
+     * fetches the associated futurePerformance records for a given review
+     * @param documentId the documentId of the review to fetch
+     * @return futurePerformance records for the given review
+     */
     ArrayList<String> fetchFuturePerformance(String documentId)
     {
         ArrayList<String> payload = new ArrayList<>();
@@ -753,6 +796,15 @@ public class DatabaseParser
     10: reviewerComments [String]
     11: recommendations [String]
     */
+
+    /**
+     * updates a review using a given payload
+     * @param documentId the documentId of the review to update
+     * @param payload the payload containing the data to insert
+     * @param updatedPastPerformance the payload containing the new pastPerformance records to insert
+     * @param updatedFuturePerformance the payload containing the new futurePerformance records to insert
+     * @return successful (true/false)
+     */
     boolean updateReview(String documentId, String[] payload, ArrayList<String[]> updatedPastPerformance, ArrayList<String> updatedFuturePerformance)
     {
         if(!sqlUpdate("UPDATE Review " +
