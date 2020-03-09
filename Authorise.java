@@ -260,7 +260,7 @@ public class Authorise
             currentMainDocument[revieweeSignatureIndex] = updatedDocument[revieweeSignatureIndex];
         }
         // If this Reviewer is the reviewee's Line Manager -> first reviewer
-        else if (dp.isReviewer(docId, user.getEmployeeId()) && dp.fetchDirectSupervisor(currentMainDocument[revieweeIdIndex]) && updatedDocument[reviewer1SignatureIndex] != null)
+        else if (dp.isReviewer(docId, user.getEmployeeId()) && user.getDirectSupervisor().equals(dp.fetchDirectSupervisor(currentMainDocument[revieweeIdIndex]))  && updatedDocument[reviewer1SignatureIndex] != null)
         {
             currentMainDocument[reviewer1SignatureIndex] = updatedDocument[reviewer1SignatureIndex];
         }
