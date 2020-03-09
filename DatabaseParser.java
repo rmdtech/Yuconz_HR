@@ -678,7 +678,7 @@ public class DatabaseParser
      */
     String[] fetchReview(String documentId)
     {
-        String[] payload = new String[11];
+        String[] payload = new String[12];
 
         sqlRead("SELECT * FROM Review " +
                 String.format("WHERE documentId = '%s'", documentId)
@@ -689,15 +689,16 @@ public class DatabaseParser
             {
                 payload[0] = result.getString("revieweeId");
                 payload[1] = result.getString("dueBy");
-                payload[2] = result.getString("meetingDate");
+                payload[2] = result.getString("documentID");
                 payload[3] = result.getString("firstReviewerId");
                 payload[4] = result.getString("secondReviewerId");
                 payload[5] = result.getString("revieweeSigned");
                 payload[6] = result.getString("firstReviewerSigned");
                 payload[7] = result.getString("secondReviewerSigned");
-                payload[8] = result.getString("performanceSummary");
-                payload[9] = result.getString("reviewerComments");
-                payload[10] = result.getString("recommendation");
+                payload[8] = result.getString("meetingDate");
+                payload[9] = result.getString("performanceSummary");
+                payload[10] = result.getString("reviewerComments");
+                payload[11] = result.getString("recommendation");
             }
             else
             {
