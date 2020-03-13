@@ -187,13 +187,13 @@ public class DatabaseParser
      * @param role the role of the new employee
      * @return whether or not the operation has been successful
      */
-    boolean newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
+    boolean newEmployee(String employeeId, String salt, String hashedPassword, String directSupervisor, String department, String role)
     {
         if (!checkEmployeeId(employeeId))
         {
             sqlUpdate("INSERT INTO User" +
-                    "(employeeID, hashedPassword, salt, role, department)" +
-                    String.format("VALUES ('%s', '%s', '%s', '%s', '%s');", employeeId, hashedPassword, salt, role, department)
+                    "(employeeID, hashedPassword, salt, role, department, directSupervisor)" +
+                    String.format("VALUES ('%s', '%s', '%s', '%s', '%s', '%s');", employeeId, hashedPassword, salt, role, department, directSupervisor)
             );
             return true;
         }
