@@ -353,8 +353,6 @@ public class DatabaseParser
                 stmt.close();
                 return null;
             }
-
-
         }
         catch (SQLException e)
         {
