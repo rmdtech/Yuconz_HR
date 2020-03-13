@@ -12,8 +12,11 @@ class AuthoriseTest {
     User miles;
     User itEmployee;
     User itManager;
+
     ArrayList<String[]> MainReviewCreatePayload = new ArrayList<String[]>();
     ArrayList<String[]> MainReviewRestPayLoad = new ArrayList<String[]>();
+    ArrayList<String[]> updatedPastPerformanceEntries = new ArrayList<String[]>();
+    ArrayList<ArrayList<String[]>> updatedPastPerformances = new ArrayList<>();
 
     String[] joinArrays(String[] first, String[] second)
     {
@@ -27,9 +30,9 @@ class AuthoriseTest {
         }
         return returned;
     }
-    String getMainReviewDocId(String[] mainDoc)
+    String getMainReviewDocId()
     {
-        return mainDoc[2];
+        return MainReviewCreatePayload.get(0)[2];
     }
 
     void setupReviewMainMandatoryPayloads(String empId)
@@ -43,25 +46,41 @@ class AuthoriseTest {
         // 3: Missing docId
         MainReviewCreatePayload.add(new String[] { "hre123", "2020-12-31", null, "hrm123", "dir123" });
         // 4, 5, 6: Missing Reviewers
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), "null", "dir123" });
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, "dir123" });
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), "hrm123", null });
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, null });
     }
 
-    void setupReviewMainOptionalPayloads(String signedOff)
+    void setupReviewMainOptionalPayloads()
     {
         // 0: Filled, not signed
         MainReviewRestPayLoad.add(new String[] { "false", "false", "false", "2020-03-13", "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
         // 1: Filled, signed
         MainReviewRestPayLoad.add(new String[] { "true", "true", "true", "2020-03-13", "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
-
+        // 2: No date, not signed
+        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", null, "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
+        // 3: no comments
+        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", "2020-03-13", null, null, null});
+        // 4: No dates or comments
+        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", null, null, null, null});
+        // 5: Empty
+        MainReviewRestPayLoad.add(new String[] { null, null, null, null, null, null, null});
     }
 
+    void setUpdatedPastPerformances()
+    {
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "0", "Some objective that is irrelevant to testing"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "1", "Some other objective that is irrelevant to testing"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "2", "Some other objective that is irrelevant to testing"});
+        updatedPastPerformances.add(updatedPastPerformanceEntries.get(0));
+        updatedPastPerformanceEntries.removeAll();
+    }
 
     @BeforeEach
     void setup() {
         dbSetup();
-        setupReviewMainMandatoryPayloads(hrEmployee.getEmployeeId());
+        setupReviewMainMandatoryPayloads("hre123");
+        setupReviewMainOptionalPayloads();
 
         if(!Authenticate.addNewUser("dir123", "password", null, Position.Department.HR, Position.Role.Director))
             System.out.println("Failed to add user miles | dir123");
