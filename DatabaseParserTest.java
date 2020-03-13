@@ -48,6 +48,20 @@ class DatabaseParserTest {
 
     @Test
     void fetchReviewDocumentId() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "hrm123", "itm123", "69d76bd5a1ae48a284587698cf980fa6"};
+        dp.createReview(payload);
+        assertEquals("69d76bd5a1ae48a284587698cf980fa6", dp.fetchReviewDocumentId("hre123", "2020-03-23"));
+    }
+
+    @Test
+    void fetchNonExistentReviewDocumentId() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "hrm123", "itm123", "69d76bd5a1ae48a284587698cf980fa6"};
+        dp.createReview(payload);
+        assertNull(dp.fetchReviewDocumentId("hre123", "2021-01-01"));
     }
 
     @Test
