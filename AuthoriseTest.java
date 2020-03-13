@@ -72,8 +72,43 @@ class AuthoriseTest {
         updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "0", "Some objective that is irrelevant to testing"});
         updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "1", "Some other objective that is irrelevant to testing"});
         updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "2", "Some other objective that is irrelevant to testing"});
-        updatedPastPerformances.add(updatedPastPerformanceEntries.get(0));
-        updatedPastPerformanceEntries.removeAll();
+
+        // 0: Expected, full payload
+        updatedPastPerformances.add(updatedPastPerformanceEntries);
+        updatedPastPerformanceEntries.clear();
+
+
+        updatedPastPerformanceEntries.add(new String[] { null, "0", "Some objective that is irrelevant to testing"});
+        updatedPastPerformanceEntries.add(new String[] { null, "1", "Some other objective that is irrelevant to testing"});
+        updatedPastPerformanceEntries.add(new String[] { null, "2", "Some other objective that is irrelevant to testing"});
+
+        // 1: invalid document ID, full payload
+        updatedPastPerformances.add(updatedPastPerformanceEntries);
+        updatedPastPerformanceEntries.clear();
+
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some objective that is irrelevant to testing"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some other objective that is irrelevant to testing"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some other objective that is irrelevant to testing"});
+
+        // 2: Number set to null. (Doing this because number is a FK in the DB
+        updatedPastPerformances.add(updatedPastPerformanceEntries);
+        updatedPastPerformanceEntries.clear();
+
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "0", null});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "1", null});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "2", null});
+
+        // 3: Objectives are null
+        updatedPastPerformances.add(updatedPastPerformanceEntries);
+        updatedPastPerformanceEntries.clear();
+
+        updatedPastPerformanceEntries.add(new String[] { null, null, null});
+        updatedPastPerformanceEntries.add(new String[] { null, null, null});
+        updatedPastPerformanceEntries.add(new String[] { null, null, null});
+
+        // 4: All content set to null
+        updatedPastPerformances.add(updatedPastPerformanceEntries);
+        updatedPastPerformanceEntries.clear();
     }
 
     @BeforeEach
