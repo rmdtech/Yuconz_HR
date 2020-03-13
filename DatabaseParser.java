@@ -171,9 +171,9 @@ public class DatabaseParser
                 "    reviewerComments text,\n" +
                 "    recommendation string,\n" +
                 "    PRIMARY KEY (revieweeId, dueBy),\n" +
-                "    FOREIGN KEY (revieweeId) REFERENCES User(UserId),\n" +
-                "    FOREIGN KEY (firstReviewerId) REFERENCES User(UserId),\n" +
-                "    FOREIGN KEY (secondReviewerId) REFERENCES User(UserId),\n" +
+                "    FOREIGN KEY (revieweeId) REFERENCES User(employeeId),\n" +
+                "    FOREIGN KEY (firstReviewerId) REFERENCES User(employeeId),\n" +
+                "    FOREIGN KEY (secondReviewerId) REFERENCES User(employeeId),\n" +
                 "    FOREIGN KEY (documentId) REFERENCES Documents(documentId)\n" +
                 ");\n");
     }
