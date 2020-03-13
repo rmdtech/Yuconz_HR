@@ -338,13 +338,21 @@ public class DatabaseParser
         );
         try
         {
-            result.next(); // only ever be one result, while loop not required
-            String role = result.getString("role");
-            result.close();
-            stmt.close();
-            // if (roleEnum == null)
-            // This means there is a typo in the Database
-            return Position.Role.valueOf(role);
+            if(result.next()) // only ever be one result, while loop not required
+            {
+                String role = result.getString("role");
+                result.close();
+                stmt.close();
+                // if (roleEnum == null)
+                // This means there is a typo in the Database
+                return Position.Role.valueOf(role);
+            }
+            else
+            {
+                result.close();
+                stmt.close();
+                return null;
+            }
         }
         catch (SQLException e)
         {
