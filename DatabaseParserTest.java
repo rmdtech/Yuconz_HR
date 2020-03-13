@@ -37,6 +37,16 @@ class DatabaseParserTest {
     }
 
     @Test
+    void createDuplicateReview() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "hrm123", "itm123", "69d76bd5a1ae48a284587698cf980fa6"};
+        dp.createReview(payload);
+        assertFalse(dp.createReview(payload));
+        deleteDatabase();
+    }
+
+    @Test
     void fetchReviewDocumentId() {
     }
 
