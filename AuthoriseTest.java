@@ -10,7 +10,10 @@ class AuthoriseTest {
     User hrEmployee;
     User hrManager;
     User miles;
+    User itEmployee;
+    User itManager;
     ArrayList<String[]> MainReviewCreatePayload = new ArrayList<String[]>();
+    ArrayList<String[]> MainReviewRestPayLoad = new ArrayList<String[]>();
 
     String[] joinArrays(String[] first, String[] second)
     {
@@ -28,7 +31,8 @@ class AuthoriseTest {
     {
         return mainDoc[2];
     }
-    void setupReviewMainPayloads(String empId)
+
+    void setupReviewMainMandatoryPayloads(String empId)
     {
         // 0: Expected
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), "hrm123", "dir123" });
@@ -44,11 +48,20 @@ class AuthoriseTest {
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, null });
     }
 
+    void setupReviewMainOptionalPayloads(String signedOff)
+    {
+        // 0: Filled, not signed
+        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", "2020-03-13", "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
+        // 1: Filled, signed
+        MainReviewRestPayLoad.add(new String[] { "true", "true", "true", "2020-03-13", "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
+
+    }
+
 
     @BeforeEach
     void setup() {
         dbSetup();
-        setupReviewMainPayloads(hrEmployee.getEmployeeId());
+        setupReviewMainMandatoryPayloads(hrEmployee.getEmployeeId());
 
         if(!Authenticate.addNewUser("dir123", "password", null, Position.Department.HR, Position.Role.Director))
             System.out.println("Failed to add user miles | dir123");
@@ -56,10 +69,16 @@ class AuthoriseTest {
             System.out.println("Failed to add user hrm123");
         if(!Authenticate.addNewUser("hre123", "password", "hrm123", Position.Department.HR, Position.Role.Employee))
             System.out.println("Failed to add user hre123");
+        if (!Authenticate.addNewUser("itm123", "password", "dir123", Position.Department.IT, Position.Role.Manager))
+            System.out.println("Failed to add user itm123");
+        if (!Authenticate.addNewUser("ite123", "password", "itm123", Position.Department.IT, Position.Role.Employee))
+            System.out.println("Failed to add user ite123");
 
         miles = Authenticate.login("dir123", "password");
         hrManager = Authenticate.login("hrm123", "password");
         hrEmployee = Authenticate.login("hre123", "password");
+        itManager = Authenticate.login("itm123", "password");
+        itEmployee = Authenticate.login("ite123", "password");
     }
 
     @Test
