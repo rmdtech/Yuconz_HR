@@ -580,7 +580,7 @@ public class DatabaseParser
     {
         if(!sqlUpdate("INSERT INTO Documents " +
                 "(documentId, creationTimestamp) " +
-                String.format("VALUES ('%s', CURRENT_TIME", payload[4]))
+                String.format("VALUES ('%s', CURRENT_TIME)", payload[4]))
         )
         {
             return false;
@@ -588,7 +588,7 @@ public class DatabaseParser
 
         return sqlUpdate("INSERT INTO Review " +
                 "(revieweeId, dueBy, firstReviewerId, secondReviewerId, documentId)" +
-                String.format("'%s', %s, '%s', '%s', '%s'", payload[0], payload[1], payload[2], payload[3], payload[4]));
+                String.format("VALUES ('%s', %s, '%s', '%s', '%s')", payload[0], payload[1], payload[2], payload[3], payload[4]));
     }
 
     /**
