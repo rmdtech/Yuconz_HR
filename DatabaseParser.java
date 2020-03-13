@@ -178,6 +178,26 @@ public class DatabaseParser
                 ");\n");
     }
 
+
+    String[] filterNulls(String[] payload)
+    {
+        int x = 0;
+        String[] newPayload = new String[payload.length];
+        for (String param : payload)
+        {
+            if(param == null)
+            {
+                newPayload[x] = "NULL";
+            }
+            else
+            {
+                newPayload[x] = "'" + param + "'";
+            }
+            x++;
+        }
+        return newPayload;
+    }
+
     /**
      * Creates a new record in the User table for a new employee
      * @param employeeId the employeeId of the new user to be stored in the database
@@ -191,9 +211,10 @@ public class DatabaseParser
     {
         if (!checkEmployeeId(employeeId))
         {
+            String[] payload = filterNulls(new String[]{employeeId, hashedPassword, salt, role, department, directSupervisor});
             sqlUpdate("INSERT INTO User" +
                     "(employeeID, hashedPassword, salt, role, department, directSupervisor)" +
-                    String.format("VALUES ('%s', '%s', '%s', '%s', '%s', '%s');", employeeId, hashedPassword, salt, role, department, directSupervisor)
+                    String.format("VALUES (%s, %s, %s, %s, %s, %s);", payload[0], payload[1], payload[2], payload[3], payload[4], payload[5])
             );
             return true;
         }
@@ -808,17 +829,18 @@ public class DatabaseParser
      */
     boolean updateReview(String documentId, String[] payload, ArrayList<String[]> updatedPastPerformance, ArrayList<String> updatedFuturePerformance)
     {
+        payload = filterNulls(payload);
         if(!sqlUpdate("UPDATE Review " +
-                String.format("SET firstReviewerId = '%s', " +
-                                "secondReviewerId= '%s', " +
-                                "revieweeSigned = '%s', " +
-                                "firstReviewerSigned = '%s', " +
-                                "secondReviewerSigned = '%s', " +
-                                "meetingDate = '%s', " +
-                                "performanceSummary = '%s', " +
-                                "reviewerComments = '%s', " +
-                                "recommendation = '%s' " +
-                                "WHERE documentId = '%s'",
+                String.format("SET firstReviewerId = %s, " +
+                                "secondReviewerId= %s, " +
+                                "revieweeSigned = %s, " +
+                                "firstReviewerSigned = %s, " +
+                                "secondReviewerSigned = %s, " +
+                                "meetingDate = %s, " +
+                                "performanceSummary = %s, " +
+                                "reviewerComments = %s, " +
+                                "recommendation = %s " +
+                                "WHERE documentId = %s",
                         payload[3], payload[4], payload[5], payload[6], payload[7], payload[8],
                         payload[9], payload[10], payload[11], documentId
                 )
