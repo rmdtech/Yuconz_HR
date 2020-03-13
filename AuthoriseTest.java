@@ -1,6 +1,5 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -69,26 +68,26 @@ class AuthoriseTest {
 
     void setUpdatedPastPerformances()
     {
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "0", "Some objective that is irrelevant to testing"});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "1", "Some other objective that is irrelevant to testing"});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "2", "Some other objective that is irrelevant to testing"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some objective that is irrelevant to testing", "Some achievement"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some other objective that is irrelevant to testing", "Some other achievement"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Another objective that is irrelevant to testing", "Another achievement"});
 
         // 0: Expected, full payload
         updatedPastPerformances.add(updatedPastPerformanceEntries);
         updatedPastPerformanceEntries.clear();
 
 
-        updatedPastPerformanceEntries.add(new String[] { null, "0", "Some objective that is irrelevant to testing"});
-        updatedPastPerformanceEntries.add(new String[] { null, "1", "Some other objective that is irrelevant to testing"});
-        updatedPastPerformanceEntries.add(new String[] { null, "2", "Some other objective that is irrelevant to testing"});
+        updatedPastPerformanceEntries.add(new String[] { null, "Some objective that is irrelevant to testing", "Some achievement"});
+        updatedPastPerformanceEntries.add(new String[] { null, "Some other objective that is irrelevant to testing", "Some other achievement"});
+        updatedPastPerformanceEntries.add(new String[] { null, "Another objective that is irrelevant to testing", "Another achievement"});
 
         // 1: invalid document ID, full payload
         updatedPastPerformances.add(updatedPastPerformanceEntries);
         updatedPastPerformanceEntries.clear();
 
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some objective that is irrelevant to testing"});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some other objective that is irrelevant to testing"});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some other objective that is irrelevant to testing"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some achievement"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some other achievement"});
+        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Another achievement"});
 
         // 2: Number set to null. (Doing this because number is a FK in the DB
         updatedPastPerformances.add(updatedPastPerformanceEntries);
