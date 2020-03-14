@@ -1,8 +1,12 @@
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,24 +18,6 @@ class DatabaseParserTest {
         String[] arguments = new String[] {"123"};
         Main.main(arguments);
         dp = new DatabaseParser();
-    }
-
-    static void deleteDatabase() {
-        File dbFile = new File("./databases/yuconz.db");
-        if(dbFile.exists()){
-            System.out.println("db File Exists");
-            if(dbFile.delete())
-            {
-                System.out.println("success");
-            }
-            else {
-                System.out.println("not successful");
-            }
-        }
-        else {
-            System.out.println("db File does not exist");
-        }
-
     }
 
     static void generateTestUsers() {
@@ -48,7 +34,7 @@ class DatabaseParserTest {
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         assertTrue(dp.createReview(payload));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -58,7 +44,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.createReview(payload));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -68,7 +54,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertEquals("69d76bd5a1ae48a284587698cf980fa6", dp.fetchReviewDocumentId("hre123", "2020-03-23"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -78,7 +64,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6",  "hrm123", "itm123"};
         dp.createReview(payload);
         assertNull(dp.fetchReviewDocumentId("hre123", "2021-01-01"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -88,7 +74,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertTrue(dp.isReviewer("69d76bd5a1ae48a284587698cf980fa6", "hrm123"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -98,7 +84,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewer("69d76bd5a1ae48a284587698cf980fa6", "ite123"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -108,7 +94,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewer("69d76bd5a1ae48a284587698cf980fa6", "abc456"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -118,7 +104,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewer("c6d2ee23175f434781f79eb0b6f471b6", "hrm123"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -128,7 +114,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertTrue(dp.isReviewee("69d76bd5a1ae48a284587698cf980fa6", "hre123"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -138,7 +124,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewee("69d76bd5a1ae48a284587698cf980fa6", "ite123"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -148,7 +134,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewee("69d76bd5a1ae48a284587698cf980fa6", "abc456"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -158,7 +144,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewer("c6d2ee23175f434781f79eb0b6f471b6", "hre123"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -177,7 +163,7 @@ class DatabaseParserTest {
                 "0",
                 null, null, null, null};
         assertArrayEquals(completePayload, dp.fetchReview("69d76bd5a1ae48a284587698cf980fa6"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -187,7 +173,7 @@ class DatabaseParserTest {
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertNull(dp.fetchReview("c6d2ee23175f434781f79eb0b6f471b6"));
-        deleteDatabase();
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -207,6 +193,7 @@ class DatabaseParserTest {
                 "They can improve",
                 "Stay In Post"};
         assertTrue(dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, new ArrayList<String[]>(), new ArrayList<String>()));
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -235,6 +222,7 @@ class DatabaseParserTest {
         updatedFuturePerformance.add("work more");
 
         assertTrue(dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance));
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -265,6 +253,7 @@ class DatabaseParserTest {
         dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
 
         assertArrayEquals(updatedPastPerformance.toArray(), dp.fetchPastPerformance("69d76bd5a1ae48a284587698cf980fa6").toArray());
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -295,6 +284,7 @@ class DatabaseParserTest {
         dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
 
         assertArrayEquals(new String[0], dp.fetchPastPerformance("c6d2ee23175f434781f79eb0b6f471b6").toArray());
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -325,6 +315,7 @@ class DatabaseParserTest {
         dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
 
         assertArrayEquals(updatedFuturePerformance.toArray(), dp.fetchFuturePerformance("69d76bd5a1ae48a284587698cf980fa6").toArray());
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 
     @Test
@@ -355,5 +346,6 @@ class DatabaseParserTest {
         dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
 
         assertArrayEquals(new String[0], dp.fetchFuturePerformance("c6d2ee23175f434781f79eb0b6f471b6").toArray());
+        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
 }
