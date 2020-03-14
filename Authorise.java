@@ -87,7 +87,9 @@ public class Authorise
             System.out.println("Invalid employeeId provided");
             return false;
         }
-        if ((content[firstReviewerIdIndex] + content[secondReviewerIdIndex]).contains(content[revieweeIdIndex]))
+        String firstReviewer = dp.fetchDirectSupervisor(content[revieweeIdIndex]);
+
+        if ((firstReviewer + content[secondReviewerIdIndex - 1]).contains(content[revieweeIdIndex]))
         {
             System.out.println("Reviewee can't also be a reviewer");
             return false;
@@ -113,24 +115,29 @@ public class Authorise
             return false;
         }
 
-        content[firstReviewerIdIndex] = dp.fetchDirectSupervisor(content[revieweeIdIndex]);
-        if (!dp.checkEmployeeId(content[firstReviewerIdIndex]))
+        if (!dp.checkEmployeeId(firstReviewer))
         {
-            System.out.println(content[firstReviewerIdIndex] + " is no longer registered on the system");
+            System.out.println(firstReviewer + " is no longer registered on the system");
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[secondReviewerIdIndex]))
+        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 1]))
         {
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
         }
+        String[] payload = new String[content.length + 1];
+        payload[0] = content[0];
+        payload[1] = content[1];
+        payload[2] = content[2];
+        payload[3] = firstReviewer;
+        payload[4] = content[3];
 
-        if (AuthorisationAttempt(Action.Create, "Performance Review", user, content))
+        if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
             // Generate a documentID for this review
             content[documentIdIndex] = User.generateUUID();
-            return dp.createReview(content);
+            return dp.createReview(payload);
         }
         return false;
     }
@@ -217,52 +224,18 @@ public class Authorise
         pastPerformance = dp.fetchPastPerformance(docId);
         futurePerformance = dp.fetchFuturePerformance(docId);
 
-        boolean justSigning = true;
         for (int i = meetingDateIndex; i < currentMainDocument.length-1; i++)
         {
             // Are there differences in the main document?
             if (!currentMainDocument[i].equals(updatedDocument[i]))
             {
-                justSigning = false;
                 break;
             }
             // Are there differences in the future Performance section?
             if (!futurePerformance.equals(updatedFuturePerformance))
             {
-                justSigning = false;
                 break;
             }
-        }
-
-        if (justSigning)
-        {
-            // Are there differences in the past Performance section?
-            for (int i = 0; i < pastPerformance.size(); i++)
-            {
-                if (!Arrays.equals(pastPerformance.get(i), updatedPastPerformance.get(i)))
-                {
-                    justSigning = false;
-                    break;
-                }
-            }
-
-            // Are there differences in the future Performance section?
-            for (int i = 0; i < futurePerformance.size(); i++)
-            {
-                if (!futurePerformance.get(i).equals(updatedFuturePerformance.get(i)))
-                {
-                    justSigning = false;
-                    break;
-                }
-            }
-        }
-
-        // If there are any signatures on this document, remove them as it will be updated and need to be reviewed again
-        if (!justSigning)
-        {
-            currentMainDocument[revieweeSignatureIndex] = null;
-            currentMainDocument[reviewer1SignatureIndex] = null;
-            currentMainDocument[reviewer2SignatureIndex] = null;
         }
 
         // Only allow users to sign their own signature box
@@ -283,10 +256,7 @@ public class Authorise
         }
 
         // Overwrite any changes in the main document
-        if (!justSigning)
-        {
-            currentMainDocument = updatedDocument;
-        }
+        currentMainDocument = updatedDocument;
 
         if (AuthorisationAttempt(Action.Update, "Performance Review", user, new String[] { docId }))
         {
