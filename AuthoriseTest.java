@@ -14,8 +14,10 @@ class AuthoriseTest {
 
     ArrayList<String[]> MainReviewCreatePayload = new ArrayList<String[]>();
     ArrayList<String[]> MainReviewRestPayLoad = new ArrayList<String[]>();
-    ArrayList<String[]> updatedPastPerformanceEntries = new ArrayList<String[]>();
-    ArrayList<ArrayList<String[]>> updatedPastPerformances = new ArrayList<>();
+    ArrayList<String[]> PastPerformanceEntries = new ArrayList<String[]>();
+    ArrayList<ArrayList<String[]>> PastPerformances = new ArrayList<>();
+    ArrayList<String> FuturePerformanceEntries = new ArrayList<>();
+    ArrayList<ArrayList<String>> FuturePerformances = new ArrayList<>();
 
     String[] joinArrays(String[] first, String[] second)
     {
@@ -48,6 +50,8 @@ class AuthoriseTest {
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, "dir123" });
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), "hrm123", null });
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, null });
+        // 7: All null
+        MainReviewCreatePayload.add(new String[] { null, null, null, null, null });
     }
 
     void setupReviewMainOptionalPayloads()
@@ -66,55 +70,72 @@ class AuthoriseTest {
         MainReviewRestPayLoad.add(new String[] { null, null, null, null, null, null, null});
     }
 
-    void setUpdatedPastPerformances()
+    void setupPastPerformances()
     {
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some objective that is irrelevant to testing", "Some achievement"});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some other objective that is irrelevant to testing", "Some other achievement"});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Another objective that is irrelevant to testing", "Another achievement"});
+        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some objective that is irrelevant to testing", "Some achievement"});
+        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some other objective that is irrelevant to testing", "Some other achievement"});
+        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Another objective that is irrelevant to testing", "Another achievement"});
 
         // 0: Expected, full payload
-        updatedPastPerformances.add(updatedPastPerformanceEntries);
-        updatedPastPerformanceEntries.clear();
+        PastPerformances.add(PastPerformanceEntries);
+        PastPerformanceEntries.clear();
 
 
-        updatedPastPerformanceEntries.add(new String[] { null, "Some objective that is irrelevant to testing", "Some achievement"});
-        updatedPastPerformanceEntries.add(new String[] { null, "Some other objective that is irrelevant to testing", "Some other achievement"});
-        updatedPastPerformanceEntries.add(new String[] { null, "Another objective that is irrelevant to testing", "Another achievement"});
+        PastPerformanceEntries.add(new String[] { null, "Some objective that is irrelevant to testing", "Some achievement"});
+        PastPerformanceEntries.add(new String[] { null, "Some other objective that is irrelevant to testing", "Some other achievement"});
+        PastPerformanceEntries.add(new String[] { null, "Another objective that is irrelevant to testing", "Another achievement"});
 
         // 1: invalid document ID, full payload
-        updatedPastPerformances.add(updatedPastPerformanceEntries);
-        updatedPastPerformanceEntries.clear();
+        PastPerformances.add(PastPerformanceEntries);
+        PastPerformanceEntries.clear();
 
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some achievement"});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some other achievement"});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Another achievement"});
+        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some achievement"});
+        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some other achievement"});
+        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Another achievement"});
 
         // 2: Number set to null. (Doing this because number is a FK in the DB
-        updatedPastPerformances.add(updatedPastPerformanceEntries);
-        updatedPastPerformanceEntries.clear();
+        PastPerformances.add(PastPerformanceEntries);
+        PastPerformanceEntries.clear();
 
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "0", null});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "1", null});
-        updatedPastPerformanceEntries.add(new String[] { getMainReviewDocId(), "2", null});
+        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "0", null});
+        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "1", null});
+        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "2", null});
 
         // 3: Objectives are null
-        updatedPastPerformances.add(updatedPastPerformanceEntries);
-        updatedPastPerformanceEntries.clear();
+        PastPerformances.add(PastPerformanceEntries);
+        PastPerformanceEntries.clear();
 
-        updatedPastPerformanceEntries.add(new String[] { null, null, null});
-        updatedPastPerformanceEntries.add(new String[] { null, null, null});
-        updatedPastPerformanceEntries.add(new String[] { null, null, null});
+        PastPerformanceEntries.add(new String[] { null, null, null});
+        PastPerformanceEntries.add(new String[] { null, null, null});
+        PastPerformanceEntries.add(new String[] { null, null, null});
 
         // 4: All content set to null
-        updatedPastPerformances.add(updatedPastPerformanceEntries);
-        updatedPastPerformanceEntries.clear();
+        PastPerformances.add(PastPerformanceEntries);
+        PastPerformanceEntries.clear();
+    }
+
+    void setupFuturePerformances()
+    {
+        FuturePerformanceEntries.add("A future objective");
+        FuturePerformanceEntries.add("Another future objective");
+        FuturePerformanceEntries.add("Other future objective");
+
+        // 0: Expected
+        FuturePerformances.add(FuturePerformanceEntries);
+        FuturePerformanceEntries.clear();
+
+        FuturePerformanceEntries.add(null);
+        FuturePerformanceEntries.add(null);
+        FuturePerformanceEntries.add(null);
+
+        // 1: Only contents containing null
+        FuturePerformances.add(FuturePerformanceEntries);
+        FuturePerformanceEntries.clear();
     }
 
     @BeforeEach
     void setup() {
         dbSetup();
-        setupReviewMainMandatoryPayloads("hre123");
-        setupReviewMainOptionalPayloads();
 
         if(!Authenticate.addNewUser("dir123", "password", null, Position.Department.HR, Position.Role.Director))
             System.out.println("Failed to add user miles | dir123");
@@ -132,17 +153,36 @@ class AuthoriseTest {
         hrEmployee = Authenticate.login("hre123", "password");
         itManager = Authenticate.login("itm123", "password");
         itEmployee = Authenticate.login("ite123", "password");
+
+        System.out.println("\n---- END OF SETUP OUTPUT ----\n");
     }
 
     @Test
     void createPerformanceReviewNonHR()
     {
-        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get((1))));
+        setupReviewMainMandatoryPayloads("hre123");
+        assertFalse(Authorise.createPerformanceReview(itEmployee, MainReviewCreatePayload.get((0))));
+        assertFalse(Authorise.createPerformanceReview(itManager, MainReviewCreatePayload.get(0)));
     }
 
     @Test
     void createPerformanceReview() {
+        // Currently fails due to SQLITE_CONSTRAINT_CHECK error
+        setupReviewMainMandatoryPayloads("ite123");
+        assert(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
+    }
 
+    @Test
+    void createInvalidPerformanceReview()
+    {
+        setupReviewMainMandatoryPayloads("hre123");
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(1)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(2)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(3)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(4)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(5)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(6)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(7)));
     }
 
     @Test

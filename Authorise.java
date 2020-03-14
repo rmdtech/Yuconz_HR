@@ -82,33 +82,40 @@ public class Authorise
      */
     public static boolean createPerformanceReview(User user, String[] content)
     {
-        //0: revieweeId           		[String]
-        //1: dueBy                		[Date]
-        //2: firstReviewerId
-        //3: secondReviewerId     	    [String, empId]
-        //4: documentId          		[String]
-        if (!dp.checkEmployeeId(content[0]))
+        if (!dp.checkEmployeeId(content[revieweeIdIndex]))
         {
             System.out.println("Invalid employeeId provided");
             return false;
         }
 
+        if (content[dueByIndex] == null)
+        {
+            System.out.println("Due-date has not been set");
+            return false;
+        }
+
         Pattern dateRegex = Pattern.compile("[2][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]");
-        Matcher dateMatch = dateRegex.matcher(content[1]);
+        Matcher dateMatch = dateRegex.matcher(content[dueByIndex]);
         if (!dateMatch.matches())
         {
             System.out.println("Date format provided is not valid\n   Use 'yyyy-mm-dd");
             return false;
         }
 
-        content[2] = user.getDirectSupervisor();
-        if (!dp.checkEmployeeId(content[2]))
+        if (content[documentIdIndex] == null)
         {
-            System.out.println(content[2] + " is no longer registered on the system");
+            System.out.println("No document ID has been provided");
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[3]))
+        content[firstReviewerIdIndex] = user.getDirectSupervisor();
+        if (!dp.checkEmployeeId(content[firstReviewerIdIndex]))
+        {
+            System.out.println(content[firstReviewerIdIndex] + " is no longer registered on the system");
+            return false;
+        }
+
+        if (!dp.checkEmployeeId(content[secondReviewerIdIndex]))
         {
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
@@ -117,7 +124,7 @@ public class Authorise
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, content))
         {
             // Generate a documentID for this review
-            content[4] = User.generateSalt();
+            content[documentIdIndex] = User.generateSalt();
             return dp.createReview(content);
         }
         return false;
@@ -331,7 +338,7 @@ public class Authorise
                     {
                         if (user.getDepartment().equals(Position.Department.HR))
                         {
-                            if (payload[0] != null && dp.checkEmployeeId(payload[2]) && dp.checkEmployeeId(payload[3]))
+                            if (payload[revieweeIdIndex] != null && dp.checkEmployeeId(payload[firstReviewerIdIndex]) && dp.checkEmployeeId(payload[secondReviewerIdIndex]))
                             {
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
