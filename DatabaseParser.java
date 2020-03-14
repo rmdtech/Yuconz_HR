@@ -857,7 +857,7 @@ public class DatabaseParser
             return false;
         }
 
-        if(!sqlUpdate("DELETE * FROM PastPerformance " +
+        if(!sqlUpdate("DELETE FROM PastPerformance " +
                 String.format("WHERE documentId = '%s'", documentId))
         ) // records must be deleted before being updated as row may be removed during editing
         {
@@ -876,7 +876,7 @@ public class DatabaseParser
             i++;
         }
 
-        if(!sqlUpdate("DELETE * FROM FuturePerformance " +
+        if(!sqlUpdate("DELETE FROM FuturePerformance " +
                 String.format("WHERE documentId = '%s'", documentId))
         ) // records must be deleted before being updated as row may be removed during editing
         {
