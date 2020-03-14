@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -179,14 +180,24 @@ class DatabaseParserTest {
     }
 
     @Test
+    void fetchNonexistentReview() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
+        dp.createReview(payload);
+        assertNull(dp.fetchReview("c6d2ee23175f434781f79eb0b6f471b6"));
+        deleteDatabase();
+    }
+
+    @Test
+    void updateReview() {
+    }
+
+    @Test
     void fetchPastPerformance() {
     }
 
     @Test
     void fetchFuturePerformance() {
-    }
-
-    @Test
-    void updateReview() {
     }
 }
