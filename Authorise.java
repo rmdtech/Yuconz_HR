@@ -93,6 +93,12 @@ public class Authorise
             return false;
         }
 
+        if (content[dueByIndex] == null)
+        {
+            System.out.println("Due-date has not been set");
+            return false;
+        }
+
         Pattern dateRegex = Pattern.compile("[2][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]");
         Matcher dateMatch = dateRegex.matcher(content[1]);
         if (!dateMatch.matches())
@@ -101,14 +107,20 @@ public class Authorise
             return false;
         }
 
-        content[2] = user.getDirectSupervisor();
-        if (!dp.checkEmployeeId(content[2]))
+        if (content[documentIdIndex] == null)
         {
-            System.out.println(content[2] + " is no longer registered on the system");
+            System.out.println("No document ID has been provided");
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[3]))
+        content[firstReviewerIdIndex] = user.getDirectSupervisor();
+        if (!dp.checkEmployeeId(content[firstReviewerIdIndex]))
+        {
+            System.out.println(content[firstReviewerIdIndex] + " is no longer registered on the system");
+            return false;
+        }
+
+        if (!dp.checkEmployeeId(content[secondReviewerIdIndex]))
         {
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;

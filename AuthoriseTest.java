@@ -50,6 +50,8 @@ class AuthoriseTest {
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, "dir123" });
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), "hrm123", null });
         MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, null });
+        // 7: All null
+        MainReviewCreatePayload.add(new String[] { null, null, null, null, null });
     }
 
     void setupReviewMainOptionalPayloads()
@@ -134,10 +136,6 @@ class AuthoriseTest {
     @BeforeEach
     void setup() {
         dbSetup();
-        setupReviewMainMandatoryPayloads("hre123");
-        setupReviewMainOptionalPayloads();
-        setupPastPerformances();
-        setupFuturePerformances();
 
         if(!Authenticate.addNewUser("dir123", "password", null, Position.Department.HR, Position.Role.Director))
             System.out.println("Failed to add user miles | dir123");
@@ -155,17 +153,34 @@ class AuthoriseTest {
         hrEmployee = Authenticate.login("hre123", "password");
         itManager = Authenticate.login("itm123", "password");
         itEmployee = Authenticate.login("ite123", "password");
+
+        System.out.println("\n---- END OF SETUP OUTPUT ----\n");
     }
 
     @Test
     void createPerformanceReviewNonHR()
     {
-        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get((1))));
+        setupReviewMainMandatoryPayloads("hre123");
+        assertFalse(Authorise.createPerformanceReview(itEmployee, MainReviewCreatePayload.get((0))));
     }
 
     @Test
     void createPerformanceReview() {
+        setupReviewMainMandatoryPayloads("ite123");
+        assert(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
+    }
 
+    @Test
+    void createInvalidPerformanceReview()
+    {
+        setupReviewMainMandatoryPayloads("hre123");
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(1)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(2)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(3)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(4)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(5)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(6)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(7)));
     }
 
     @Test
