@@ -167,6 +167,7 @@ class AuthoriseTest {
 
     @Test
     void createPerformanceReview() {
+        // Currently fails due to SQLITE_CONSTRAINT_CHECK error
         setupReviewMainMandatoryPayloads("ite123");
         assert(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
     }
