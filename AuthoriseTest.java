@@ -160,12 +160,7 @@ class AuthoriseTest {
         System.out.println("\n---- END OF SETUP OUTPUT ----\n");
     }
 
-    @AfterEach
-    void teardown()
-    {
-        File database = new File("./databases/yuconz.db");
-        database.delete();
-    }
+
 
     @Test
     void createPerformanceReviewNonHR()
@@ -181,20 +176,37 @@ class AuthoriseTest {
         setupReviewMainMandatoryPayloads("ite123");
         assertTrue(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
 
+        File database = new File("./databases/yuconz.db");
+        if (!database.delete())
+            System.out.println("Couldn't delete database");
+        dbSetup();
+
         // A User setting the Reviewee and Reviewer to be the same person
         MainReviewCreatePayload.clear();
         setupReviewMainMandatoryPayloads("hrm123");
         assertFalse(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(6)));
+
+        if (!database.delete())
+            System.out.println("Couldn't delete database");
+        dbSetup();
 
         // Confirming that HR Managers can create Personal Reviews
         MainReviewCreatePayload.clear();
         setupReviewMainMandatoryPayloads("itm123");
         assertTrue(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0)));
 
+        if (!database.delete())
+            System.out.println("Couldn't delete database");
+        dbSetup();
+
         // Confirming that HR Directors can create Personal Reviews
         MainReviewCreatePayload.clear();
         setupReviewMainMandatoryPayloads("hrm123");
         assertTrue(Authorise.createPerformanceReview(miles, MainReviewCreatePayload.get(0)));
+
+        if (!database.delete())
+            System.out.println("Couldn't delete database");
+        dbSetup();
     }
 
     @Test
