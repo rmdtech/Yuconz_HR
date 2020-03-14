@@ -21,6 +21,192 @@ class AuthoriseTest {
     ArrayList<String> FuturePerformanceEntries = new ArrayList<>();
     ArrayList<ArrayList<String>> FuturePerformances = new ArrayList<>();
 
+    @BeforeEach
+    void setup() {
+        dbSetup();
+
+        if(!Authenticate.addNewUser("dir123", "password", null, Position.Department.HR, Position.Role.Director))
+            System.out.println("Failed to add user miles | dir123");
+        if (!Authenticate.addNewUser("hrm123", "password", "dir123", Position.Department.HR, Position.Role.Manager))
+            System.out.println("Failed to add user hrm123");
+        if(!Authenticate.addNewUser("hre123", "password", "hrm123", Position.Department.HR, Position.Role.Employee))
+            System.out.println("Failed to add user hre123");
+        if (!Authenticate.addNewUser("itm123", "password", "dir123", Position.Department.IT, Position.Role.Manager))
+            System.out.println("Failed to add user itm123");
+        if (!Authenticate.addNewUser("ite123", "password", "itm123", Position.Department.IT, Position.Role.Employee))
+            System.out.println("Failed to add user ite123");
+
+        miles = Authenticate.login("dir123", "password");
+        hrManager = Authenticate.login("hrm123", "password");
+        hrEmployee = Authenticate.login("hre123", "password");
+        itManager = Authenticate.login("itm123", "password");
+        itEmployee = Authenticate.login("ite123", "password");
+
+        System.out.println("\n---- END OF SETUP OUTPUT ----\n");
+    }
+
+    @Test
+    void createPerformanceReview() {
+        // Expected use case where HR Employees can
+        setupReviewMainMandatoryPayloads("ite123");
+        assertTrue(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
+    }
+
+    @Test
+    void createPerformanceReviewNonHR()
+    {
+        setupReviewMainMandatoryPayloads("hre123");
+        assertFalse(Authorise.createPerformanceReview(itEmployee, MainReviewCreatePayload.get((0))));
+        assertFalse(Authorise.createPerformanceReview(itManager, MainReviewCreatePayload.get(0)));
+    }
+
+    @Test
+    void createPerformanceReviewReviewerIsReviewee()
+    {
+        // Expected use case where HR Employees can
+        setupReviewMainMandatoryPayloads("hrm123");
+        assertFalse(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(6)));
+    }
+
+    @Test
+    void createPerformanceReviewHRMCreateReview()
+    {
+        setupReviewMainMandatoryPayloads("itm123");
+        assertTrue(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0)));
+    }
+
+    @Test
+    void createPerformanceReviewHRDCreateReview()
+    {
+        setupReviewMainMandatoryPayloads("hrm123");
+        assertTrue(Authorise.createPerformanceReview(miles, MainReviewCreatePayload.get(0)));
+    }
+
+    @Test
+    void createInvalidPerformanceReview()
+    {
+        setupReviewMainMandatoryPayloads("hre123");
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(1)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(2)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(3)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(4)));
+        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(5)));
+    }
+
+    @Test
+    void readPerformanceReview() {
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("ite123");
+        setupReviewMainOptionalPayloads();
+        setupFuturePerformances();
+        setupPastPerformances();
+
+        String[] MainDocUpdated = new String[12];
+        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
+        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
+        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
+        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
+        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
+
+        Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0));
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDocUpdated, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
+
+        ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
+        ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
+
+        Authorise.readPerformanceReview(itEmployee, "ite123", "2020-12-31");
+        String[] actualMainDoc = Authorise.readReviewMain(getMainReviewDocId());
+        ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
+        ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
+
+        assertArrayEquals(MainDocUpdated, actualMainDoc);
+        assertEquals(expectedFuturePerformance, actualFuturePerformance);
+        assertEquals(expectedPastPerformance, actualPastPerformance);
+    }
+
+    @Test
+    void readPerformanceReviewNonHRonSelf()
+    {
+        writeReview();
+        Authorise.readPerformanceReview(itEmployee, "ite123", "2020-12-31");
+        String[] actualMainDoc = Authorise.readReviewMain(getMainReviewDocId());
+        ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
+        ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
+
+        String[] MainDocUpdated = new String[12];
+        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
+        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
+        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
+        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
+        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
+
+        ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
+        ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
+
+        assertArrayEquals(MainDocUpdated, actualMainDoc);
+        assertEquals(expectedFuturePerformance, actualFuturePerformance);
+        assertEquals(expectedPastPerformance, actualPastPerformance);
+    }
+
+    @Test
+    void readPerformanceReviewNonHRonOther()
+    {
+        // Write Performance Review
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("hre123");
+        setupReviewMainOptionalPayloads();
+        setupFuturePerformances();
+        setupPastPerformances();
+
+        String[] MainDocUpdated = new String[12];
+        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
+        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
+        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
+        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
+        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
+
+        Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0));
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDocUpdated, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
+
+        Authorise.readPerformanceReview(itEmployee, "hre123", "2020-12-31");
+        String[] actualMainDoc = Authorise.readReviewMain(getMainReviewDocId());
+        ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
+        ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
+
+        ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
+        ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
+
+        assertNull(actualMainDoc);
+        assertNotEquals(expectedFuturePerformance, actualFuturePerformance);
+        assertNotEquals(expectedPastPerformance, actualPastPerformance);
+    }
+
+    @Test
+    void updatePerformanceReview() {
+        /* To Test:
+        [ ] Stakeholders involved in the Review process must be able to sign a review off
+        [ ] Reviewee able to make changes to their own document
+        [ ] Reviewer(s) able to make changes to a a Review they're involved in
+        [ ] Document becoming read only after all signatures have been provided
+         */
+    }
+
+    // THIS
+    // IS
+    // WHERE
+    // THE
+    // TEST
+    // DATA
+    // SETUP
+    // BEGINS
+    // AND
+    // WE
+    // JUST
+    // MAKE
+    // THIS
+    // VISIBLE
+    // WHEN
+    // SCROLLING
     String[] joinArrays(String[] first, String[] second)
     {
         String[] returned = new String[first.length + second.length];
@@ -134,188 +320,6 @@ class AuthoriseTest {
         // 1: Only contents containing null
         FuturePerformances.add(FuturePerformanceEntries);
         FuturePerformanceEntries.clear();
-    }
-
-    @BeforeEach
-    void setup() {
-        dbSetup();
-
-        if(!Authenticate.addNewUser("dir123", "password", null, Position.Department.HR, Position.Role.Director))
-            System.out.println("Failed to add user miles | dir123");
-        if (!Authenticate.addNewUser("hrm123", "password", "dir123", Position.Department.HR, Position.Role.Manager))
-            System.out.println("Failed to add user hrm123");
-        if(!Authenticate.addNewUser("hre123", "password", "hrm123", Position.Department.HR, Position.Role.Employee))
-            System.out.println("Failed to add user hre123");
-        if (!Authenticate.addNewUser("itm123", "password", "dir123", Position.Department.IT, Position.Role.Manager))
-            System.out.println("Failed to add user itm123");
-        if (!Authenticate.addNewUser("ite123", "password", "itm123", Position.Department.IT, Position.Role.Employee))
-            System.out.println("Failed to add user ite123");
-
-        miles = Authenticate.login("dir123", "password");
-        hrManager = Authenticate.login("hrm123", "password");
-        hrEmployee = Authenticate.login("hre123", "password");
-        itManager = Authenticate.login("itm123", "password");
-        itEmployee = Authenticate.login("ite123", "password");
-
-        System.out.println("\n---- END OF SETUP OUTPUT ----\n");
-    }
-
-
-
-    @Test
-    void createPerformanceReviewNonHR()
-    {
-        setupReviewMainMandatoryPayloads("hre123");
-        assertFalse(Authorise.createPerformanceReview(itEmployee, MainReviewCreatePayload.get((0))));
-        assertFalse(Authorise.createPerformanceReview(itManager, MainReviewCreatePayload.get(0)));
-    }
-
-    @Test
-    void createPerformanceReview() {
-        // Expected use case where HR Employees can
-        setupReviewMainMandatoryPayloads("ite123");
-        assertTrue(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
-
-        File database = new File("./databases/yuconz.db");
-        if (!database.delete())
-            System.out.println("Couldn't delete database");
-        dbSetup();
-
-        // A User setting the Reviewee and Reviewer to be the same person
-        MainReviewCreatePayload.clear();
-        setupReviewMainMandatoryPayloads("hrm123");
-        assertFalse(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(6)));
-
-        if (!database.delete())
-            System.out.println("Couldn't delete database");
-        dbSetup();
-
-        // Confirming that HR Managers can create Personal Reviews
-        MainReviewCreatePayload.clear();
-        setupReviewMainMandatoryPayloads("itm123");
-        assertTrue(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0)));
-
-        if (!database.delete())
-            System.out.println("Couldn't delete database");
-        dbSetup();
-
-        // Confirming that HR Directors can create Personal Reviews
-        MainReviewCreatePayload.clear();
-        setupReviewMainMandatoryPayloads("hrm123");
-        assertTrue(Authorise.createPerformanceReview(miles, MainReviewCreatePayload.get(0)));
-
-        if (!database.delete())
-            System.out.println("Couldn't delete database");
-        dbSetup();
-    }
-
-    @Test
-    void createInvalidPerformanceReview()
-    {
-        setupReviewMainMandatoryPayloads("hre123");
-        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(1)));
-        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(2)));
-        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(3)));
-        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(4)));
-        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(5)));
-    }
-
-    @Test
-    void readPerformanceReview() {
-        dp = new DatabaseParser();
-        setupReviewMainMandatoryPayloads("ite123");
-        setupReviewMainOptionalPayloads();
-        setupFuturePerformances();
-        setupPastPerformances();
-
-        String[] MainDocUpdated = new String[12];
-        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
-        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
-        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
-        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
-        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
-
-        Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0));
-        dp.updateReview(getMainReviewDocId(), joinArrays(MainDocUpdated, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
-
-        ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
-        ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
-
-        Authorise.readPerformanceReview(itEmployee, "ite123", "2020-12-31");
-        String[] actualMainDoc = Authorise.readReviewMain(getMainReviewDocId());
-        ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
-        ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
-
-        assertArrayEquals(MainDocUpdated, actualMainDoc);
-        assertEquals(expectedFuturePerformance, actualFuturePerformance);
-        assertEquals(expectedPastPerformance, actualPastPerformance);
-    }
-
-    @Test
-    void readPerformanceReviewNonHRonSelf()
-    {
-        writeReview();
-        Authorise.readPerformanceReview(itEmployee, "ite123", "2020-12-31");
-        String[] actualMainDoc = Authorise.readReviewMain(getMainReviewDocId());
-        ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
-        ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
-
-        String[] MainDocUpdated = new String[12];
-        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
-        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
-        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
-        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
-        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
-
-        ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
-        ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
-
-        assertArrayEquals(MainDocUpdated, actualMainDoc);
-        assertEquals(expectedFuturePerformance, actualFuturePerformance);
-        assertEquals(expectedPastPerformance, actualPastPerformance);
-    }
-
-    @Test
-    void readPerformanceReviewNonHRonOther()
-    {
-        // Write Performance Review
-        dp = new DatabaseParser();
-        setupReviewMainMandatoryPayloads("hre123");
-        setupReviewMainOptionalPayloads();
-        setupFuturePerformances();
-        setupPastPerformances();
-
-        String[] MainDocUpdated = new String[12];
-        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
-        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
-        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
-        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
-        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
-
-        Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0));
-        dp.updateReview(getMainReviewDocId(), joinArrays(MainDocUpdated, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
-
-        Authorise.readPerformanceReview(itEmployee, "hre123", "2020-12-31");
-        String[] actualMainDoc = Authorise.readReviewMain(getMainReviewDocId());
-        ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
-        ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
-
-        ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
-        ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
-
-        assertNull(actualMainDoc);
-        assertNotEquals(expectedFuturePerformance, actualFuturePerformance);
-        assertNotEquals(expectedPastPerformance, actualPastPerformance);
-    }
-
-    @Test
-    void updatePerformanceReview() {
-        /* To Test:
-        [ ] Stakeholders involved in the Review process must be able to sign a review off
-        [ ] Reviewee able to make changes to their own document
-        [ ] Reviewer(s) able to make changes to a a Review they're involved in
-        [ ] Document becoming read only after all signatures have been provided
-         */
     }
 
     void writeReview()
