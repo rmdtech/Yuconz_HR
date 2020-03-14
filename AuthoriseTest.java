@@ -11,6 +11,7 @@ class AuthoriseTest {
     User miles;
     User itEmployee;
     User itManager;
+    DatabaseParser dp;
 
     ArrayList<String[]> MainReviewCreatePayload = new ArrayList<String[]>();
     ArrayList<String[]> MainReviewRestPayLoad = new ArrayList<String[]>();
@@ -39,19 +40,19 @@ class AuthoriseTest {
     void setupReviewMainMandatoryPayloads(String empId)
     {
         // 0: Expected
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), "hrm123", "dir123" });
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), "dir123" });
         // 1: Missing Reviewee
-        MainReviewCreatePayload.add(new String[] { null, "2020-12-31", User.generateSalt(), "hrm123", "dir123" });
+        MainReviewCreatePayload.add(new String[] { null, "2020-12-31", User.generateUUID(), "dir123" });
         // 2: Missing Due Date
-        MainReviewCreatePayload.add(new String[] { empId, null, User.generateSalt(), "hrm123", "dir123" });
+        MainReviewCreatePayload.add(new String[] { empId, null, User.generateUUID(), "dir123" });
         // 3: Missing docId
-        MainReviewCreatePayload.add(new String[] { "hre123", "2020-12-31", null, "hrm123", "dir123" });
-        // 4, 5, 6: Missing Reviewers
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, "dir123" });
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), "hrm123", null });
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, null });
-        // 7: All null
-        MainReviewCreatePayload.add(new String[] { null, null, null, null, null });
+        MainReviewCreatePayload.add(new String[] { "hre123", "2020-12-31", null, "dir123" });
+        // 4, Missing 2nd Reviewer
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), null });
+        // 5: All null
+        MainReviewCreatePayload.add(new String[] { null, null, null,  null });
+        // 6: Expected but with a different second Reviewer
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), "hrm123" });
     }
 
     void setupReviewMainOptionalPayloads()
@@ -167,9 +168,24 @@ class AuthoriseTest {
 
     @Test
     void createPerformanceReview() {
-        // Currently fails due to SQLITE_CONSTRAINT_CHECK error
+        // Expected use case where HR Employees can
         setupReviewMainMandatoryPayloads("ite123");
-        assert(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
+        assertTrue(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
+
+        // A User setting the Reviewee and Reviewer to be the same person
+        MainReviewCreatePayload.clear();
+        setupReviewMainMandatoryPayloads("hrm123");
+        assertFalse(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(6)));
+
+        // Confirming that HR Managers can create Personal Reviews
+        MainReviewCreatePayload.clear();
+        setupReviewMainMandatoryPayloads("itm123");
+        assertTrue(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0)));
+
+        // Confirming that HR Directors can create Personal Reviews
+        MainReviewCreatePayload.clear();
+        setupReviewMainMandatoryPayloads("hrm123");
+        assertTrue(Authorise.createPerformanceReview(miles, MainReviewCreatePayload.get(0)));
     }
 
     @Test
@@ -181,24 +197,28 @@ class AuthoriseTest {
         assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(3)));
         assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(4)));
         assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(5)));
-        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(6)));
-        assertFalse(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(7)));
     }
 
     @Test
     void readPerformanceReview() {
+        dp = new DatabaseParser();
+        dp.createReview(MainReviewCreatePayload.get(0));
+        dp.updateReview(MainReviewCreatePayload.get(0)[2], );
+
+        //Expected use case where an employee reads their own Performance Review
     }
 
     @Test
     void updatePerformanceReview() {
-    }
 
+    }
 
     static boolean checkIsFirstBoot()
     {
         File dbFile = new File("./databases/yuconz.db");
         return dbFile.exists();
     }
+
     static void dbSetup()
     {
         File database = new File("./databases/yuconz.db");
