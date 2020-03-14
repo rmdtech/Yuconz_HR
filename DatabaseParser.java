@@ -886,7 +886,7 @@ public class DatabaseParser
         i = 0;
         for(String record : updatedFuturePerformance)
         {
-            if(!sqlUpdate("INSERT INTO PastPerformance " +
+            if(!sqlUpdate("INSERT INTO FuturePerformance " +
                     "(documentId, num, objective) " +
                     String.format("VALUES ('%s', %d, '%s')", documentId, i, record)))
             {
