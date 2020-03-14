@@ -239,9 +239,121 @@ class DatabaseParserTest {
 
     @Test
     void fetchPastPerformance() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
+        dp.createReview(payload);
+        String[] updatedPayload = {"hre123",
+                "2020-03-23",
+                "69d76bd5a1ae48a284587698cf980fa6",
+                "hrm123",
+                "itm123",
+                "1", "1", "1",
+                "2020-03-22",
+                "They did good",
+                "They can improve",
+                "Stay In Post"};
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[]{"do better", "did better"});
+        updatedPastPerformance.add(new String[]{"do more", "did more"});
+        updatedPastPerformance.add(new String[]{"do things", "did things"});
+
+        ArrayList<String> updatedFuturePerformance = new ArrayList<>();
+        updatedFuturePerformance.add("work better");
+        updatedFuturePerformance.add("work more");
+
+        dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
+
+        assertArrayEquals(updatedPastPerformance.toArray(), dp.fetchPastPerformance("69d76bd5a1ae48a284587698cf980fa6").toArray());
+    }
+
+    @Test
+    void fetchNonexistentPastPerformance() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
+        dp.createReview(payload);
+        String[] updatedPayload = {"hre123",
+                "2020-03-23",
+                "69d76bd5a1ae48a284587698cf980fa6",
+                "hrm123",
+                "itm123",
+                "1", "1", "1",
+                "2020-03-22",
+                "They did good",
+                "They can improve",
+                "Stay In Post"};
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[]{"do better", "did better"});
+        updatedPastPerformance.add(new String[]{"do more", "did more"});
+        updatedPastPerformance.add(new String[]{"do things", "did things"});
+
+        ArrayList<String> updatedFuturePerformance = new ArrayList<>();
+        updatedFuturePerformance.add("work better");
+        updatedFuturePerformance.add("work more");
+
+        dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
+
+        assertArrayEquals(new String[0], dp.fetchPastPerformance("c6d2ee23175f434781f79eb0b6f471b6").toArray());
     }
 
     @Test
     void fetchFuturePerformance() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
+        dp.createReview(payload);
+        String[] updatedPayload = {"hre123",
+                "2020-03-23",
+                "69d76bd5a1ae48a284587698cf980fa6",
+                "hrm123",
+                "itm123",
+                "1", "1", "1",
+                "2020-03-22",
+                "They did good",
+                "They can improve",
+                "Stay In Post"};
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[]{"do better", "did better"});
+        updatedPastPerformance.add(new String[]{"do more", "did more"});
+        updatedPastPerformance.add(new String[]{"do things", "did things"});
+
+        ArrayList<String> updatedFuturePerformance = new ArrayList<>();
+        updatedFuturePerformance.add("work better");
+        updatedFuturePerformance.add("work more");
+
+        dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
+
+        assertArrayEquals(updatedFuturePerformance.toArray(), dp.fetchFuturePerformance("69d76bd5a1ae48a284587698cf980fa6").toArray());
+    }
+
+    @Test
+    void fetchNonexistentFuturePerformance() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
+        dp.createReview(payload);
+        String[] updatedPayload = {"hre123",
+                "2020-03-23",
+                "69d76bd5a1ae48a284587698cf980fa6",
+                "hrm123",
+                "itm123",
+                "1", "1", "1",
+                "2020-03-22",
+                "They did good",
+                "They can improve",
+                "Stay In Post"};
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[]{"do better", "did better"});
+        updatedPastPerformance.add(new String[]{"do more", "did more"});
+        updatedPastPerformance.add(new String[]{"do things", "did things"});
+
+        ArrayList<String> updatedFuturePerformance = new ArrayList<>();
+        updatedFuturePerformance.add("work better");
+        updatedFuturePerformance.add("work more");
+
+        dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
+
+        assertArrayEquals(new String[0], dp.fetchFuturePerformance("c6d2ee23175f434781f79eb0b6f471b6").toArray());
     }
 }
