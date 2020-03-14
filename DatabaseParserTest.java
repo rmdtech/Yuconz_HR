@@ -210,6 +210,34 @@ class DatabaseParserTest {
     }
 
     @Test
+    void updateReviewFullDataSet() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
+        dp.createReview(payload);
+        String[] updatedPayload = {"hre123",
+                "2020-03-23",
+                "69d76bd5a1ae48a284587698cf980fa6",
+                "hrm123",
+                "itm123",
+                "1", "1", "1",
+                "2020-03-22",
+                "They did good",
+                "They can improve",
+                "Stay In Post"};
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[]{"do better", "did better"});
+        updatedPastPerformance.add(new String[]{"do more", "did more"});
+        updatedPastPerformance.add(new String[]{"do things", "did things"});
+
+        ArrayList<String> updatedFuturePerformance = new ArrayList<>();
+        updatedFuturePerformance.add("work better");
+        updatedFuturePerformance.add("work more");
+
+        assertTrue(dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance));
+    }
+
+    @Test
     void fetchPastPerformance() {
     }
 
