@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.File;
@@ -157,6 +158,13 @@ class AuthoriseTest {
         itEmployee = Authenticate.login("ite123", "password");
 
         System.out.println("\n---- END OF SETUP OUTPUT ----\n");
+    }
+
+    @AfterEach
+    void teardown()
+    {
+        File database = new File("./databases/yuconz.db");
+        database.delete();
     }
 
     @Test
