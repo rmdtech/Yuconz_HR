@@ -69,7 +69,7 @@ public class Authorise
             {
                 return false;
             }
-            return dp.createPersonalDetailsRecord(details, User.generateSalt());
+            return dp.createPersonalDetailsRecord(details, User.generateUUID());
         }
         return false;
     }
@@ -85,6 +85,11 @@ public class Authorise
         if (!dp.checkEmployeeId(content[revieweeIdIndex]))
         {
             System.out.println("Invalid employeeId provided");
+            return false;
+        }
+        if ((content[firstReviewerIdIndex] + content[secondReviewerIdIndex]).contains(content[revieweeIdIndex]))
+        {
+            System.out.println("Reviewee can't also be a reviewer");
             return false;
         }
 
@@ -108,7 +113,7 @@ public class Authorise
             return false;
         }
 
-        content[firstReviewerIdIndex] = user.getDirectSupervisor();
+        content[firstReviewerIdIndex] = dp.fetchDirectSupervisor(content[revieweeIdIndex]);
         if (!dp.checkEmployeeId(content[firstReviewerIdIndex]))
         {
             System.out.println(content[firstReviewerIdIndex] + " is no longer registered on the system");
@@ -124,7 +129,7 @@ public class Authorise
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, content))
         {
             // Generate a documentID for this review
-            content[documentIdIndex] = User.generateSalt();
+            content[documentIdIndex] = User.generateUUID();
             return dp.createReview(content);
         }
         return false;

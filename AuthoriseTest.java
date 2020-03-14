@@ -39,17 +39,17 @@ class AuthoriseTest {
     void setupReviewMainMandatoryPayloads(String empId)
     {
         // 0: Expected
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), "hrm123", "dir123" });
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), "hrm123", "dir123" });
         // 1: Missing Reviewee
-        MainReviewCreatePayload.add(new String[] { null, "2020-12-31", User.generateSalt(), "hrm123", "dir123" });
+        MainReviewCreatePayload.add(new String[] { null, "2020-12-31", User.generateUUID(), "hrm123", "dir123" });
         // 2: Missing Due Date
-        MainReviewCreatePayload.add(new String[] { empId, null, User.generateSalt(), "hrm123", "dir123" });
+        MainReviewCreatePayload.add(new String[] { empId, null, User.generateUUID(), "hrm123", "dir123" });
         // 3: Missing docId
         MainReviewCreatePayload.add(new String[] { "hre123", "2020-12-31", null, "hrm123", "dir123" });
         // 4, 5, 6: Missing Reviewers
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, "dir123" });
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), "hrm123", null });
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateSalt(), null, null });
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), null, "dir123" });
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), "hrm123", null });
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), null, null });
         // 7: All null
         MainReviewCreatePayload.add(new String[] { null, null, null, null, null });
     }
@@ -167,9 +167,19 @@ class AuthoriseTest {
 
     @Test
     void createPerformanceReview() {
-        // Currently fails due to SQLITE_CONSTRAINT_CHECK error
+        // Expected use case
         setupReviewMainMandatoryPayloads("ite123");
-        assert(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
+        assertTrue(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
+
+        // A User setting the Reviewee and Reviewer to be the same person
+        MainReviewCreatePayload.clear();
+        setupReviewMainMandatoryPayloads("hrm123");
+        assertFalse(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0)));
+
+        // Confirming that special case Miles can do this
+        MainReviewCreatePayload.clear();
+        setupReviewMainMandatoryPayloads("ite123");
+        assertTrue(Authorise.createPerformanceReview(miles, MainReviewCreatePayload.get(0)));
     }
 
     @Test
@@ -191,6 +201,7 @@ class AuthoriseTest {
 
     @Test
     void updatePerformanceReview() {
+
     }
 
 

@@ -3,7 +3,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
 
 public class Authenticate{
     private static DatabaseParser dp = new DatabaseParser();
@@ -50,7 +49,7 @@ public class Authenticate{
      */
     public static boolean addNewUser(String employeeId, String password, String supervisor, Position.Department department, Position.Role role)
     {
-        String passwordSalt = User.generateSalt();
+        String passwordSalt = User.generateUUID();
 
         Matcher employeeIdMatcher = Pattern.compile("[a-z]{3}[0-9]{3}").matcher(employeeId);
         if (!employeeIdMatcher.matches())
