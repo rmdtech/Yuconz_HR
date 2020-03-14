@@ -54,6 +54,7 @@ public class Authorise
     static int recommendationsIndex = 11;
     static ArrayList<String[]> pastPerformance = new ArrayList<>();
     static ArrayList<String> futurePerformance = new ArrayList<>();
+    private static boolean allowReviewRead = false;
 
     /**
      * Creates a new Personal Details record for a member of Staff
@@ -136,7 +137,7 @@ public class Authorise
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
             // Generate a documentID for this review
-            content[documentIdIndex] = User.generateUUID();
+            // content[documentIdIndex] = User.generateUUID();
             return dp.createReview(payload);
         }
         return false;
@@ -169,29 +170,44 @@ public class Authorise
      *         [1] PastPerformance
      *         [2] FuturePerformance
      */
-    public static ArrayList<String[]> readPerformanceReview(User user, String revieweeId, String dueBy)
+    public static boolean readPerformanceReview(User user, String revieweeId, String dueBy)
     {
         String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
         if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
         {
-            String[] mainDocument = dp.fetchReview(docId);
-            pastPerformance = dp.fetchPastPerformance(docId);
-            futurePerformance = dp.fetchFuturePerformance(docId);
-
-            ArrayList<String[]> returned = new ArrayList<String[]>();
-            returned.add(mainDocument);
-
-            // Flatten future performance
-            String[] future = new String[futurePerformance.size()-1];
-            for (int i = 0; i < futurePerformance.size(); i++)
-            {
-                future[i] = futurePerformance.get(i);
-            }
-            returned.add(future);
-            // Map PastPerformance entries to the end
-            returned.addAll(pastPerformance);
-            return returned;
+            allowReviewRead = true;
+            return allowReviewRead;
         }
+        return false;
+    }
+
+    public static String[] readReviewMain(String documentId)
+    {
+        if (allowReviewRead)
+        {
+            return dp.fetchReview(documentId);
+        }
+        System.out.println("Must call readPerformanceReview first!");
+        return null;
+    }
+
+    public static ArrayList<String[]> readPastPerformance(String documentId)
+    {
+        if (allowReviewRead)
+        {
+            return dp.fetchPastPerformance(documentId);
+        }
+        System.out.println("Must call readPerformanceReview first!");
+        return null;
+    }
+
+    public static ArrayList<String> readFuturePerformance(String documentId)
+    {
+        if (allowReviewRead)
+        {
+            return dp.fetchFuturePerformance(documentId);
+        }
+        System.out.println("Must call readPerformanceReview first!");
         return null;
     }
 
@@ -370,6 +386,7 @@ public class Authorise
                             if (dp.isReviewee(payload[0], user.getEmployeeId()) || dp.isReviewer(payload[0], user.getEmployeeId()) || user.getDepartment().equals(Position.Department.HR))
                             {
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
+                                allowReviewRead = true;
                                 return true;
                             }
                             System.out.println("You do not have the required permissions to access this file");
