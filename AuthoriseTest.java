@@ -11,6 +11,7 @@ class AuthoriseTest {
     User miles;
     User itEmployee;
     User itManager;
+    DatabaseParser dp;
 
     ArrayList<String[]> MainReviewCreatePayload = new ArrayList<String[]>();
     ArrayList<String[]> MainReviewRestPayLoad = new ArrayList<String[]>();
@@ -200,6 +201,8 @@ class AuthoriseTest {
 
     @Test
     void readPerformanceReview() {
+        dp = new DatabaseParser();
+        dp.createReview(MainReviewCreatePayload.get(0));
     }
 
     @Test
