@@ -169,7 +169,7 @@ public class Authorise
      *         [1] PastPerformance
      *         [2] FuturePerformance
      */
-    public static Object[] readPerformanceReview(User user, String revieweeId, String dueBy)
+    public static ArrayList<String[]> readPerformanceReview(User user, String revieweeId, String dueBy)
     {
         String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
         if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
@@ -178,7 +178,19 @@ public class Authorise
             pastPerformance = dp.fetchPastPerformance(docId);
             futurePerformance = dp.fetchFuturePerformance(docId);
 
-            return new Object[] { mainDocument, pastPerformance, futurePerformance };
+            ArrayList<String[]> returned = new ArrayList<String[]>();
+            returned.add(mainDocument);
+
+            // Flatten future performance
+            String[] future = new String[futurePerformance.size()-1];
+            for (int i = 0; i < futurePerformance.size(); i++)
+            {
+                future[i] = futurePerformance.get(i);
+            }
+            returned.add(future);
+            // Map PastPerformance entries to the end
+            returned.addAll(pastPerformance);
+            return returned;
         }
         return null;
     }
