@@ -162,6 +162,7 @@ class AuthoriseTest {
     {
         setupReviewMainMandatoryPayloads("hre123");
         assertFalse(Authorise.createPerformanceReview(itEmployee, MainReviewCreatePayload.get((0))));
+        assertFalse(Authorise.createPerformanceReview(itManager, MainReviewCreatePayload.get(0)));
     }
 
     @Test

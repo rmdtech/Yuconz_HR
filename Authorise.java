@@ -82,12 +82,7 @@ public class Authorise
      */
     public static boolean createPerformanceReview(User user, String[] content)
     {
-        //0: revieweeId           		[String]
-        //1: dueBy                		[Date]
-        //2: firstReviewerId
-        //3: secondReviewerId     	    [String, empId]
-        //4: documentId          		[String]
-        if (!dp.checkEmployeeId(content[0]))
+        if (!dp.checkEmployeeId(content[revieweeIdIndex]))
         {
             System.out.println("Invalid employeeId provided");
             return false;
@@ -100,7 +95,7 @@ public class Authorise
         }
 
         Pattern dateRegex = Pattern.compile("[2][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]");
-        Matcher dateMatch = dateRegex.matcher(content[1]);
+        Matcher dateMatch = dateRegex.matcher(content[dueByIndex]);
         if (!dateMatch.matches())
         {
             System.out.println("Date format provided is not valid\n   Use 'yyyy-mm-dd");
@@ -129,7 +124,7 @@ public class Authorise
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, content))
         {
             // Generate a documentID for this review
-            content[4] = User.generateSalt();
+            content[documentIdIndex] = User.generateSalt();
             return dp.createReview(content);
         }
         return false;
@@ -343,7 +338,7 @@ public class Authorise
                     {
                         if (user.getDepartment().equals(Position.Department.HR))
                         {
-                            if (payload[0] != null && dp.checkEmployeeId(payload[2]) && dp.checkEmployeeId(payload[3]))
+                            if (payload[revieweeIdIndex] != null && dp.checkEmployeeId(payload[firstReviewerIdIndex]) && dp.checkEmployeeId(payload[secondReviewerIdIndex]))
                             {
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
