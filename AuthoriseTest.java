@@ -167,7 +167,7 @@ class AuthoriseTest {
 
     @Test
     void createPerformanceReview() {
-        // Expected use case
+        // Expected use case where HR Employees can
         setupReviewMainMandatoryPayloads("ite123");
         assertTrue(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
 
@@ -176,7 +176,12 @@ class AuthoriseTest {
         setupReviewMainMandatoryPayloads("hrm123");
         assertFalse(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(6)));
 
-        // Confirming that special case Miles can do this
+        // Confirming that HR Managers can create Personal Reviews
+        MainReviewCreatePayload.clear();
+        setupReviewMainMandatoryPayloads("itm123");
+        assertTrue(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0)));
+
+        // Confirming that HR Directors can create Personal Reviews
         MainReviewCreatePayload.clear();
         setupReviewMainMandatoryPayloads("hrm123");
         assertTrue(Authorise.createPerformanceReview(miles, MainReviewCreatePayload.get(0)));
@@ -202,12 +207,12 @@ class AuthoriseTest {
 
     }
 
-
     static boolean checkIsFirstBoot()
     {
         File dbFile = new File("./databases/yuconz.db");
         return dbFile.exists();
     }
+
     static void dbSetup()
     {
         File database = new File("./databases/yuconz.db");
