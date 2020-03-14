@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -190,7 +191,22 @@ class DatabaseParserTest {
     }
 
     @Test
-    void updateReview() {
+    void updateReviewPayloadOnly() {
+        initDatabase();
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
+        dp.createReview(payload);
+        String[] updatedPayload = {"hre123",
+                "2020-03-23",
+                "69d76bd5a1ae48a284587698cf980fa6",
+                "hrm123",
+                "itm123",
+                "1", "1", "1",
+                "2020-03-22",
+                "They did good",
+                "They can improve",
+                "Stay In Post"};
+        assertTrue(dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, new ArrayList<String[]>(), new ArrayList<String>()));
     }
 
     @Test
