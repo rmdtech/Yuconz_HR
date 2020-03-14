@@ -848,7 +848,7 @@ public class DatabaseParser
                                 "performanceSummary = %s, " +
                                 "reviewerComments = %s, " +
                                 "recommendation = %s " +
-                                "WHERE documentId = %s",
+                                "WHERE documentId = '%s'",
                         payload[3], payload[4], payload[5], payload[6], payload[7], payload[8],
                         payload[9], payload[10], payload[11], documentId
                 )
