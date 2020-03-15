@@ -136,7 +136,7 @@ public class Authorise
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
             // Generate a documentID for this review
-            content[documentIdIndex] = User.generateUUID();
+            // content[documentIdIndex] = User.generateUUID();
             return dp.createReview(payload);
         }
         return false;
@@ -169,30 +169,29 @@ public class Authorise
      *         [1] PastPerformance
      *         [2] FuturePerformance
      */
-    public static ArrayList<String[]> readPerformanceReview(User user, String revieweeId, String dueBy)
+    public static boolean readPerformanceReview(User user, String revieweeId, String dueBy)
     {
         String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
         if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
         {
-            String[] mainDocument = dp.fetchReview(docId);
-            pastPerformance = dp.fetchPastPerformance(docId);
-            futurePerformance = dp.fetchFuturePerformance(docId);
-
-            ArrayList<String[]> returned = new ArrayList<String[]>();
-            returned.add(mainDocument);
-
-            // Flatten future performance
-            String[] future = new String[futurePerformance.size()-1];
-            for (int i = 0; i < futurePerformance.size(); i++)
-            {
-                future[i] = futurePerformance.get(i);
-            }
-            returned.add(future);
-            // Map PastPerformance entries to the end
-            returned.addAll(pastPerformance);
-            return returned;
+            return true;
         }
-        return null;
+        return false;
+    }
+
+    public static String[] readReviewMain(String documentId)
+    {
+        return dp.fetchReview(documentId);
+    }
+
+    public static ArrayList<String[]> readPastPerformance(String documentId)
+    {
+        return dp.fetchPastPerformance(documentId);
+    }
+
+    public static ArrayList<String> readFuturePerformance(String documentId)
+    {
+        return dp.fetchFuturePerformance(documentId);
     }
 
     /**
@@ -373,6 +372,7 @@ public class Authorise
                                 return true;
                             }
                             System.out.println("You do not have the required permissions to access this file");
+                            System.out.println(user.getEmployeeId());
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                             return false;
                         }

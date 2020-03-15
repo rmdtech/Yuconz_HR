@@ -1,7 +1,9 @@
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,120 +21,6 @@ class AuthoriseTest {
     ArrayList<ArrayList<String[]>> PastPerformances = new ArrayList<>();
     ArrayList<String> FuturePerformanceEntries = new ArrayList<>();
     ArrayList<ArrayList<String>> FuturePerformances = new ArrayList<>();
-
-    String[] joinArrays(String[] first, String[] second)
-    {
-        String[] returned = new String[first.length + second.length];
-        for (int i = 0; i < returned.length; i++)
-        {
-            if (i <= first.length-1)
-                returned[i] = first[i];
-            else
-                returned[i] = second[i];
-        }
-        return returned;
-    }
-    String getMainReviewDocId()
-    {
-        return MainReviewCreatePayload.get(0)[2];
-    }
-
-    void setupReviewMainMandatoryPayloads(String empId)
-    {
-        // 0: Expected
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), "dir123" });
-        // 1: Missing Reviewee
-        MainReviewCreatePayload.add(new String[] { null, "2020-12-31", User.generateUUID(), "dir123" });
-        // 2: Missing Due Date
-        MainReviewCreatePayload.add(new String[] { empId, null, User.generateUUID(), "dir123" });
-        // 3: Missing docId
-        MainReviewCreatePayload.add(new String[] { "hre123", "2020-12-31", null, "dir123" });
-        // 4, Missing 2nd Reviewer
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), null });
-        // 5: All null
-        MainReviewCreatePayload.add(new String[] { null, null, null,  null });
-        // 6: Expected but with a different second Reviewer
-        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", User.generateUUID(), "hrm123" });
-    }
-
-    void setupReviewMainOptionalPayloads()
-    {
-        // 0: Filled, not signed
-        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", "2020-03-13", "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
-        // 1: Filled, signed
-        MainReviewRestPayLoad.add(new String[] { "true", "true", "true", "2020-03-13", "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
-        // 2: No date, not signed
-        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", null, "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
-        // 3: no comments
-        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", "2020-03-13", null, null, null});
-        // 4: No dates or comments
-        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", null, null, null, null});
-        // 5: Empty
-        MainReviewRestPayLoad.add(new String[] { null, null, null, null, null, null, null});
-    }
-
-    void setupPastPerformances()
-    {
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some objective that is irrelevant to testing", "Some achievement"});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some other objective that is irrelevant to testing", "Some other achievement"});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Another objective that is irrelevant to testing", "Another achievement"});
-
-        // 0: Expected, full payload
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
-
-
-        PastPerformanceEntries.add(new String[] { null, "Some objective that is irrelevant to testing", "Some achievement"});
-        PastPerformanceEntries.add(new String[] { null, "Some other objective that is irrelevant to testing", "Some other achievement"});
-        PastPerformanceEntries.add(new String[] { null, "Another objective that is irrelevant to testing", "Another achievement"});
-
-        // 1: invalid document ID, full payload
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
-
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some achievement"});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some other achievement"});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Another achievement"});
-
-        // 2: Number set to null. (Doing this because number is a FK in the DB
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
-
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "0", null});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "1", null});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "2", null});
-
-        // 3: Objectives are null
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
-
-        PastPerformanceEntries.add(new String[] { null, null, null});
-        PastPerformanceEntries.add(new String[] { null, null, null});
-        PastPerformanceEntries.add(new String[] { null, null, null});
-
-        // 4: All content set to null
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
-    }
-
-    void setupFuturePerformances()
-    {
-        FuturePerformanceEntries.add("A future objective");
-        FuturePerformanceEntries.add("Another future objective");
-        FuturePerformanceEntries.add("Other future objective");
-
-        // 0: Expected
-        FuturePerformances.add(FuturePerformanceEntries);
-        FuturePerformanceEntries.clear();
-
-        FuturePerformanceEntries.add(null);
-        FuturePerformanceEntries.add(null);
-        FuturePerformanceEntries.add(null);
-
-        // 1: Only contents containing null
-        FuturePerformances.add(FuturePerformanceEntries);
-        FuturePerformanceEntries.clear();
-    }
 
     @BeforeEach
     void setup() {
@@ -159,6 +47,13 @@ class AuthoriseTest {
     }
 
     @Test
+    void createPerformanceReview() {
+        // Expected use case where HR Employees can
+        setupReviewMainMandatoryPayloads("ite123");
+        assertTrue(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
+    }
+
+    @Test
     void createPerformanceReviewNonHR()
     {
         setupReviewMainMandatoryPayloads("hre123");
@@ -167,23 +62,23 @@ class AuthoriseTest {
     }
 
     @Test
-    void createPerformanceReview() {
+    void createPerformanceReviewReviewerIsReviewee()
+    {
         // Expected use case where HR Employees can
-        setupReviewMainMandatoryPayloads("ite123");
-        assertTrue(Authorise.createPerformanceReview(hrEmployee, MainReviewCreatePayload.get(0)));
-
-        // A User setting the Reviewee and Reviewer to be the same person
-        MainReviewCreatePayload.clear();
         setupReviewMainMandatoryPayloads("hrm123");
         assertFalse(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(6)));
+    }
 
-        // Confirming that HR Managers can create Personal Reviews
-        MainReviewCreatePayload.clear();
+    @Test
+    void createPerformanceReviewHRMCreateReview()
+    {
         setupReviewMainMandatoryPayloads("itm123");
         assertTrue(Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0)));
+    }
 
-        // Confirming that HR Directors can create Personal Reviews
-        MainReviewCreatePayload.clear();
+    @Test
+    void createPerformanceReviewHRDCreateReview()
+    {
         setupReviewMainMandatoryPayloads("hrm123");
         assertTrue(Authorise.createPerformanceReview(miles, MainReviewCreatePayload.get(0)));
     }
@@ -202,15 +97,275 @@ class AuthoriseTest {
     @Test
     void readPerformanceReview() {
         dp = new DatabaseParser();
-        dp.createReview(MainReviewCreatePayload.get(0));
-        dp.updateReview(MainReviewCreatePayload.get(0)[2], );
+        setupReviewMainMandatoryPayloads("ite123");
+        setupReviewMainOptionalPayloads();
+        setupFuturePerformances();
+        setupPastPerformances();
 
-        //Expected use case where an employee reads their own Performance Review
+        String[] MainDocUpdated = new String[12];
+        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
+        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
+        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
+        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
+        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
+
+        Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0));
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDocUpdated, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
+
+        ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
+        ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
+
+        Authorise.readPerformanceReview(itEmployee, "ite123", "2020-12-31");
+        String[] actualMainDoc = Authorise.readReviewMain(getMainReviewDocId());
+        ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
+        ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
+
+        // Printing the values to confirm tests are correct
+        System.out.println("MainDoc:        " + Arrays.toString(MainDocUpdated));
+        System.out.println("actualDoc:      " + Arrays.toString(actualMainDoc));
+
+        System.out.println("expectedFuture: " + expectedFuturePerformance);
+        System.out.println("actualFuture:   " + actualFuturePerformance);
+
+        System.out.println("expectedPast:   ");
+        for (int i = 0; i < expectedPastPerformance.size(); i++)
+            System.out.println("- " + expectedPastPerformance.get(i)[0] + " " + expectedPastPerformance.get(i)[1]);
+
+        System.out.println("actualPast:     ");
+        for (int i = 0; i < actualPastPerformance.size(); i++)
+            System.out.println("- " + actualPastPerformance.get(i)[0] + " " + actualPastPerformance.get(i)[1]);
+
+        assertArrayEquals(MainDocUpdated, actualMainDoc);
+        assertEquals(expectedFuturePerformance, actualFuturePerformance);
+        assertArrayEquals(expectedPastPerformance.toArray(), actualPastPerformance.toArray());
+    }
+
+    @Test
+    void readPerformanceReviewNonHRonSelf()
+    {
+        writeReview();
+        Authorise.readPerformanceReview(itEmployee, "ite123", "2020-12-31");
+        String[] actualMainDoc = Authorise.readReviewMain(getMainReviewDocId());
+        ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
+        ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
+
+        String[] MainDocUpdated = new String[12];
+        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
+        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
+        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
+        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
+        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
+
+        ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
+        ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
+
+        assertArrayEquals(MainDocUpdated, actualMainDoc);
+        System.out.println("MainDoc:        " + Arrays.toString(MainDocUpdated));
+        System.out.println("actualDoc:      " + Arrays.toString(actualMainDoc));
+        System.out.println("expectedFuture: " + expectedFuturePerformance);
+        System.out.println("actualFuture:   " + actualFuturePerformance);
+        System.out.println("expectedPast:   ");
+        for (int i = 0; i < expectedPastPerformance.size(); i++)
+            System.out.println("- " + expectedPastPerformance.get(i)[0] + " " + expectedPastPerformance.get(i)[1]);
+
+        System.out.println("actualPast:     ");
+        for (int i = 0; i < actualPastPerformance.size(); i++)
+            System.out.println("- " + actualPastPerformance.get(i)[0] + " " + actualPastPerformance.get(i)[1]);
+
+        for (int i = 0; i < expectedFuturePerformance.size(); i++)
+        {
+            assertEquals(expectedFuturePerformance.get(i), actualFuturePerformance.get(i));
+        }
+        for (int i = 0; i < expectedPastPerformance.size(); i++)
+        {
+            assertArrayEquals(expectedPastPerformance.get(i), actualPastPerformance.get(i));
+        }
+    }
+
+    @Test
+    void readPerformanceReviewNonHRonOther()
+    {
+        // Write Performance Review
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("hre123");
+        setupReviewMainOptionalPayloads();
+        setupFuturePerformances();
+        setupPastPerformances();
+
+        String[] MainDocUpdated = new String[12];
+        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
+        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
+        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
+        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
+        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
+
+        Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0));
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDocUpdated, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
+
+        String[] actualMainDoc = null;
+        ArrayList<String[]> actualPastPerformance = new ArrayList<String[]>();
+        ArrayList<String> actualFuturePerformance = new ArrayList<String>();
+
+        assertFalse(Authorise.readPerformanceReview(itEmployee, "hre123", "2020-12-31"));
+
     }
 
     @Test
     void updatePerformanceReview() {
+        /* To Test:
+        [ ] Stakeholders involved in the Review process must be able to sign a review off
+        [ ] Reviewee able to make changes to their own document
+        [ ] Reviewer(s) able to make changes to a a Review they're involved in
+        [ ] Document becoming read only after all signatures have been provided
+         */
+    }
 
+
+
+
+
+
+
+
+
+
+
+
+    // THIS
+    // IS
+    // WHERE
+    // THE
+    // TEST
+    // DATA
+    // SETUP
+    // BEGINS
+    // AND
+    // WE
+    // JUST
+    // MAKE
+    // THIS
+    // VISIBLE
+    // WHEN
+    // SCROLLING
+    String[] joinArrays(String[] first, String[] second)
+    {
+        String[] returned = new String[first.length + second.length];
+        for (int i = 0; i < returned.length; i++)
+        {
+            if (i < first.length)
+                returned[i] = first[i];
+            else
+                returned[i] = second[i-first.length];
+        }
+        return returned;
+    }
+
+    String getMainReviewDocId()
+    {
+        return MainReviewCreatePayload.get(0)[2];
+    }
+
+    void setupReviewMainMandatoryPayloads(String empId)
+    {
+        // 0: Expected
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", "3534c934edef4388b1c404d2d8064a21", "dir123" });
+        // 1: Missing Reviewee
+        MainReviewCreatePayload.add(new String[] { null, "2020-12-31", "3534c934edef4388b1c404d2d8064a21", "dir123" });
+        // 2: Missing Due Date
+        MainReviewCreatePayload.add(new String[] { empId, null, "3534c934edef4388b1c404d2d8064a21", "dir123" });
+        // 3: Missing docId
+        MainReviewCreatePayload.add(new String[] { "hre123", "2020-12-31", null, "dir123" });
+        // 4, Missing 2nd Reviewer
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", "3534c934edef4388b1c404d2d8064a21", null });
+        // 5: All null
+        MainReviewCreatePayload.add(new String[] { null, null, null,  null });
+        // 6: Expected but with a different second Reviewer
+        MainReviewCreatePayload.add(new String[] { empId, "2020-12-31", "3534c934edef4388b1c404d2d8064a21", "hrm123" });
+
+    }
+
+    void setupReviewMainOptionalPayloads()
+    {
+        // 0: Filled, not signed
+        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", "2020-03-13", "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
+        // 1: Filled, signed
+        MainReviewRestPayLoad.add(new String[] { "true", "true", "true", "2020-03-13", "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
+        // 2: No date, not signed
+        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", null, "Some text that makes up the summary and is irrelevant for testing", "reviewercomments that are irrelevent for testing", "recommendation that is irrelevant for testing"});
+        // 3: no comments
+        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", "2020-03-13", null, null, null});
+        // 4: No dates or comments
+        MainReviewRestPayLoad.add(new String[] { "false", "false", "false", null, null, null, null});
+        // 5: Empty
+        MainReviewRestPayLoad.add(new String[] { null, null, null, null, null, null, null});
+    }
+
+    void setupPastPerformances()
+    {
+        ArrayList<String[]> case1 = new ArrayList<>();
+        case1.add(new String[] { "Some objective that is irrelevant to testing", "Some achievement"});
+        case1.add(new String[] { "Some other objective that is irrelevant to testing", "Some other achievement"});
+        case1.add(new String[] { "Another objective that is irrelevant to testing", "Another achievement"});
+
+        // 0: Expected, full payload
+        PastPerformances.add(case1);
+
+        ArrayList<String[]> case2 = new ArrayList<>();
+
+        case2.add(new String[] { null, "Some achievement"});
+        case2.add(new String[] { null, "Some other achievement"});
+        case2.add(new String[] { null, "Another achievement"});
+        // 1: invalid document ID, full payload
+        PastPerformances.add(case2);
+
+        // 2: Number set to null. (Doing this because number is a FK in the DB
+
+        ArrayList<String[]> case3 = new ArrayList<>();
+        case3.add(new String[] {null, null});
+        case3.add(new String[] {null, null});
+        case3.add(new String[] {null, null});
+        PastPerformances.add(case3);
+
+
+    }
+
+    void setupFuturePerformances()
+    {
+        ArrayList<String> case1 = new ArrayList<>();
+        case1.add("A future objective");
+        case1.add("Another future objective");
+        case1.add("Other future objective");
+
+        // 0: Expected
+        FuturePerformances.add(case1);
+
+        ArrayList<String> case2 = new ArrayList<>();
+        case2.add("A future objective");
+        case2.add("Another future objective");
+        case2.add("Other future objective");
+
+        // 1: Only contents containing null
+        FuturePerformances.add(case2);
+
+    }
+
+    void writeReview()
+    {
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("ite123");
+        setupReviewMainOptionalPayloads();
+        setupFuturePerformances();
+        setupPastPerformances();
+
+        String[] MainDocUpdated = new String[12];
+        MainDocUpdated[0] = MainReviewCreatePayload.get(0)[0];
+        MainDocUpdated[1] = MainReviewCreatePayload.get(0)[1];
+        MainDocUpdated[2] = MainReviewCreatePayload.get(0)[2];
+        MainDocUpdated[3] = dp.fetchDirectSupervisor(MainReviewCreatePayload.get(0)[0]);
+        MainDocUpdated[4] = MainReviewCreatePayload.get(0)[3];
+
+        Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0));
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDocUpdated, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
     }
 
     static boolean checkIsFirstBoot()
