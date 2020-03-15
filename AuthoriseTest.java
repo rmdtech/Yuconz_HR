@@ -120,15 +120,24 @@ class AuthoriseTest {
         ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
         ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
 
-        assertArrayEquals(MainDocUpdated, actualMainDoc);
-        System.out.println("MainDoc: " + Arrays.toString(MainDocUpdated));
-        System.out.println("actualDoc: " + Arrays.toString(actualMainDoc));
-        assertEquals(expectedFuturePerformance, actualFuturePerformance);
+        // Printing the values to confirm tests are correct
+        System.out.println("MainDoc:        " + Arrays.toString(MainDocUpdated));
+        System.out.println("actualDoc:      " + Arrays.toString(actualMainDoc));
+
         System.out.println("expectedFuture: " + expectedFuturePerformance);
-        System.out.println("actualFuture: " + actualFuturePerformance);
-        assertEquals(expectedPastPerformance, actualPastPerformance);
-        System.out.println("MainDoc: " + expectedPastPerformance);
-        System.out.println("actualDoc: " + actualPastPerformance);
+        System.out.println("actualFuture:   " + actualFuturePerformance);
+
+        System.out.println("expectedPast:   ");
+        for (int i = 0; i < expectedPastPerformance.size(); i++)
+            System.out.println("- " + expectedPastPerformance.get(i)[0] + " " + expectedPastPerformance.get(i)[1]);
+
+        System.out.println("actualPast:     ");
+        for (int i = 0; i < actualPastPerformance.size(); i++)
+            System.out.println("- " + actualPastPerformance.get(i)[0] + " " + actualPastPerformance.get(i)[1]);
+
+        assertArrayEquals(MainDocUpdated, actualMainDoc);
+        assertEquals(expectedFuturePerformance, actualFuturePerformance);
+        assertArrayEquals(expectedPastPerformance.toArray(), actualPastPerformance.toArray());
     }
 
     @Test
@@ -151,14 +160,26 @@ class AuthoriseTest {
         ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
 
         assertArrayEquals(MainDocUpdated, actualMainDoc);
-        System.out.println("MainDoc: " + Arrays.toString(MainDocUpdated));
-        System.out.println("actualDoc: " + Arrays.toString(actualMainDoc));
-        assertEquals(expectedFuturePerformance, actualFuturePerformance);
+        System.out.println("MainDoc:        " + Arrays.toString(MainDocUpdated));
+        System.out.println("actualDoc:      " + Arrays.toString(actualMainDoc));
         System.out.println("expectedFuture: " + expectedFuturePerformance);
-        System.out.println("actualFuture: " + actualFuturePerformance);
-        assertEquals(expectedPastPerformance, actualPastPerformance);
-        System.out.println("MainDoc: " + expectedPastPerformance);
-        System.out.println("actualDoc: " + actualPastPerformance);
+        System.out.println("actualFuture:   " + actualFuturePerformance);
+        System.out.println("expectedPast:   ");
+        for (int i = 0; i < expectedPastPerformance.size(); i++)
+            System.out.println("- " + expectedPastPerformance.get(i)[0] + " " + expectedPastPerformance.get(i)[1]);
+
+        System.out.println("actualPast:     ");
+        for (int i = 0; i < actualPastPerformance.size(); i++)
+            System.out.println("- " + actualPastPerformance.get(i)[0] + " " + actualPastPerformance.get(i)[1]);
+
+        for (int i = 0; i < expectedFuturePerformance.size(); i++)
+        {
+            assertEquals(expectedFuturePerformance.get(i), actualFuturePerformance.get(i));
+        }
+        for (int i = 0; i < expectedPastPerformance.size(); i++)
+        {
+            assertArrayEquals(expectedPastPerformance.get(i), actualPastPerformance.get(i));
+        }
     }
 
     @Test
@@ -181,23 +202,12 @@ class AuthoriseTest {
         Authorise.createPerformanceReview(hrManager, MainReviewCreatePayload.get(0));
         dp.updateReview(getMainReviewDocId(), joinArrays(MainDocUpdated, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
 
-        Authorise.readPerformanceReview(itEmployee, "hre123", "2020-12-31");
-        String[] actualMainDoc = Authorise.readReviewMain(getMainReviewDocId());
-        ArrayList<String[]> actualPastPerformance = Authorise.readPastPerformance(getMainReviewDocId());
-        ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
+        String[] actualMainDoc = null;
+        ArrayList<String[]> actualPastPerformance = new ArrayList<String[]>();
+        ArrayList<String> actualFuturePerformance = new ArrayList<String>();
 
-        ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
-        ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
+        assertFalse(Authorise.readPerformanceReview(itEmployee, "hre123", "2020-12-31"));
 
-        assertArrayEquals(MainDocUpdated, actualMainDoc);
-        System.out.println("MainDoc: " + Arrays.toString(MainDocUpdated));
-        System.out.println("actualDoc: " + Arrays.toString(actualMainDoc));
-        assertEquals(expectedFuturePerformance, actualFuturePerformance);
-        System.out.println("expectedFuture: " + expectedFuturePerformance);
-        System.out.println("actualFuture: " + actualFuturePerformance);
-        assertEquals(expectedPastPerformance, actualPastPerformance);
-        System.out.println("MainDoc: " + expectedPastPerformance);
-        System.out.println("actualDoc: " + actualPastPerformance);
     }
 
     @Test
@@ -209,6 +219,17 @@ class AuthoriseTest {
         [ ] Document becoming read only after all signatures have been provided
          */
     }
+
+
+
+
+
+
+
+
+
+
+
 
     // THIS
     // IS
@@ -281,64 +302,51 @@ class AuthoriseTest {
 
     void setupPastPerformances()
     {
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some objective that is irrelevant to testing", "Some achievement"});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Some other objective that is irrelevant to testing", "Some other achievement"});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "Another objective that is irrelevant to testing", "Another achievement"});
+        ArrayList<String[]> case1 = new ArrayList<>();
+        case1.add(new String[] { "Some objective that is irrelevant to testing", "Some achievement"});
+        case1.add(new String[] { "Some other objective that is irrelevant to testing", "Some other achievement"});
+        case1.add(new String[] { "Another objective that is irrelevant to testing", "Another achievement"});
 
         // 0: Expected, full payload
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
+        PastPerformances.add(case1);
 
-        PastPerformanceEntries.add(new String[] { null, "Some objective that is irrelevant to testing", "Some achievement"});
-        PastPerformanceEntries.add(new String[] { null, "Some other objective that is irrelevant to testing", "Some other achievement"});
-        PastPerformanceEntries.add(new String[] { null, "Another objective that is irrelevant to testing", "Another achievement"});
+        ArrayList<String[]> case2 = new ArrayList<>();
 
+        case2.add(new String[] { null, "Some achievement"});
+        case2.add(new String[] { null, "Some other achievement"});
+        case2.add(new String[] { null, "Another achievement"});
         // 1: invalid document ID, full payload
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
-
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some achievement"});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Some other achievement"});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), null, "Another achievement"});
+        PastPerformances.add(case2);
 
         // 2: Number set to null. (Doing this because number is a FK in the DB
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
 
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "0", null});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "1", null});
-        PastPerformanceEntries.add(new String[] { getMainReviewDocId(), "2", null});
+        ArrayList<String[]> case3 = new ArrayList<>();
+        case3.add(new String[] {null, null});
+        case3.add(new String[] {null, null});
+        case3.add(new String[] {null, null});
+        PastPerformances.add(case3);
 
-        // 3: Objectives are null
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
 
-        PastPerformanceEntries.add(new String[] { null, null, null});
-        PastPerformanceEntries.add(new String[] { null, null, null});
-        PastPerformanceEntries.add(new String[] { null, null, null});
-
-        // 4: All content set to null
-        PastPerformances.add(PastPerformanceEntries);
-        PastPerformanceEntries.clear();
     }
 
     void setupFuturePerformances()
     {
-        FuturePerformanceEntries.add("A future objective");
-        FuturePerformanceEntries.add("Another future objective");
-        FuturePerformanceEntries.add("Other future objective");
+        ArrayList<String> case1 = new ArrayList<>();
+        case1.add("A future objective");
+        case1.add("Another future objective");
+        case1.add("Other future objective");
 
         // 0: Expected
-        FuturePerformances.add(FuturePerformanceEntries);
-        FuturePerformanceEntries.clear();
+        FuturePerformances.add(case1);
 
-        FuturePerformanceEntries.add(null);
-        FuturePerformanceEntries.add(null);
-        FuturePerformanceEntries.add(null);
+        ArrayList<String> case2 = new ArrayList<>();
+        case2.add("A future objective");
+        case2.add("Another future objective");
+        case2.add("Other future objective");
 
         // 1: Only contents containing null
-        FuturePerformances.add(FuturePerformanceEntries);
-        FuturePerformanceEntries.clear();
+        FuturePerformances.add(case2);
+
     }
 
     void writeReview()

@@ -54,7 +54,6 @@ public class Authorise
     static int recommendationsIndex = 11;
     static ArrayList<String[]> pastPerformance = new ArrayList<>();
     static ArrayList<String> futurePerformance = new ArrayList<>();
-    private static boolean allowReviewRead = false;
 
     /**
      * Creates a new Personal Details record for a member of Staff
@@ -175,40 +174,24 @@ public class Authorise
         String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
         if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
         {
-            allowReviewRead = true;
-            return allowReviewRead;
+            return true;
         }
         return false;
     }
 
     public static String[] readReviewMain(String documentId)
     {
-        if (allowReviewRead)
-        {
-            return dp.fetchReview(documentId);
-        }
-        System.out.println("Must call readPerformanceReview first!");
-        return null;
+        return dp.fetchReview(documentId);
     }
 
     public static ArrayList<String[]> readPastPerformance(String documentId)
     {
-        if (allowReviewRead)
-        {
-            return dp.fetchPastPerformance(documentId);
-        }
-        System.out.println("Must call readPerformanceReview first!");
-        return null;
+        return dp.fetchPastPerformance(documentId);
     }
 
     public static ArrayList<String> readFuturePerformance(String documentId)
     {
-        if (allowReviewRead)
-        {
-            return dp.fetchFuturePerformance(documentId);
-        }
-        System.out.println("Must call readPerformanceReview first!");
-        return null;
+        return dp.fetchFuturePerformance(documentId);
     }
 
     /**
@@ -386,10 +369,10 @@ public class Authorise
                             if (dp.isReviewee(payload[0], user.getEmployeeId()) || dp.isReviewer(payload[0], user.getEmployeeId()) || user.getDepartment().equals(Position.Department.HR))
                             {
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
-                                allowReviewRead = true;
                                 return true;
                             }
                             System.out.println("You do not have the required permissions to access this file");
+                            System.out.println(user.getEmployeeId());
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                             return false;
                         }
