@@ -17,9 +17,7 @@ class AuthoriseTest {
 
     ArrayList<String[]> MainReviewCreatePayload = new ArrayList<String[]>();
     ArrayList<String[]> MainReviewRestPayLoad = new ArrayList<String[]>();
-    ArrayList<String[]> PastPerformanceEntries = new ArrayList<String[]>();
     ArrayList<ArrayList<String[]>> PastPerformances = new ArrayList<>();
-    ArrayList<String> FuturePerformanceEntries = new ArrayList<>();
     ArrayList<ArrayList<String>> FuturePerformances = new ArrayList<>();
 
     @BeforeEach
@@ -211,18 +209,272 @@ class AuthoriseTest {
     }
 
     @Test
-    void updatePerformanceReview() {
+    void updatePerformanceReviewReviewee() {
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("ite123");
+        setupReviewMainOptionalPayloads();
+        setupPastPerformances();
+        setupFuturePerformances();
+
+        // Create a review
+        String[] MainDoc = new String[5];
+        MainDoc[0] = MainReviewCreatePayload.get(0)[0];
+        MainDoc[1] = MainReviewCreatePayload.get(0)[1];
+        MainDoc[2] = MainReviewCreatePayload.get(0)[2];
+        MainDoc[3] = dp.fetchDirectSupervisor("ite123");
+        MainDoc[4] = MainReviewCreatePayload.get(0)[3];
+        dp.createReview(MainDoc);
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
+
+        // Update Past Performance
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[] { "An updated objective", "With an updated achievement"} );
+        updatedPastPerformance.add(new String[] { "The last objective and achievement" , " have been deleted"});
+
+        // Update Future Performance
+        ArrayList<String> updatedFuturePerformance = new ArrayList<String>();
+        updatedFuturePerformance.add("An updated achievement");
+        updatedFuturePerformance.add("The last achievement has been removed");
+
+        // Test if just updating the information was successful
+        assertTrue(Authorise.updatePerformanceReview(itEmployee, joinArrays(MainDoc, MainReviewRestPayLoad.get(0)), updatedPastPerformance, updatedFuturePerformance));
+        assertArrayEquals(updatedPastPerformance.toArray(), dp.fetchPastPerformance(getMainReviewDocId()).toArray());
+        assertEquals(updatedFuturePerformance, dp.fetchFuturePerformance(getMainReviewDocId()));
+
         /* To Test:
-        [ ] Stakeholders involved in the Review process must be able to sign a review off
-        [ ] Reviewee able to make changes to their own document
-        [ ] Reviewer(s) able to make changes to a a Review they're involved in
-        [ ] Document becoming read only after all signatures have been provided
+        [x] Stakeholders involved in the Review process must be able to sign a review off
+        [x] Reviewee able to make changes to their own document
+        [x] Reviewer(s) able to make changes to a a Review they're involved in
+        [x] Document becoming read only after all signatures have been provided
          */
     }
 
+    @Test
+    void updatePerformanceReviewReviewer1()
+    {
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("ite123");
+        setupReviewMainOptionalPayloads();
+        setupPastPerformances();
+        setupFuturePerformances();
 
+        // Create a review
+        String[] MainDoc = new String[5];
+        MainDoc[0] = MainReviewCreatePayload.get(0)[0];
+        MainDoc[1] = MainReviewCreatePayload.get(0)[1];
+        MainDoc[2] = MainReviewCreatePayload.get(0)[2];
+        MainDoc[3] = dp.fetchDirectSupervisor("ite123");
+        MainDoc[4] = MainReviewCreatePayload.get(0)[3];
+        dp.createReview(MainDoc);
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
 
+        // Update Past Performance
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[] { "An updated objective", "With an updated achievement"} );
+        updatedPastPerformance.add(new String[] { "The last objective and achievement" , " have been deleted"});
 
+        // Update Future Performance
+        ArrayList<String> updatedFuturePerformance = new ArrayList<String>();
+        updatedFuturePerformance.add("An updated achievement");
+        updatedFuturePerformance.add("The last achievement has been removed");
+
+        // Test if just updating the information was successful
+        assertTrue(Authorise.updatePerformanceReview(itManager, joinArrays(MainDoc, MainReviewRestPayLoad.get(0)), updatedPastPerformance, updatedFuturePerformance));
+        assertArrayEquals(updatedPastPerformance.toArray(), dp.fetchPastPerformance(getMainReviewDocId()).toArray());
+        assertEquals(updatedFuturePerformance, dp.fetchFuturePerformance(getMainReviewDocId()));
+    }
+
+    @Test
+    void updatePerformanceReviewReviewer2()
+    {
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("ite123");
+        setupReviewMainOptionalPayloads();
+        setupPastPerformances();
+        setupFuturePerformances();
+
+        // Create a review
+        String[] MainDoc = new String[5];
+        MainDoc[0] = MainReviewCreatePayload.get(0)[0];
+        MainDoc[1] = MainReviewCreatePayload.get(0)[1];
+        MainDoc[2] = MainReviewCreatePayload.get(0)[2];
+        MainDoc[3] = dp.fetchDirectSupervisor("ite123");
+        MainDoc[4] = MainReviewCreatePayload.get(0)[3];
+        dp.createReview(MainDoc);
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
+
+        // Update Past Performance
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[] { "An updated objective", "With an updated achievement"} );
+        updatedPastPerformance.add(new String[] { "The last objective and achievement" , " have been deleted"});
+
+        // Update Future Performance
+        ArrayList<String> updatedFuturePerformance = new ArrayList<String>();
+        updatedFuturePerformance.add("An updated achievement");
+        updatedFuturePerformance.add("The last achievement has been removed");
+
+        // Test if just updating the information was successful
+        assertTrue(Authorise.updatePerformanceReview(miles , joinArrays(MainDoc, MainReviewRestPayLoad.get(0)), updatedPastPerformance, updatedFuturePerformance));
+        assertArrayEquals(updatedPastPerformance.toArray(), dp.fetchPastPerformance(getMainReviewDocId()).toArray());
+        assertEquals(updatedFuturePerformance, dp.fetchFuturePerformance(getMainReviewDocId()));
+    }
+
+    @Test
+    void updatePerformanceReviewSignAuthorised()
+    {
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("ite123");
+        setupReviewMainOptionalPayloads();
+        setupPastPerformances();
+        setupFuturePerformances();
+
+        // Create a review
+        String[] MainDoc = new String[5];
+        MainDoc[0] = MainReviewCreatePayload.get(0)[0];
+        MainDoc[1] = MainReviewCreatePayload.get(0)[1];
+        MainDoc[2] = MainReviewCreatePayload.get(0)[2];
+        MainDoc[3] = dp.fetchDirectSupervisor("ite123");
+        MainDoc[4] = MainReviewCreatePayload.get(0)[3];
+        dp.createReview(MainDoc);
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
+
+        // Update Past Performance
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[] { "An updated objective", "With an updated achievement"} );
+        updatedPastPerformance.add(new String[] { "The last objective and achievement" , " have been deleted"});
+
+        // Update Future Performance
+        ArrayList<String> updatedFuturePerformance = new ArrayList<String>();
+        updatedFuturePerformance.add("An updated achievement");
+        updatedFuturePerformance.add("The last achievement has been removed");
+
+        String[] testSignatures = MainReviewRestPayLoad.get(0);
+
+        // Reviewee
+        testSignatures[0] = "true";
+        assertTrue(Authorise.updatePerformanceReview(itEmployee, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
+        assertEquals("true", dp.fetchReview(getMainReviewDocId())[5]);
+
+        // Reviewer 1
+        testSignatures[1] = "true";
+        assertTrue(Authorise.updatePerformanceReview(itManager, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
+        assertEquals("true", dp.fetchReview(getMainReviewDocId())[6]);
+
+        // Reviewer 2
+        testSignatures[2] = "true";
+        assertTrue(Authorise.updatePerformanceReview(miles, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
+        assertEquals("true", dp.fetchReview(getMainReviewDocId())[7]);
+    }
+
+    @Test
+    void updatePerformanceReviewSignInUnauthorised()
+    {
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("ite123");
+        setupReviewMainOptionalPayloads();
+        setupPastPerformances();
+        setupFuturePerformances();
+
+        // Create a review
+        String[] MainDoc = new String[5];
+        MainDoc[0] = MainReviewCreatePayload.get(0)[0];
+        MainDoc[1] = MainReviewCreatePayload.get(0)[1];
+        MainDoc[2] = MainReviewCreatePayload.get(0)[2];
+        MainDoc[3] = dp.fetchDirectSupervisor("ite123");
+        MainDoc[4] = MainReviewCreatePayload.get(0)[3];
+        dp.createReview(MainDoc);
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, MainReviewRestPayLoad.get(0)), PastPerformances.get(0), FuturePerformances.get(0));
+
+        // Update Past Performance
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[] { "An updated objective", "With an updated achievement"} );
+        updatedPastPerformance.add(new String[] { "The last objective and achievement" , " have been deleted"});
+
+        // Update Future Performance
+        ArrayList<String> updatedFuturePerformance = new ArrayList<String>();
+        updatedFuturePerformance.add("An updated achievement");
+        updatedFuturePerformance.add("The last achievement has been removed");
+
+        String[] testSignatures = MainReviewRestPayLoad.get(0);
+
+        // 2nd Reviewer
+        testSignatures[0] = "true";
+        testSignatures[1] = "true";
+        testSignatures[2] = "true";
+
+        assertTrue(Authorise.updatePerformanceReview(miles, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
+        assertEquals("false", dp.fetchReview(getMainReviewDocId())[5]);
+        assertEquals("false", dp.fetchReview(getMainReviewDocId())[6]);
+        assertEquals("true", dp.fetchReview(getMainReviewDocId())[7]);
+
+        // Reset
+        testSignatures[0] = "false";
+        testSignatures[1] = "false";
+        testSignatures[2] = "false";
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, testSignatures), PastPerformances.get(0), FuturePerformances.get(0));
+        testSignatures[0] = "true";
+        testSignatures[1] = "true";
+        testSignatures[2] = "true";
+
+        // Reviewer 1
+        assertTrue(Authorise.updatePerformanceReview(itManager, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
+        assertEquals("false", dp.fetchReview(getMainReviewDocId())[5]);
+        assertEquals("true", dp.fetchReview(getMainReviewDocId())[6]);
+        assertEquals("false", dp.fetchReview(getMainReviewDocId())[7]);
+
+        testSignatures[0] = "false";
+        testSignatures[1] = "false";
+        testSignatures[2] = "false";
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, testSignatures), PastPerformances.get(0), FuturePerformances.get(0));
+        testSignatures[0] = "true";
+        testSignatures[1] = "true";
+        testSignatures[2] = "true";
+
+        // Reviewee
+        assertTrue(Authorise.updatePerformanceReview(itEmployee, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
+        assertEquals("true", dp.fetchReview(getMainReviewDocId())[5]);
+        assertEquals("false", dp.fetchReview(getMainReviewDocId())[6]);
+        assertEquals("false", dp.fetchReview(getMainReviewDocId())[7]);
+
+    }
+
+    @Test
+    void updatePerformanceReviewReadOnly()
+    {
+        dp = new DatabaseParser();
+        setupReviewMainMandatoryPayloads("ite123");
+        setupReviewMainOptionalPayloads();
+        setupPastPerformances();
+        setupFuturePerformances();
+
+        // Create a review
+        String[] MainDoc = new String[5];
+        MainDoc[0] = MainReviewCreatePayload.get(0)[0];
+        MainDoc[1] = MainReviewCreatePayload.get(0)[1];
+        MainDoc[2] = MainReviewCreatePayload.get(0)[2];
+        MainDoc[3] = dp.fetchDirectSupervisor("ite123");
+        MainDoc[4] = MainReviewCreatePayload.get(0)[3];
+        dp.createReview(MainDoc);
+
+        // Set all signatures to be true
+        String[] testSignatures = MainReviewRestPayLoad.get(0);
+        testSignatures[0] = "true";
+        testSignatures[1] = "true";
+        testSignatures[2] = "true";
+        dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, testSignatures), PastPerformances.get(0), FuturePerformances.get(0));
+
+        // Update Past Performance
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        updatedPastPerformance.add(new String[] { "An updated objective", "With an updated achievement"} );
+        updatedPastPerformance.add(new String[] { "The last objective and achievement" , " have been deleted"});
+
+        // Update Future Performance
+        ArrayList<String> updatedFuturePerformance = new ArrayList<String>();
+        updatedFuturePerformance.add("An updated achievement");
+        updatedFuturePerformance.add("The last achievement has been removed");
+
+        assertFalse(Authorise.updatePerformanceReview(itManager, joinArrays(MainDoc, MainReviewRestPayLoad.get(0)), updatedPastPerformance, updatedFuturePerformance));
+    }
 
 
 

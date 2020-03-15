@@ -232,46 +232,49 @@ public class Authorise
     {
         String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
         String[] currentMainDocument = dp.fetchReview(docId);
-        pastPerformance = dp.fetchPastPerformance(docId);
-        futurePerformance = dp.fetchFuturePerformance(docId);
-
-        for (int i = meetingDateIndex; i < currentMainDocument.length-1; i++)
-        {
-            // Are there differences in the main document?
-            if (!currentMainDocument[i].equals(updatedDocument[i]))
-            {
-                break;
-            }
-            // Are there differences in the future Performance section?
-            if (!futurePerformance.equals(updatedFuturePerformance))
-            {
-                break;
-            }
-        }
 
         // Only allow users to sign their own signature box
-        if (dp.isReviewee(docId, user.getEmployeeId()) && updatedDocument[revieweeSignatureIndex] != null)
+        if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && !updatedDocument[revieweeSignatureIndex].equals("false"))
         {
-            currentMainDocument[revieweeSignatureIndex] = updatedDocument[revieweeSignatureIndex];
+            System.out.println("Reviewee signature accepted");
         }
-        // If this Reviewer is the reviewee's Line Manager -> first reviewer
-        else if (dp.isReviewer(docId, user.getEmployeeId()) && user.getDirectSupervisor().equals(dp.fetchDirectSupervisor(currentMainDocument[revieweeIdIndex]))  && updatedDocument[reviewer1SignatureIndex] != null)
+        else
         {
-            currentMainDocument[reviewer1SignatureIndex] = updatedDocument[reviewer1SignatureIndex];
-        }
-        // If this Reviewer is just another Reviewer
-        else if (dp.isReviewer(docId, user.getEmployeeId()) && updatedDocument[reviewer2SignatureIndex] != null)
-        {
-            // 2nd Reviewer as they are not a line manager
-            currentMainDocument[reviewer2SignatureIndex] = updatedDocument[reviewer2SignatureIndex];
+            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[revieweeIdIndex] + "'s behalf");
         }
 
-        // Overwrite any changes in the main document
-        currentMainDocument = updatedDocument;
+        // If this Reviewer is the reviewee's Line Manager -> first reviewer
+        if (currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()) && !updatedDocument[reviewer1SignatureIndex].equals("false"))
+        {
+            System.out.println("Direct Manager's signature accepted");
+        }
+        else
+        {
+            updatedDocument[reviewer1SignatureIndex] = currentMainDocument[reviewer1SignatureIndex];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[firstReviewerIdIndex] + "'s behalf");
+        }
+
+        // If this Reviewer is just another Reviewer
+        if (currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()) && !updatedDocument[reviewer2SignatureIndex].equals("false"))
+        {
+            System.out.println("Second Reviewer's signature accepted");
+        }
+        else
+        {
+            updatedDocument[reviewer2SignatureIndex] = currentMainDocument[reviewer2SignatureIndex];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[secondReviewerIdIndex] + "'s behalf");
+        }
+
+        if (currentMainDocument[revieweeSignatureIndex].equals("true") && currentMainDocument[reviewer1SignatureIndex].equals("true") && currentMainDocument[reviewer2SignatureIndex].equals("true"))
+        {
+            System.out.println("This Review has already been completed and cannot be updated");
+            return false;
+        }
 
         if (AuthorisationAttempt(Action.Update, "Performance Review", user, new String[] { docId }))
         {
-            return dp.updateReview(docId, currentMainDocument, updatedPastPerformance, updatedFuturePerformance);
+            return dp.updateReview(docId, updatedDocument, updatedPastPerformance, updatedFuturePerformance);
         }
         return false;
     }
