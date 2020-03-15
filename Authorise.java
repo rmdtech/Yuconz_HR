@@ -375,7 +375,6 @@ public class Authorise
                                 return true;
                             }
                             System.out.println("You do not have the required permissions to access this file");
-                            System.out.println(user.getEmployeeId());
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                             return false;
                         }
