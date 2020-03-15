@@ -163,9 +163,9 @@ public class DatabaseParser
                 "    documentId string NOT NULL UNIQUE,\n" +
                 "    firstReviewerId string NOT NULL,\n" +
                 "    secondReviewerId string NOT NULL,\n" +
-                "    revieweeSigned boolean DEFAULT FALSE,\n" +
-                "    firstReviewerSigned boolean DEFAULT FALSE,\n" +
-                "    secondReviewerSigned boolean DEFAULT FALSE,\n" +
+                "    revieweeSigned date,\n" +
+                "    firstReviewerSigned date,\n" +
+                "    secondReviewerSigned date,\n" +
                 "    meetingDate date,\n" +
                 "    performanceSummary text,\n" +
                 "    reviewerComments text,\n" +
@@ -192,6 +192,29 @@ public class DatabaseParser
             else
             {
                 newPayload[x] = "'" + param + "'";
+            }
+            x++;
+        }
+        return newPayload;
+    }
+
+    String[] filterTruesToCurrentDate(String[] payload)
+    {
+        int x = 0;
+        String[] newPayload = new String[payload.length];
+        for (String param : payload)
+        {
+            if(param.equals("'true'"))
+            {
+                newPayload[x] = "CURRENT_DATE";
+            }
+            else if(param.equals("'false'"))
+            {
+                newPayload[x] = "NULL";
+            }
+            else
+            {
+                newPayload[x] = param;
             }
             x++;
         }
@@ -838,6 +861,7 @@ public class DatabaseParser
     boolean updateReview(String documentId, String[] payload, ArrayList<String[]> updatedPastPerformance, ArrayList<String> updatedFuturePerformance)
     {
         payload = filterNulls(payload);
+        payload = filterTruesToCurrentDate(payload);
         if(!sqlUpdate("UPDATE Review " +
                 String.format("SET firstReviewerId = %s, " +
                                 "secondReviewerId= %s, " +
