@@ -234,7 +234,7 @@ public class Authorise
         String[] currentMainDocument = dp.fetchReview(docId);
 
         // Only allow users to sign their own signature box
-        if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && !updatedDocument[revieweeSignatureIndex].equals("false"))
+        if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && updatedDocument[revieweeSignatureIndex] != null)
         {
             System.out.println("Reviewee signature accepted");
         }
@@ -245,7 +245,7 @@ public class Authorise
         }
 
         // If this Reviewer is the reviewee's Line Manager -> first reviewer
-        if (currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()) && !updatedDocument[reviewer1SignatureIndex].equals("false"))
+        if (currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()) && updatedDocument[reviewer1SignatureIndex] != null)
         {
             System.out.println("Direct Manager's signature accepted");
         }
@@ -256,7 +256,7 @@ public class Authorise
         }
 
         // If this Reviewer is just another Reviewer
-        if (currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()) && !updatedDocument[reviewer2SignatureIndex].equals("false"))
+        if (currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()) && updatedDocument[reviewer2SignatureIndex] != null)
         {
             System.out.println("Second Reviewer's signature accepted");
         }
@@ -266,7 +266,7 @@ public class Authorise
             System.out.println("Cannot overwrite signature on " + currentMainDocument[secondReviewerIdIndex] + "'s behalf");
         }
 
-        if (currentMainDocument[revieweeSignatureIndex].equals("true") && currentMainDocument[reviewer1SignatureIndex].equals("true") && currentMainDocument[reviewer2SignatureIndex].equals("true"))
+        if (currentMainDocument[revieweeSignatureIndex] != null && currentMainDocument[reviewer1SignatureIndex] != null && currentMainDocument[reviewer2SignatureIndex] != null)
         {
             System.out.println("This Review has already been completed and cannot be updated");
             return false;
@@ -416,7 +416,7 @@ public class Authorise
                             {
                                 String[] content = dp.fetchReview(payload[0]);
                                 // Has this already been signed off?
-                                if (content[revieweeSignatureIndex].equals("true") && content[reviewer1SignatureIndex].equals("true") && content[reviewer2SignatureIndex].equals("true"))
+                                if (content[revieweeSignatureIndex] != null && content[reviewer1SignatureIndex] != null && content[reviewer2SignatureIndex] != null)
                                 {
                                     System.out.println("Changes to this review are not allowed as it has been signed off already");
                                     dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);

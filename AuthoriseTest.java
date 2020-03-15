@@ -2,6 +2,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -351,19 +353,19 @@ class AuthoriseTest {
         String[] testSignatures = MainReviewRestPayLoad.get(0);
 
         // Reviewee
-        testSignatures[0] = "true";
+        testSignatures[0] = getCurrentDate();
         assertTrue(Authorise.updatePerformanceReview(itEmployee, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
-        assertEquals("true", dp.fetchReview(getMainReviewDocId())[5]);
+        assertEquals(getCurrentDate(), dp.fetchReview(getMainReviewDocId())[5]);
 
         // Reviewer 1
-        testSignatures[1] = "true";
+        testSignatures[1] = getCurrentDate();
         assertTrue(Authorise.updatePerformanceReview(itManager, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
-        assertEquals("true", dp.fetchReview(getMainReviewDocId())[6]);
+        assertEquals(getCurrentDate(), dp.fetchReview(getMainReviewDocId())[6]);
 
         // Reviewer 2
-        testSignatures[2] = "true";
+        testSignatures[2] = getCurrentDate();
         assertTrue(Authorise.updatePerformanceReview(miles, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
-        assertEquals("true", dp.fetchReview(getMainReviewDocId())[7]);
+        assertEquals(getCurrentDate(), dp.fetchReview(getMainReviewDocId())[7]);
     }
 
     @Test
@@ -398,44 +400,44 @@ class AuthoriseTest {
         String[] testSignatures = MainReviewRestPayLoad.get(0);
 
         // 2nd Reviewer
-        testSignatures[0] = "true";
-        testSignatures[1] = "true";
-        testSignatures[2] = "true";
+        testSignatures[0] = getCurrentDate();
+        testSignatures[1] = getCurrentDate();
+        testSignatures[2] = getCurrentDate();
+        System.out.println(testSignatures[2]);
 
         assertTrue(Authorise.updatePerformanceReview(miles, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
-        assertEquals("false", dp.fetchReview(getMainReviewDocId())[5]);
-        assertEquals("false", dp.fetchReview(getMainReviewDocId())[6]);
-        assertEquals("true", dp.fetchReview(getMainReviewDocId())[7]);
+        assertNull(dp.fetchReview(getMainReviewDocId())[5]);
+        assertNull(dp.fetchReview(getMainReviewDocId())[6]);
+        assertEquals(getCurrentDate(), dp.fetchReview(getMainReviewDocId())[7]);
 
         // Reset
-        testSignatures[0] = "false";
-        testSignatures[1] = "false";
-        testSignatures[2] = "false";
+        testSignatures[0] = null;
+        testSignatures[1] = null;
+        testSignatures[2] = null;
         dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, testSignatures), PastPerformances.get(0), FuturePerformances.get(0));
-        testSignatures[0] = "true";
-        testSignatures[1] = "true";
-        testSignatures[2] = "true";
+        testSignatures[0] = getCurrentDate();
+        testSignatures[1] = getCurrentDate();
+        testSignatures[2] = getCurrentDate();
 
         // Reviewer 1
         assertTrue(Authorise.updatePerformanceReview(itManager, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
-        assertEquals("false", dp.fetchReview(getMainReviewDocId())[5]);
-        assertEquals("true", dp.fetchReview(getMainReviewDocId())[6]);
-        assertEquals("false", dp.fetchReview(getMainReviewDocId())[7]);
+        assertNull(dp.fetchReview(getMainReviewDocId())[5]);
+        assertEquals(getCurrentDate(), dp.fetchReview(getMainReviewDocId())[6]);
+        assertNull(dp.fetchReview(getMainReviewDocId())[7]);
 
-        testSignatures[0] = "false";
-        testSignatures[1] = "false";
-        testSignatures[2] = "false";
+        testSignatures[0] = null;
+        testSignatures[1] = null;
+        testSignatures[2] = null;
         dp.updateReview(getMainReviewDocId(), joinArrays(MainDoc, testSignatures), PastPerformances.get(0), FuturePerformances.get(0));
-        testSignatures[0] = "true";
-        testSignatures[1] = "true";
-        testSignatures[2] = "true";
+        testSignatures[0] = getCurrentDate();
+        testSignatures[1] = getCurrentDate();
+        testSignatures[2] = getCurrentDate();
 
         // Reviewee
         assertTrue(Authorise.updatePerformanceReview(itEmployee, joinArrays(MainDoc, testSignatures), updatedPastPerformance, updatedFuturePerformance));
-        assertEquals("true", dp.fetchReview(getMainReviewDocId())[5]);
-        assertEquals("false", dp.fetchReview(getMainReviewDocId())[6]);
-        assertEquals("false", dp.fetchReview(getMainReviewDocId())[7]);
-
+        assertEquals(getCurrentDate(), dp.fetchReview(getMainReviewDocId())[5]);
+        assertNull(dp.fetchReview(getMainReviewDocId())[6]);
+        assertNull(dp.fetchReview(getMainReviewDocId())[7]);
     }
 
     @Test
@@ -599,6 +601,13 @@ class AuthoriseTest {
         // 1: Only contents containing null
         FuturePerformances.add(case2);
 
+    }
+
+    String getCurrentDate()
+    {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+        return dtf.format(now);
     }
 
     void writeReview()
