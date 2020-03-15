@@ -100,7 +100,8 @@ class AuthoriseTest {
     }
 
     @Test
-    void readPerformanceReview() {
+    void readPerformanceReview()
+    {
         // Create a review
         String[] mainDoc = insertSupervisor(mainDocMandatoryPayload.get(0));
         dp.createReview(mainDoc);
@@ -169,7 +170,8 @@ class AuthoriseTest {
     }
 
     @Test
-    void updatePerformanceReviewReviewee() {
+    void updatePerformanceReviewReviewee()
+    {
         // Create a review
         String[] mainDoc = insertSupervisor(mainDocMandatoryPayload.get(0));
         dp.createReview(mainDoc);
@@ -484,6 +486,12 @@ class AuthoriseTest {
         case3.add("The last achievement has been removed");
         futureperformanceDataCollection.add(case3);
     }
+
+    /*
+        THIS MARKS THE END OF THE ACTUAL TESTS
+        ANY METHODS BELOW THIS POINT
+        ARE SIMPLY SUPPORT METHODS
+     */
 
     String getCurrentDate()
     {
