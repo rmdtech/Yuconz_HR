@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
-
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DatabaseParserTest {
@@ -151,10 +152,7 @@ class DatabaseParserTest {
                 "69d76bd5a1ae48a284587698cf980fa6",
                 "hrm123",
                 "itm123",
-                "0",
-                "0",
-                "0",
-                null, null, null, null};
+                null, null, null, null, null, null, null};
         assertArrayEquals(completePayload, dp.fetchReview("69d76bd5a1ae48a284587698cf980fa6"));
         //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
     }
@@ -180,7 +178,7 @@ class DatabaseParserTest {
                 "69d76bd5a1ae48a284587698cf980fa6",
                 "hrm123",
                 "itm123",
-                "1", "1", "1",
+                "true", "true", "true",
                 "2020-03-22",
                 "They did good",
                 "They can improve",
@@ -200,7 +198,7 @@ class DatabaseParserTest {
                 "69d76bd5a1ae48a284587698cf980fa6",
                 "hrm123",
                 "itm123",
-                "1", "1", "1",
+                "true", "true", "true",
                 "2020-03-22",
                 "They did good",
                 "They can improve",
@@ -229,7 +227,7 @@ class DatabaseParserTest {
                 "69d76bd5a1ae48a284587698cf980fa6",
                 "hrm123",
                 "itm123",
-                "1", "1", "1",
+                "true", "true", "true",
                 "2020-03-22",
                 "They did good",
                 "They can improve",
@@ -260,7 +258,7 @@ class DatabaseParserTest {
                 "69d76bd5a1ae48a284587698cf980fa6",
                 "hrm123",
                 "itm123",
-                "1", "1", "1",
+                "true", "true", "true",
                 "2020-03-22",
                 "They did good",
                 "They can improve",
@@ -291,7 +289,7 @@ class DatabaseParserTest {
                 "69d76bd5a1ae48a284587698cf980fa6",
                 "hrm123",
                 "itm123",
-                "1", "1", "1",
+                "true", "true", "true",
                 "2020-03-22",
                 "They did good",
                 "They can improve",
@@ -322,7 +320,7 @@ class DatabaseParserTest {
                 "69d76bd5a1ae48a284587698cf980fa6",
                 "hrm123",
                 "itm123",
-                "1", "1", "1",
+                "true", "true", "true",
                 "2020-03-22",
                 "They did good",
                 "They can improve",
