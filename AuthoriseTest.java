@@ -3,6 +3,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -120,8 +121,14 @@ class AuthoriseTest {
         ArrayList<String> actualFuturePerformance = Authorise.readFuturePerformance(getMainReviewDocId());
 
         assertArrayEquals(MainDocUpdated, actualMainDoc);
+        System.out.println("MainDoc: " + Arrays.toString(MainDocUpdated));
+        System.out.println("actualDoc: " + Arrays.toString(actualMainDoc));
         assertEquals(expectedFuturePerformance, actualFuturePerformance);
+        System.out.println("expectedFuture: " + expectedFuturePerformance);
+        System.out.println("actualFuture: " + actualFuturePerformance);
         assertEquals(expectedPastPerformance, actualPastPerformance);
+        System.out.println("MainDoc: " + expectedPastPerformance);
+        System.out.println("actualDoc: " + actualPastPerformance);
     }
 
     @Test
@@ -144,8 +151,14 @@ class AuthoriseTest {
         ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
 
         assertArrayEquals(MainDocUpdated, actualMainDoc);
+        System.out.println("MainDoc: " + Arrays.toString(MainDocUpdated));
+        System.out.println("actualDoc: " + Arrays.toString(actualMainDoc));
         assertEquals(expectedFuturePerformance, actualFuturePerformance);
+        System.out.println("expectedFuture: " + expectedFuturePerformance);
+        System.out.println("actualFuture: " + actualFuturePerformance);
         assertEquals(expectedPastPerformance, actualPastPerformance);
+        System.out.println("MainDoc: " + expectedPastPerformance);
+        System.out.println("actualDoc: " + actualPastPerformance);
     }
 
     @Test
@@ -176,9 +189,15 @@ class AuthoriseTest {
         ArrayList<String[]> expectedPastPerformance = PastPerformances.get(0);
         ArrayList<String> expectedFuturePerformance = FuturePerformances.get(0);
 
-        assertNull(actualMainDoc);
-        assertNotEquals(expectedFuturePerformance, actualFuturePerformance);
-        assertNotEquals(expectedPastPerformance, actualPastPerformance);
+        assertArrayEquals(MainDocUpdated, actualMainDoc);
+        System.out.println("MainDoc: " + Arrays.toString(MainDocUpdated));
+        System.out.println("actualDoc: " + Arrays.toString(actualMainDoc));
+        assertEquals(expectedFuturePerformance, actualFuturePerformance);
+        System.out.println("expectedFuture: " + expectedFuturePerformance);
+        System.out.println("actualFuture: " + actualFuturePerformance);
+        assertEquals(expectedPastPerformance, actualPastPerformance);
+        System.out.println("MainDoc: " + expectedPastPerformance);
+        System.out.println("actualDoc: " + actualPastPerformance);
     }
 
     @Test
