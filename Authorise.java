@@ -82,6 +82,12 @@ public class Authorise
      */
     public static boolean createPerformanceReview(User user, String[] content)
     {
+        if (user == null)
+        {
+            System.out.println("No User provided");
+            return false;
+        }
+
         if (!dp.checkEmployeeId(content[revieweeIdIndex]))
         {
             System.out.println("Invalid employeeId provided");

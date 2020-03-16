@@ -58,6 +58,13 @@ class AuthoriseTest {
     }
 
     @Test
+    void createPerformanceReviewNoUser()
+    {
+        initialiseMainDocMandatoryPayload("ite123", "dir123");
+        assertFalse(Authorise.createPerformanceReview(null, mainDocMandatoryPayload.get(0)));
+    }
+
+    @Test
     void createPerformanceReviewNonHR()
     {
         initialiseMainDocMandatoryPayload("hre123", "dir123");
