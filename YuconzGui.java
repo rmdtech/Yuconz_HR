@@ -39,15 +39,31 @@ public class YuconzGui extends Application {
         return path;
     }
 
+    static boolean checkIsFirstBoot()
+    {
+        File dbFile = new File("./databases/yuconz.db");
+        return !dbFile.exists();
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Yuconz");
-        loader.setLocation(new URL(getAbsPath("Login.fxml")));
-        AnchorPane anchorPane = loader.<AnchorPane>load();
-        Scene loginScene = new Scene(anchorPane);
-        primaryStage.setScene(loginScene);
+        loader.setLocation(new URL(getAbsPath("Boot.fxml")));
         primaryStage.show();
         primaryStage.setResizable(false);
+
+        if(checkIsFirstBoot())
+        {
+            File dir = new File("./databases");
+            dir.mkdir();
+            DatabaseParser dp = new DatabaseParser();
+            dp.setupDatabase();
+            changeScene("InitialiseUser.fxml");
+        }
+        else
+        {
+            changeScene("Login.fxml");
+        }
     }
 
     public void changeScene(String fxml) throws Exception
@@ -69,11 +85,10 @@ public class YuconzGui extends Application {
 
         if(user != null)
         {
-
+            changeScene("ProfilePage.fxml");
         }
         else
         {
-            changeScene("ProfilePage.fxml");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error!");
             alert.setHeaderText("Login Form Error!");
