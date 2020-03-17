@@ -99,7 +99,12 @@ public class YuconzGui extends Application {
         alert.showAndWait();
     }
 
-    public boolean validatePersonalDetailsPaylod(String[] payload)
+    /**
+     * Checks that the data being entered in the Personal Details payload is valid data.
+     * @param payload the data being added
+     * @return
+     */
+    public boolean validatePersonalDetailsPayload(String[] payload)
     {
         if(payload[0].toString().length() != 6)
         {
@@ -118,7 +123,8 @@ public class YuconzGui extends Application {
             showError("Postcode Error!", "Please use a valid UK Postcode. Example: CT2 7SG");
             return false;
         }
-        if(payload[8].length() != 11)
+        Pattern telephonePattern = Pattern.compile("^(?:(?:\\(?(?:0(?:0|11)\\)?[\\s-]?\\(?|\\+)44\\)?[\\s-]?(?:\\(?0\\)?[\\s-]?)?)|(?:\\(?0))(?:(?:\\d{5}\\)?[\\s-]?\\d{4,5})|(?:\\d{4}\\)?[\\s-]?(?:\\d{5}|\\d{3}[\\s-]?\\d{3}))|(?:\\d{3}\\)?[\\s-]?\\d{3}[\\s-]?\\d{3,4})|(?:\\d{2}\\)?[\\s-]?\\d{4}[\\s-]?\\d{4}))(?:[\\s-]?(?:x|ext\\.?|\\#)\\d{3,4})?$");
+        if(!telephonePattern.matcher(payload[8].toString()).matches())
         {
             showError("Telephone Number Error!", "The telephone number must be 11 numbers long, including no spaces.");
             return false;
@@ -161,7 +167,7 @@ public class YuconzGui extends Application {
 
         String[] personalDetails = new String[]{employeeId, surname, firstName, dob, address, city, county, postcode, telephone, mobile, emergencyContact, emergencyContactNumber};
 
-        if(validatePersonalDetailsPaylod(personalDetails) && password != null)
+        if(validatePersonalDetailsPayload(personalDetails) && password != null)
         {
             //Initialise the database.
             File dir = new File("./databases");
