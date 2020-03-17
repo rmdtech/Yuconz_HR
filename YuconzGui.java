@@ -3,10 +3,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -16,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.sql.Array;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -104,7 +102,7 @@ public class YuconzGui extends Application {
         Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
         loader.setLocation(new URL(getAbsPath(fxml)));
         AnchorPane anchorPane = loader.<AnchorPane>load();
-        Scene scene = new Scene(anchorPane);
+        scene = new Scene(anchorPane);
         stage.setScene(scene);
         stage.show();
         stage.setResizable(false);
@@ -200,14 +198,35 @@ public class YuconzGui extends Application {
         }
     }
 
-    private void initialiseProfilePage()
+    public void initialiseProfilePage()
     {
         if(user.isLoggedIn())
         {
+            noPortalsLabel = (Label) scene.lookup("#noPortalsLabel");
+            portalsPane = (Pane) scene.lookup("#portalsPane");
             if(user.getDepartment() == Position.Department.HR)
             {
-                stage.getChildren().remove(noPortalsLabel);
+                noPortalsLabel.setVisible(false);
+                Button hrPortalButton = new Button();
+                hrPortalButton.setText("HR Portal");
+                hrPortalButton.setTranslateY(30);
+                hrPortalButton.setTranslateX(5);
+                portalsPane.getChildren().add(hrPortalButton);
             }
+            if(user.getRole().level > 0)
+            {
+                noPortalsLabel.setVisible(false);
+                Button managerPortalButton = new Button();
+                managerPortalButton.setText("Manager/Director Portal");
+                managerPortalButton.setTranslateY(30);
+                managerPortalButton.setTranslateX(5);
+                if(user.getDepartment() == Position.Department.HR)
+                {
+                    managerPortalButton.setTranslateX(80);
+                }
+                portalsPane.getChildren().add(managerPortalButton);
+            }
+
         }
     }
 
