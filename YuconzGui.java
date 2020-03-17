@@ -40,10 +40,12 @@ public class YuconzGui extends Application {
     public TextField initialisePasswordField;
     public Label noPortalsLabel;
     public Pane portalsPane;
+    public Label employeeIdLabel;
 
     //Initialising other  elements
     User user = null;
     FXMLLoader loader = new FXMLLoader();
+    Scene scene = null;
 
     public YuconzGui() {
 
@@ -85,6 +87,11 @@ public class YuconzGui extends Application {
         {
             changeScene("Login.fxml");
         }
+    }
+
+    public Scene getScene()
+    {
+        return scene;
     }
 
     /**
@@ -204,6 +211,16 @@ public class YuconzGui extends Application {
         }
     }
 
+    public void updatePersonalDetailsForm() {
+        String[] payload = Authorise.readPersonalDetails(user, user.getEmployeeId());
+
+        employeeIdLabel = (Label) scene.lookup("#employeeIdLabel");
+        employeeIdLabel.setText("Employee ID: " + user.getEmployeeId());
+
+        surnameField = (TextField) scene.lookup("#surnameField");
+        surnameField.setText(payload[1].toString());
+    }
+
     /**
      * Initialises the HR Director user which can then create additional users who can log into the sytsem.
      * @param actionEvent
@@ -248,6 +265,11 @@ public class YuconzGui extends Application {
                 showError("User Initialisation Error!", "Error initialising User, please check employeeID and password.");
             }
         }
+
+    }
+
+    public void unlockPersonalDetails(ActionEvent actionEvent)
+    {
 
     }
 }
