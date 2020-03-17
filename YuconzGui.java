@@ -393,4 +393,9 @@ public class YuconzGui extends Application {
     public void viewManagerPortal(ActionEvent actionEvent) throws Exception {
         changeScene("ManagerPortal.fxml");
     }
+
+    public void goHome(ActionEvent actionEvent) throws Exception {
+        changeScene("ProfilePage.fxml");
+        initialiseProfilePage();
+    }
 }
