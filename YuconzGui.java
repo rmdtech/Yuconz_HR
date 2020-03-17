@@ -377,4 +377,10 @@ public class YuconzGui extends Application {
             showError("Saving Error!", "Check the details you have entered!");
         }
     }
+
+    public void viewPersonalDetails(ActionEvent actionEvent) throws Exception {
+        changeScene("ViewPersonalDetails.fxml");
+        updatePersonalDetailsForm();
+
+    }
 }
