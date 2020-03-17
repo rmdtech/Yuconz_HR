@@ -71,7 +71,7 @@ public class Authenticate{
 
         if (dp.fetchRole(supervisor) != null)
         {
-            if ((dp.fetchRole(supervisor).level <= (Position.Role.Employee.level))
+            if (dp.fetchRole(supervisor).level <= Position.Role.Employee.level)
             {
                 System.out.println("Supervisor cannot be of the same or lower level than the User you are trying to add");
                 return false;
