@@ -493,8 +493,8 @@ public class DatabaseParser
     boolean createPersonalDetailsRecord(String[] payload, String newDocumentId)
     {
         if(!sqlUpdate("INSERT INTO Documents " +
-                "(documentId, creationTimestamp, lastAccessed) " +
-                String.format("VALUES ('%s', CURRENT_TIME, CURRENT_TIME);", newDocumentId)
+                "(documentId, creationTimestamp) " +
+                String.format("VALUES ('%s', CURRENT_TIME);", newDocumentId)
         ))
         {
             return false;
