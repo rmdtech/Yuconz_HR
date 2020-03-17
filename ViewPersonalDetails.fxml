@@ -24,56 +24,61 @@
                     <font>
                         <Font size="30.0" />
                     </font></Label>
-                <Button mnemonicParsing="false" onAction="#unlockPersonalDetails" text="Edit" translateY="25.0" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+                <Button fx:id="editPersonalDetailsButton" mnemonicParsing="false" onAction="#unlockPersonalDetails" text="Edit" translateY="25.0" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Button>
+            <Button fx:id="savePersonalDetailsButton" layoutX="422.0" layoutY="332.0" mnemonicParsing="false" onAction="#lockPersonalDetails" text="Save" translateY="25.0" visible="false" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
                 <TextField fx:id="surnameField" disable="true" promptText="Surname" translateY="-50.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets right="4.0" />
                     </GridPane.margin></TextField>
-                <TextField fx:id="firstNameField" promptText="First Name" translateY="-50.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                <TextField fx:id="firstNameField" disable="true" promptText="First Name" translateY="-50.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets left="4.0" />
                     </GridPane.margin></TextField>
-                <TextField fx:id="dobField" promptText="Date of Birth (YYYY-MM-DD)" translateY="-15.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <TextField fx:id="dobField" disable="true" promptText="Date of Birth (YYYY-MM-DD)" translateY="-15.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets right="4.0" />
                     </GridPane.margin>
                     <font>
                         <Font size="10.0" />
                     </font></TextField>
-                <TextField fx:id="addressField" promptText="House No. and address" translateY="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <TextField fx:id="addressField" disable="true" promptText="House No. and address" translateY="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets right="4.0" />
                     </GridPane.margin></TextField>
-                <TextField fx:id="cityField" promptText="Town/City" translateY="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                <TextField fx:id="cityField" disable="true" promptText="Town/City" translateY="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets left="4.0" />
                     </GridPane.margin></TextField>
-                <TextField fx:id="countyField" promptText="County" translateY="55.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <TextField fx:id="countyField" disable="true" promptText="County" translateY="55.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets right="4.0" />
                     </GridPane.margin></TextField>
-                <TextField fx:id="postcodeField" promptText="Postcode" translateY="55.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                <TextField fx:id="postcodeField" disable="true" promptText="Postcode" translateY="55.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets left="4.0" />
                     </GridPane.margin></TextField>
-                <TextField fx:id="telephoneField" promptText="Telephone Number" translateY="-45.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <TextField fx:id="telephoneField" disable="true" promptText="Telephone Number" translateY="-45.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <GridPane.margin>
                         <Insets right="4.0" />
                     </GridPane.margin>
                 </TextField>
-                <TextField fx:id="mobileField" promptText="Mobile Number" translateY="-45.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                <TextField fx:id="mobileField" disable="true" promptText="Mobile Number" translateY="-45.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                     <GridPane.margin>
                         <Insets left="4.0" />
                     </GridPane.margin>
                 </TextField>
-                <TextField fx:id="emergencyContactNameField" promptText="Emergency Contact Name" translateY="-10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <TextField fx:id="emergencyContactNameField" disable="true" promptText="Emergency Contact Name" translateY="-10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <GridPane.margin>
                         <Insets right="4.0" />
                     </GridPane.margin>
                     <font>
                         <Font size="10.0" />
                     </font></TextField>
-                <TextField fx:id="emergencyContactNumberField" promptText="Emergency Contact Number" translateY="-10.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                <TextField fx:id="emergencyContactNumberField" disable="true" promptText="Emergency Contact Number" translateY="-10.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                     <GridPane.margin>
                         <Insets left="4.0" />
                     </GridPane.margin>
