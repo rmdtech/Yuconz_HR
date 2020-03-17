@@ -14,13 +14,29 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Array;
 import java.util.List;
 
 
 public class YuconzGui extends Application {
 
+    //Initialising fields
     public TextField employeeIdField;
     public PasswordField passwordField;
+    public TextField firstNameField;
+    public TextField surnameField;
+    public TextField dobField;
+    public TextField addressField;
+    public TextField countyField;
+    public TextField emergencyContactNameField;
+    public TextField cityField;
+    public TextField postcodeField;
+    public TextField emergencyContactNumberField;
+    public TextField telephoneField;
+    public TextField mobileField;
+    public TextField initialisePasswordField;
+
+    //Initialising other  elements
     User user = null;
     FXMLLoader loader = new FXMLLoader();
 
@@ -77,6 +93,15 @@ public class YuconzGui extends Application {
         stage.setResizable(false);
     }
 
+    public void showError(String errorHeader, String errorContent)
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error!");
+        alert.setHeaderText(errorHeader);
+        alert.setContentText(errorContent);
+        alert.showAndWait();
+    }
+
     public void login(ActionEvent actionEvent) throws Exception {
 
         String employeeId = employeeIdField.getText();
@@ -89,13 +114,45 @@ public class YuconzGui extends Application {
         }
         else
         {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error!");
-            alert.setHeaderText("Login Form Error!");
-            alert.setContentText("Your username or password is incorrect!");
-            alert.showAndWait();
+            showError("Login Form Error!", "Your username or password is incorrect!");
         }
 
 
+    }
+
+    public void initialiseUser(ActionEvent actionEvent) throws Exception {
+        String employeeId = employeeIdField.getText();
+        String password = initialisePasswordField.getText();
+        String firstName = firstNameField.getText();
+        String surname = surnameField.getText();
+        String dob = dobField.getText();
+        String address = addressField.getText();
+        String city = cityField.getText();
+        String county = countyField.getText();
+        String postcode = postcodeField.getText();
+        String telephone = telephoneField.getText();
+        String mobile = mobileField.getText();
+        String emergencyContact = emergencyContactNameField.getText();
+        String emergencyContactNumber = emergencyContactNumberField.getText();
+
+
+        String[] PersonalDetails = new String[]{employeeId, surname, firstName, dob, address, city, county, postcode, telephone, mobile, emergencyContact, emergencyContactNumber};
+
+
+
+        if (Authenticate.addNewUser(employeeId, password, null, Position.Department.HR, Position.Role.Director))
+        {
+            user = Authenticate.login(employeeId, password);
+            if(Authorise.createPersonalDetailsRecord(user, PersonalDetails))
+            {
+                Authenticate.logout(user);
+                changeScene("Login.fxml");
+            }
+
+        }
+        else
+        {
+            showError("User Initialisation Error!", "Error initialising User, please check employeeID and password.");
+        }
     }
 }
