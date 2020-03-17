@@ -43,6 +43,8 @@ public class YuconzGui extends Application {
 
     //Initialising other  elements
     public static User user;
+    public Button managerPortalButton;
+    public Button hrPortalButton;
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
 
@@ -217,24 +219,23 @@ public class YuconzGui extends Application {
             if(user.getDepartment() == Position.Department.HR)
             {
                 noPortalsLabel.setVisible(false);
-                Button hrPortalButton = new Button();
-                hrPortalButton.setText("HR Portal");
+                Button hrPortalButton = (Button) scene.lookup("#hrPortalButton");
                 hrPortalButton.setTranslateY(30);
                 hrPortalButton.setTranslateX(5);
-                portalsPane.getChildren().add(hrPortalButton);
+                hrPortalButton.setVisible(true);
             }
             if(user.getRole().level > 0)
             {
                 noPortalsLabel.setVisible(false);
-                Button managerPortalButton = new Button();
-                managerPortalButton.setText("Manager/Director Portal");
+                Button managerPortalButton = (Button) scene.lookup("#managerPortalButton");
                 managerPortalButton.setTranslateY(30);
                 managerPortalButton.setTranslateX(5);
+
                 if(user.getDepartment() == Position.Department.HR)
                 {
                     managerPortalButton.setTranslateX(80);
                 }
-                portalsPane.getChildren().add(managerPortalButton);
+                managerPortalButton.setVisible(true);
             }
 
         }
@@ -378,9 +379,18 @@ public class YuconzGui extends Application {
         }
     }
 
-    public void viewPersonalDetails(ActionEvent actionEvent) throws Exception {
+    public void viewPersonalDetails(ActionEvent actionEvent) throws Exception
+    {
         changeScene("ViewPersonalDetails.fxml");
         updatePersonalDetailsForm();
+    }
 
+    public void viewHrPortal(ActionEvent actionEvent) throws Exception
+    {
+        changeScene("HrPortal.fxml");
+    }
+
+    public void viewManagerPortal(ActionEvent actionEvent) throws Exception {
+        changeScene("ManagerPortal.fxml");
     }
 }
