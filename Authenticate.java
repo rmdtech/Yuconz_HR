@@ -68,10 +68,14 @@ public class Authenticate{
             System.out.println("No supervisor with this ID exists");
             return false;
         }
-        if (dp.fetchRole(supervisor) != null && (dp.fetchRole(supervisor).level <= (Position.Role.Employee.level)))
+
+        if (dp.fetchRole(supervisor) != null)
         {
-            System.out.println("Supervisor cannot be of the same or lower level than the User you are trying to add");
-            return false;
+            if ((dp.fetchRole(supervisor).level <= (Position.Role.Employee.level))
+            {
+                System.out.println("Supervisor cannot be of the same or lower level than the User you are trying to add");
+                return false;
+            }
         }
 
         dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password, passwordSalt), supervisor ,department.label, role.label);
