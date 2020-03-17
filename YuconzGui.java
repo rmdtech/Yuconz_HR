@@ -383,4 +383,9 @@ public class YuconzGui extends Application {
         updatePersonalDetailsForm();
 
     }
+
+    public void goHome(ActionEvent actionEvent) throws Exception {
+        changeScene("ProfilePage.fxml");
+        initialiseProfilePage();
+    }
 }
