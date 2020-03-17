@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -36,10 +37,12 @@ public class YuconzGui extends Application {
     public TextField telephoneField;
     public TextField mobileField;
     public TextField initialisePasswordField;
+    public Label employeeIdLabel;
 
     //Initialising other  elements
     User user = null;
     FXMLLoader loader = new FXMLLoader();
+    Scene scene = null;
 
     public YuconzGui() {
 
@@ -83,6 +86,11 @@ public class YuconzGui extends Application {
         }
     }
 
+    public Scene getScene()
+    {
+        return scene;
+    }
+
     /**
      * Changes the scene the user can see to whatever is passed in via fxml
      * @param fxml a string in the format (document.fxml)
@@ -93,7 +101,7 @@ public class YuconzGui extends Application {
         Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
         loader.setLocation(new URL(getAbsPath(fxml)));
         AnchorPane anchorPane = loader.<AnchorPane>load();
-        Scene scene = new Scene(anchorPane);
+        scene = new Scene(anchorPane);
         stage.setScene(scene);
         stage.show();
         stage.setResizable(false);
@@ -180,12 +188,24 @@ public class YuconzGui extends Application {
 
         if(user != null)
         {
-            changeScene("ProfilePage.fxml");
+            changeScene("ViewPersonalDetails.fxml");
+            updatePersonalDetailsForm();
+            //changeScene("ProfilePage.fxml");
         }
         else
         {
             showError("Login Form Error!", "Your username or password is incorrect!");
         }
+    }
+
+    public void updatePersonalDetailsForm() {
+        String[] payload = Authorise.readPersonalDetails(user, user.getEmployeeId());
+
+        employeeIdLabel = (Label) scene.lookup("#employeeIdLabel");
+        employeeIdLabel.setText("Employee ID: " + user.getEmployeeId());
+
+        surnameField = (TextField) scene.lookup("#surnameField");
+        surnameField.setText(payload[1].toString());
     }
 
     /**
@@ -232,6 +252,11 @@ public class YuconzGui extends Application {
                 showError("User Initialisation Error!", "Error initialising User, please check employeeID and password.");
             }
         }
+
+    }
+
+    public void unlockPersonalDetails(ActionEvent actionEvent)
+    {
 
     }
 }
