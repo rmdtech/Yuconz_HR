@@ -43,7 +43,7 @@
                <children>
                   <ComboBox prefHeight="25.0" prefWidth="127.0" GridPane.columnSpan="2" GridPane.rowIndex="1" />
                   <Label alignment="CENTER" prefHeight="17.0" prefWidth="218.0" text="View My Details" translateY="-40.0" GridPane.columnSpan="3" />
-                  <Button alignment="TOP_CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="77.0" text="View" translateY="-60.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Button alignment="TOP_CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="77.0" text="View" translateY="-60.0" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#viewPersonalDetails" />
                   <Label alignment="CENTER" prefHeight="17.0" prefWidth="245.0" text="View My Performance Reviews" translateY="20.0" GridPane.columnSpan="3" />
                   <Button alignment="TOP_CENTER" layoutX="76.0" layoutY="65.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="77.0" text="View" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                </children>
