@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Array;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 public class YuconzGui extends Application {
@@ -70,10 +71,6 @@ public class YuconzGui extends Application {
 
         if(checkIsFirstBoot())
         {
-            File dir = new File("./databases");
-            dir.mkdir();
-            DatabaseParser dp = new DatabaseParser();
-            dp.setupDatabase();
             changeScene("InitialiseUser.fxml");
         }
         else
@@ -100,6 +97,33 @@ public class YuconzGui extends Application {
         alert.setHeaderText(errorHeader);
         alert.setContentText(errorContent);
         alert.showAndWait();
+    }
+
+    public boolean validatePersonalDetailsPaylod(String[] payload)
+    {
+        if(payload[0].toString().length() != 6)
+        {
+            showError("EmployeeID Error!", "The EmployeeID must be 6 Characters");
+            return false;
+        }
+        Pattern datePattern = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
+        if(!datePattern.matcher(payload[3].toString()).matches())
+        {
+            showError("Birth Date Error!", "The Date should fit the format YYYY-MM-DD");
+            return false;
+        }
+        Pattern postcodePattern = Pattern.compile("^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$");
+        if(!postcodePattern.matcher(payload[7].toString()).matches())
+        {
+            showError("Postcode Error!", "Please use a valid UK Postcode. Example: CT2 7SG");
+            return false;
+        }
+        if(payload[8].length() != 11)
+        {
+            showError("Telephone Number Error!", "The telephone number must be 11 numbers long, including no spaces.");
+            return false;
+        }
+        return true;
     }
 
     public void login(ActionEvent actionEvent) throws Exception {
@@ -135,24 +159,34 @@ public class YuconzGui extends Application {
         String emergencyContact = emergencyContactNameField.getText();
         String emergencyContactNumber = emergencyContactNumberField.getText();
 
+        String[] personalDetails = new String[]{employeeId, surname, firstName, dob, address, city, county, postcode, telephone, mobile, emergencyContact, emergencyContactNumber};
 
-        String[] PersonalDetails = new String[]{employeeId, surname, firstName, dob, address, city, county, postcode, telephone, mobile, emergencyContact, emergencyContactNumber};
-
-
-
-        if (Authenticate.addNewUser(employeeId, password, null, Position.Department.HR, Position.Role.Director))
+        if(validatePersonalDetailsPaylod(personalDetails) && password != null)
         {
-            user = Authenticate.login(employeeId, password);
-            if(Authorise.createPersonalDetailsRecord(user, PersonalDetails))
+            //Initialise the database.
+            File dir = new File("./databases");
+            dir.mkdir();
+            DatabaseParser dp = new DatabaseParser();
+            dp.setupDatabase();
+
+            if (Authenticate.addNewUser(employeeId, password, null, Position.Department.HR, Position.Role.Director))
             {
-                Authenticate.logout(user);
-                changeScene("Login.fxml");
-            }
+                user = Authenticate.login(employeeId, password);
+                if(Authorise.createPersonalDetailsRecord(user, personalDetails))
+                {
+                    Authenticate.logout(user);
+                    changeScene("Login.fxml");
+                }
 
+            }
+            else
+            {
+                showError("User Initialisation Error!", "Error initialising User, please check employeeID and password.");
+            }
         }
-        else
-        {
-            showError("User Initialisation Error!", "Error initialising User, please check employeeID and password.");
-        }
+
+
+
+
     }
 }
