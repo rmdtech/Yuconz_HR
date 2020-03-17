@@ -188,9 +188,7 @@ public class YuconzGui extends Application {
 
         if(user != null)
         {
-            changeScene("ViewPersonalDetails.fxml");
-            updatePersonalDetailsForm();
-            //changeScene("ProfilePage.fxml");
+            changeScene("ProfilePage.fxml");
         }
         else
         {
