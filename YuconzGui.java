@@ -41,7 +41,7 @@ public class YuconzGui extends Application {
     //Initialising other  elements
     public static User user;
     FXMLLoader loader = new FXMLLoader();
-    Scene scene;
+    public static Scene scene;
 
     public YuconzGui() {
 
@@ -87,8 +87,7 @@ public class YuconzGui extends Application {
 
     public Scene getScene()
     {
-        Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
-        return stage.getScene();
+        return scene;
     }
 
     /**
@@ -118,6 +117,15 @@ public class YuconzGui extends Application {
         alert.setTitle("Error!");
         alert.setHeaderText(errorHeader);
         alert.setContentText(errorContent);
+        alert.showAndWait();
+    }
+
+    public void showInfo(String infoHeader, String infoContent)
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(infoHeader);
+        alert.setContentText(infoContent);
         alert.showAndWait();
     }
 
@@ -328,6 +336,7 @@ public class YuconzGui extends Application {
             savePersonalDetailsButton.setVisible(false);
             System.out.println(user);
             Authorise.updatePersonalDetails(user, payload);
+            showInfo("Information", "User Details Updated Successfully!");
         }
         else
         {
