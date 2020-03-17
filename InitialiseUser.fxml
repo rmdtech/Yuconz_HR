@@ -24,65 +24,75 @@
                <font>
                   <Font size="30.0" />
                </font></Label>
-            <TextField promptText="Surname" translateY="-50.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextField fx:id="surnameField" promptText="Surname" translateY="-50.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="4.0" />
                </GridPane.margin></TextField>
-            <TextField promptText="First Name" translateY="-50.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <TextField fx:id="firstNameField" promptText="First Name" translateY="-50.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="4.0" />
                </GridPane.margin></TextField>
-            <TextField promptText="Employee ID" translateY="50.0" GridPane.columnIndex="1">
+            <TextField fx:id="employeeIdField" promptText="Employee ID" translateY="50.0" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets right="4.0" />
                </GridPane.margin></TextField>
-            <TextField promptText="Password" translateY="50.0" GridPane.columnIndex="2">
+            <TextField fx:id="initialisePasswordField" promptText="Password" translateY="50.0" GridPane.columnIndex="2">
                <GridPane.margin>
                   <Insets left="4.0" />
                </GridPane.margin></TextField>
-            <TextField promptText="Date of Birth (YYYY-MM-DD)" translateY="-15.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextField fx:id="dobField" promptText="Date of Birth (YYYY-MM-DD)" translateY="-15.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="4.0" />
                </GridPane.margin>
                <font>
                   <Font size="10.0" />
                </font></TextField>
-            <TextField promptText="House No. and address" translateY="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextField fx:id="addressField" promptText="House No. and address" translateY="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="4.0" />
                </GridPane.margin></TextField>
-            <TextField promptText="County" translateY="55.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextField fx:id="countyField" promptText="County" translateY="55.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="4.0" />
                </GridPane.margin></TextField>
-            <TextField promptText="Emergency Contact Name" translateY="-45.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <TextField fx:id="emergencyContactNameField" promptText="Emergency Contact Name" translateY="-10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets right="4.0" />
                </GridPane.margin>
                <font>
                   <Font size="10.0" />
                </font></TextField>
-            <TextField promptText="Town/City" translateY="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <TextField fx:id="cityField" promptText="Town/City" translateY="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="4.0" />
                </GridPane.margin></TextField>
-            <TextField promptText="Postcode" translateY="55.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <TextField fx:id="postcodeField" promptText="Postcode" translateY="55.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="4.0" />
                </GridPane.margin></TextField>
-            <TextField promptText="Emergency Contact Number" translateY="-45.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+            <TextField fx:id="emergencyContactNumberField" promptText="Emergency Contact Number" translateY="-10.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="4.0" />
                </GridPane.margin>
                <font>
                   <Font size="10.0" />
                </font></TextField>
-            <Button mnemonicParsing="false" text="Create" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+            <Button mnemonicParsing="false" onAction="#initialiseUser" text="Create" translateY="25.0" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
             <Label alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="300.0" text="Please Set Up Your Account" textAlignment="CENTER" GridPane.columnIndex="1">
                <font>
                   <Font size="20.0" />
                </font>
             </Label>
+            <TextField fx:id="telephoneField" promptText="Telephone Number" translateY="-45.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets right="4.0" />
+               </GridPane.margin>
+            </TextField>
+            <TextField fx:id="mobileField" promptText="Mobile Number" translateY="-45.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="4.0" />
+               </GridPane.margin>
+            </TextField>
          </children>
       </GridPane>
    </children>
