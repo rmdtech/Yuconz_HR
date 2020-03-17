@@ -49,9 +49,9 @@
                </children>
             </GridPane>
             <Label alignment="CENTER" prefHeight="17.0" prefWidth="293.0" text="My Portals" translateY="-60.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: DFDFDF;" GridPane.columnSpan="3" GridPane.rowIndex="2">
+            <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: DFDFDF;" GridPane.columnSpan="3" GridPane.rowIndex="2" fx:id="portalsPane">
                <children>
-                  <Label layoutX="7.0" layoutY="34.0" text="You do not have access to any portals"/>
+                  <Label layoutX="7.0" layoutY="34.0" text="You do not have access to any portals" fx:id="noPortalsLabel"/>
                </children>
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
