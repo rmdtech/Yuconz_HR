@@ -56,6 +56,10 @@ public class YuconzGui extends Application {
         return path;
     }
 
+    /**
+     * Checks if the database exists yet
+     * @return boolean
+     */
     static boolean checkIsFirstBoot()
     {
         File dbFile = new File("./databases/yuconz.db");
@@ -79,6 +83,11 @@ public class YuconzGui extends Application {
         }
     }
 
+    /**
+     * Changes the scene the user can see to whatever is passed in via fxml
+     * @param fxml a string in the format (document.fxml)
+     * @throws Exception
+     */
     public void changeScene(String fxml) throws Exception
     {
         Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
@@ -90,6 +99,11 @@ public class YuconzGui extends Application {
         stage.setResizable(false);
     }
 
+    /**
+     * Displays an error message to the user
+     * @param errorHeader String content of the header
+     * @param errorContent String content of the content box
+     */
     public void showError(String errorHeader, String errorContent)
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -153,6 +167,11 @@ public class YuconzGui extends Application {
         return true;
     }
 
+    /**
+     * Takes the user to their profile page if they entered correct details, displays an error if they did not.
+     * @param actionEvent
+     * @throws Exception
+     */
     public void login(ActionEvent actionEvent) throws Exception {
 
         String employeeId = employeeIdField.getText();
@@ -167,10 +186,13 @@ public class YuconzGui extends Application {
         {
             showError("Login Form Error!", "Your username or password is incorrect!");
         }
-
-
     }
 
+    /**
+     * Initialises the HR Director user which can then create additional users who can log into the sytsem.
+     * @param actionEvent
+     * @throws Exception
+     */
     public void initialiseUser(ActionEvent actionEvent) throws Exception {
         String employeeId = employeeIdField.getText();
         String password = initialisePasswordField.getText();
@@ -204,7 +226,6 @@ public class YuconzGui extends Application {
                     Authenticate.logout(user);
                     changeScene("Login.fxml");
                 }
-
             }
             else
             {
