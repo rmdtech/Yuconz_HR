@@ -1,4 +1,6 @@
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -40,11 +42,13 @@ public class YuconzGui extends Application {
     public Label employeeIdLabel;
     public Button editPersonalDetailsButton;
     public Button savePersonalDetailsButton;
+    public Button managerPortalButton;
+    public Button hrPortalButton;
+    public ComboBox reviewsDropdown;
 
     //Initialising other  elements
     public static User user;
-    public Button managerPortalButton;
-    public Button hrPortalButton;
+
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
 
@@ -214,6 +218,15 @@ public class YuconzGui extends Application {
     {
         if(user.isLoggedIn())
         {
+            ObservableList<Object> reviewObjs = FXCollections.observableArrayList();
+
+            for(rev:/**get all reviews*/)
+            {
+                reviewObjs.add(rev.dueDate); // something like this
+            }
+
+            reviewsDropdown.setItems(reviewObjs);
+
             noPortalsLabel = (Label) scene.lookup("#noPortalsLabel");
             portalsPane = (Pane) scene.lookup("#portalsPane");
             if(user.getDepartment() == Position.Department.HR)
