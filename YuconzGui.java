@@ -108,7 +108,17 @@ public class YuconzGui extends Application {
     {
         if(payload[0].toString().length() != 6)
         {
-            showError("EmployeeID Error!", "The EmployeeID must be 6 Characters");
+            showError("EmployeeID Error!", "The EmployeeID must be 6 Characters.");
+            return false;
+        }
+        if(payload[1].toString().length() < 1)
+        {
+            showError("Surname Error!", "You must enter your Surname.");
+            return false;
+        }
+        if(payload[2].toString().length() < 1)
+        {
+            showError("First Name Error!", "You must enter your First Name.");
             return false;
         }
         Pattern datePattern = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
@@ -127,6 +137,17 @@ public class YuconzGui extends Application {
         if(!telephonePattern.matcher(payload[8].toString()).matches())
         {
             showError("Telephone Number Error!", "The telephone number must be 11 numbers long, including no spaces.");
+            return false;
+        }
+        Pattern mobilePattern = Pattern.compile("((\\+44(\\s\\(0\\)\\s|\\s0\\s|\\s)?)|0)7\\d{3}(\\s)?\\d{6}");
+        if(!mobilePattern.matcher(payload[9].toString()).matches())
+        {
+            showError("Mobile Number Error!", "The mobile number must be 11 numbers long, including no spaces.");
+            return false;
+        }
+        if((!mobilePattern.matcher(payload[11].toString()).matches()) && (!telephonePattern.matcher(payload[11].toString()).matches()))
+        {
+            showError("Emergency Contact Number Error!", "The emergency contact number must be a valid UK phone number.");
             return false;
         }
         return true;
@@ -190,9 +211,6 @@ public class YuconzGui extends Application {
                 showError("User Initialisation Error!", "Error initialising User, please check employeeID and password.");
             }
         }
-
-
-
 
     }
 }
