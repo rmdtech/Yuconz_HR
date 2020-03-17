@@ -52,8 +52,8 @@
             <Pane fx:id="portalsPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: DFDFDF;" GridPane.columnSpan="3" GridPane.rowIndex="2">
                <children>
                   <Label fx:id="noPortalsLabel" layoutX="7.0" layoutY="34.0" text="You do not have access to any portals" />
-                  <Button layoutX="520.0" layoutY="30.0" mnemonicParsing="false" text="HR Portal" visible="false" fx:id="hrPortalButton" onAction="#viewHrPortal"/>
-                  <Button layoutX="441.0" layoutY="30.0" mnemonicParsing="false" text="Manager/Director Portal" visible="false" fx:id="managerPortalButton" onAction="#viewManagerPortal"/>
+                  <Button mnemonicParsing="false" text="HR Portal" visible="false" fx:id="hrPortalButton" onAction="#viewHrPortal"/>
+                  <Button mnemonicParsing="false" text="Manager/Director Portal" visible="false" fx:id="managerPortalButton" onAction="#viewManagerPortal"/>
                </children>
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
