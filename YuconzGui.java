@@ -4,9 +4,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -36,6 +38,8 @@ public class YuconzGui extends Application {
     public TextField telephoneField;
     public TextField mobileField;
     public TextField initialisePasswordField;
+    public Label noPortalsLabel;
+    public Pane portalsPane;
 
     //Initialising other  elements
     User user = null;
@@ -181,10 +185,22 @@ public class YuconzGui extends Application {
         if(user != null)
         {
             changeScene("ProfilePage.fxml");
+            initialiseProfilePage();
         }
         else
         {
             showError("Login Form Error!", "Your username or password is incorrect!");
+        }
+    }
+
+    private void initialiseProfilePage()
+    {
+        if(user.isLoggedIn())
+        {
+            if(user.getDepartment() == Position.Department.HR)
+            {
+                stage.getChildren().remove(noPortalsLabel);
+            }
         }
     }
 
