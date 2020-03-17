@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.sql.Array;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -39,11 +38,13 @@ public class YuconzGui extends Application {
     public Label noPortalsLabel;
     public Pane portalsPane;
     public Label employeeIdLabel;
+    public Button editPersonalDetailsButton;
+    public Button savePersonalDetailsButton;
 
     //Initialising other  elements
-    User user = null;
+    public static User user;
     FXMLLoader loader = new FXMLLoader();
-    Scene scene = null;
+    public static Scene scene;
 
     public YuconzGui() {
 
@@ -119,6 +120,15 @@ public class YuconzGui extends Application {
         alert.setTitle("Error!");
         alert.setHeaderText(errorHeader);
         alert.setContentText(errorContent);
+        alert.showAndWait();
+    }
+
+    public void showInfo(String infoHeader, String infoContent)
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(infoHeader);
+        alert.setContentText(infoContent);
         alert.showAndWait();
     }
 
@@ -234,10 +244,40 @@ public class YuconzGui extends Application {
         String[] payload = Authorise.readPersonalDetails(user, user.getEmployeeId());
 
         employeeIdLabel = (Label) scene.lookup("#employeeIdLabel");
-        employeeIdLabel.setText("Employee ID: " + user.getEmployeeId());
+        employeeIdLabel.setText("Employee ID: " + payload[0].toString());
 
         surnameField = (TextField) scene.lookup("#surnameField");
         surnameField.setText(payload[1].toString());
+
+        firstNameField = (TextField) scene.lookup("#firstNameField");
+        firstNameField.setText(payload[2].toString());
+
+        dobField = (TextField) scene.lookup("#dobField");
+        dobField.setText(payload[3].toString());
+
+        addressField = (TextField) scene.lookup("#addressField");
+        addressField.setText(payload[4].toString());
+
+        cityField = (TextField) scene.lookup("#cityField");
+        cityField.setText(payload[5].toString());
+
+        countyField = (TextField) scene.lookup("#countyField");
+        countyField.setText(payload[6].toString());
+
+        postcodeField = (TextField) scene.lookup("#postcodeField");
+        postcodeField.setText(payload[7].toString());
+
+        telephoneField = (TextField) scene.lookup("#telephoneField");
+        telephoneField.setText(payload[8].toString());
+
+        mobileField = (TextField) scene.lookup("#mobileField");
+        mobileField.setText(payload[9].toString());
+
+        emergencyContactNameField = (TextField) scene.lookup("#emergencyContactNameField");
+        emergencyContactNameField.setText(payload[10].toString());
+
+        emergencyContactNumberField = (TextField) scene.lookup("#emergencyContactNumberField");
+        emergencyContactNumberField.setText(payload[11].toString());
     }
 
     /**
@@ -289,6 +329,52 @@ public class YuconzGui extends Application {
 
     public void unlockPersonalDetails(ActionEvent actionEvent)
     {
+        surnameField.setDisable(false);
+        firstNameField.setDisable(false);
+        dobField.setDisable(false);
+        addressField.setDisable(false);
+        cityField.setDisable(false);
+        countyField.setDisable(false);
+        postcodeField.setDisable(false);
+        telephoneField.setDisable(false);
+        mobileField.setDisable(false);
+        emergencyContactNumberField.setDisable(false);
+        emergencyContactNameField.setDisable(false);
 
+        editPersonalDetailsButton = (Button) getScene().lookup("#editPersonalDetailsButton");
+        editPersonalDetailsButton.setVisible(false);
+        savePersonalDetailsButton = (Button) getScene().lookup("#savePersonalDetailsButton");
+        savePersonalDetailsButton.setVisible(true);
+    }
+
+    public void lockPersonalDetails(ActionEvent actionEvent) {
+        String id = employeeIdLabel.getText().substring(employeeIdLabel.getText().length() - 6);
+        String[] payload = new String[]{id, surnameField.getText(), firstNameField.getText(), dobField.getText(), addressField.getText(), cityField.getText(), countyField.getText(), postcodeField.getText(), telephoneField.getText(), mobileField.getText(), emergencyContactNameField.getText(), emergencyContactNumberField.getText()};
+
+        if(validatePersonalDetailsPayload(payload))
+        {
+            surnameField.setDisable(true);
+            firstNameField.setDisable(true);
+            dobField.setDisable(true);
+            addressField.setDisable(true);
+            cityField.setDisable(true);
+            countyField.setDisable(true);
+            postcodeField.setDisable(true);
+            telephoneField.setDisable(true);
+            mobileField.setDisable(true);
+            emergencyContactNumberField.setDisable(true);
+            emergencyContactNameField.setDisable(true);
+            editPersonalDetailsButton = (Button) getScene().lookup("#editPersonalDetailsButton");
+            editPersonalDetailsButton.setVisible(true);
+            savePersonalDetailsButton = (Button) getScene().lookup("#savePersonalDetailsButton");
+            savePersonalDetailsButton.setVisible(false);
+            System.out.println(user);
+            Authorise.updatePersonalDetails(user, payload);
+            showInfo("Information", "User Details Updated Successfully!");
+        }
+        else
+        {
+            showError("Saving Error!", "Check the details you have entered!");
+        }
     }
 }
