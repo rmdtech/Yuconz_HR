@@ -534,4 +534,31 @@ public class Authorise
         return revieweeReviews;
     }
 
+    /**
+     * Gets all reviews currently in the Database. Only to be used by HR Staff
+     * @param user The currently logged in member of HR
+     * @return An ArrayList containing all the keys required to fetch a review
+     */
+    public static ArrayList<String> getAllUsers(User user)
+    {
+        if (user.getDepartment().equals(Position.Department.HR))
+        {
+            return dp.fetchAllUsers();
+        }
+        else
+        {
+            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Read.toString(), "UI Restraint error - tried loading all Users", false);
+            return null;
+        }
+    }
+
+    /**
+     * Returns the full name of a given employee based on their name
+     * @param employeeId the employeeId of the user
+     * @return an array in form of [0] First Name [1] Last name
+     */
+    public static String[] getUserName(String employeeId)
+    {
+        return new String[]{ dp.fetchPersonalDetails(employeeId)[2], dp.fetchPersonalDetails(employeeId)[1]};
+    }
 }

@@ -6,6 +6,8 @@ public class User{
     private Position.Department department;
     private Position.Role role;
     private String directSupervisor;
+    private String firstName;
+    private String lastName;
     private DatabaseParser dp;
 
     /**
@@ -13,10 +15,12 @@ public class User{
      * @param employeeId String value given from GUI
      * @param sessionId SessionID for this user
      */
-    public User(String employeeId, String sessionId)
+    public User(String employeeId, String firstName, String lastName, String sessionId)
     {
         dp = new DatabaseParser();
         this.employeeId= employeeId;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.sessionId = sessionId;
         this.directSupervisor = null;
         department = null;
@@ -90,10 +94,6 @@ public class User{
         return employeeId;
     }
 
-    /**
-     * Accessor method for the department
-     * @return the department enum
-     */
     public Position.Department getDepartment()
     {
         return department;
