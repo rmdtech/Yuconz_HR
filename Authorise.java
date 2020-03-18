@@ -547,4 +547,14 @@ public class Authorise
             return null;
         }
     }
+
+    /**
+     * Returns the full name of a given employee based on their name
+     * @param employeeId the employeeId of the user
+     * @return an array in form of [0] First Name [1] Last name
+     */
+    public static String[] getUserName(String employeeId)
+    {
+        return new String[]{ dp.fetchPersonalDetails(employeeId)[2], dp.fetchPersonalDetails(employeeId)[1]};
+    }
 }

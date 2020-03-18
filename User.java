@@ -94,28 +94,6 @@ public class User{
         return employeeId;
     }
 
-    /**
-     * Accessor method for the first name
-     * @return the user's first name
-     */
-    public String getFirstName()
-    {
-        return firstName;
-    }
-
-    /**
-     * Accessor method for the last name
-     * @return the user's last name
-     */
-    public String getLastName()
-    {
-        return lastName;
-    }
-
-    /**
-     * Accessor method for the department
-     * @return the department enum
-     */
     public Position.Department getDepartment()
     {
         return department;

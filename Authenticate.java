@@ -19,8 +19,7 @@ public class Authenticate{
         {
             if (verifyPassword(employeeId, password))
             {
-                User newUser = new User(employeeId, dp.fetchPersonalDetails(employeeId)[2],
-                        dp.fetchPersonalDetails(employeeId)[1], UUID.randomUUID().toString().replace("-", ""));
+                User newUser = new User(employeeId, UUID.randomUUID().toString().replace("-", ""));
                 newUser.setDepartment(dp.fetchDepartment(employeeId));
                 newUser.setRole(dp.fetchRole(employeeId));
                 newUser.setDirectSupervisor(dp.fetchDirectSupervisor(newUser.getEmployeeId()));
