@@ -6,7 +6,6 @@ public class User{
     private Position.Department department;
     private Position.Role role;
     private String directSupervisor;
-    private DatabaseParser dp;
 
     /**
      * Constructor for User
@@ -15,7 +14,6 @@ public class User{
      */
     public User(String employeeId, String sessionId)
     {
-        dp = new DatabaseParser();
         this.employeeId= employeeId;
         this.sessionId = sessionId;
         this.directSupervisor = null;
@@ -60,18 +58,6 @@ public class User{
     }
 
 
-    /**
-     * This method calls the Authenticate class which will run checks if the password is valid and update this in
-     * the database accordingly
-     * @param updatedPassword The desired new password for this User
-     * @return Whether or not this operation was successful
-     */
-    /*
-    public boolean updatePassword(String updatedPassword)
-    {
-        return Authenticate.updatePassword(employeeId, updatedPassword, generateSalt());
-    }
-    */
     /**
      * Checks whether this User object is logged in
      * @return Logged in status

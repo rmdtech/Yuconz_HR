@@ -163,19 +163,62 @@ public class DatabaseParser
                 "    documentId string NOT NULL UNIQUE,\n" +
                 "    firstReviewerId string NOT NULL,\n" +
                 "    secondReviewerId string NOT NULL,\n" +
-                "    revieweeSigned boolean DEFAULT FALSE,\n" +
-                "    firstReviewerSigned boolean DEFAULT FALSE,\n" +
-                "    secondReviewerSigned boolean DEFAULT FALSE,\n" +
+                "    revieweeSigned date,\n" +
+                "    firstReviewerSigned date,\n" +
+                "    secondReviewerSigned date,\n" +
                 "    meetingDate date,\n" +
                 "    performanceSummary text,\n" +
                 "    reviewerComments text,\n" +
                 "    recommendation string,\n" +
                 "    PRIMARY KEY (revieweeId, dueBy),\n" +
-                "    FOREIGN KEY (revieweeId) REFERENCES User(UserId),\n" +
-                "    FOREIGN KEY (firstReviewerId) REFERENCES User(UserId),\n" +
-                "    FOREIGN KEY (secondReviewerId) REFERENCES User(UserId),\n" +
+                "    FOREIGN KEY (revieweeId) REFERENCES User(employeeId),\n" +
+                "    FOREIGN KEY (firstReviewerId) REFERENCES User(employeeId),\n" +
+                "    FOREIGN KEY (secondReviewerId) REFERENCES User(employeeId),\n" +
                 "    FOREIGN KEY (documentId) REFERENCES Documents(documentId)\n" +
                 ");\n");
+    }
+
+
+    String[] filterNulls(String[] payload)
+    {
+        int x = 0;
+        String[] newPayload = new String[payload.length];
+        for (String param : payload)
+        {
+            if(param == null)
+            {
+                newPayload[x] = "NULL";
+            }
+            else
+            {
+                newPayload[x] = "'" + param + "'";
+            }
+            x++;
+        }
+        return newPayload;
+    }
+
+    String[] filterTruesToCurrentDate(String[] payload)
+    {
+        int x = 0;
+        String[] newPayload = new String[payload.length];
+        for (String param : payload)
+        {
+            if(param.equals("'true'"))
+            {
+                newPayload[x] = "CURRENT_DATE";
+            }
+            else if(param.equals("'false'"))
+            {
+                newPayload[x] = "NULL";
+            }
+            else
+            {
+                newPayload[x] = param;
+            }
+            x++;
+        }
+        return newPayload;
     }
 
     /**
@@ -187,13 +230,14 @@ public class DatabaseParser
      * @param role the role of the new employee
      * @return whether or not the operation has been successful
      */
-    boolean newEmployee(String employeeId, String salt, String hashedPassword, String department, String role)
+    boolean newEmployee(String employeeId, String salt, String hashedPassword, String directSupervisor, String department, String role)
     {
         if (!checkEmployeeId(employeeId))
         {
+            String[] payload = filterNulls(new String[]{employeeId, hashedPassword, salt, role, department, directSupervisor});
             sqlUpdate("INSERT INTO User" +
-                    "(employeeID, hashedPassword, salt, role, department)" +
-                    String.format("VALUES ('%s', '%s', '%s', '%s', '%s');", employeeId, hashedPassword, salt, role, department)
+                    "(employeeID, hashedPassword, salt, role, department, directSupervisor)" +
+                    String.format("VALUES (%s, %s, %s, %s, %s, %s);", payload[0], payload[1], payload[2], payload[3], payload[4], payload[5])
             );
             return true;
         }
@@ -317,13 +361,21 @@ public class DatabaseParser
         );
         try
         {
-            result.next(); // only ever be one result, while loop not required
-            String role = result.getString("role");
-            result.close();
-            stmt.close();
-            // if (roleEnum == null)
-            // This means there is a typo in the Database
-            return Position.Role.valueOf(role);
+            if(result.next()) // only ever be one result, while loop not required
+            {
+                String role = result.getString("role");
+                result.close();
+                stmt.close();
+                // if (roleEnum == null)
+                // This means there is a typo in the Database
+                return Position.Role.valueOf(role);
+            }
+            else
+            {
+                result.close();
+                stmt.close();
+                return null;
+            }
         }
         catch (SQLException e)
         {
@@ -357,6 +409,31 @@ public class DatabaseParser
             e.printStackTrace();
             return null; // keep compiler happy
         }
+    }
+
+    /**
+     * returns an ArrayList of all employeeIds in the database
+     * @return payload of employeeIds
+     */
+    ArrayList<String> fetchAllUsers()
+    {
+        ArrayList<String> payload = new ArrayList<>();
+        sqlRead("SELECT employeeId FROM User");
+
+        try
+        {
+            while(result.next())
+            {
+                payload.add(result.getString("employeeId"));
+            }
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     /**
@@ -441,8 +518,8 @@ public class DatabaseParser
     boolean createPersonalDetailsRecord(String[] payload, String newDocumentId)
     {
         if(!sqlUpdate("INSERT INTO Documents " +
-                "(documentId, creationTimestamp, lastAccessed) " +
-                String.format("VALUES ('%s', CURRENT_TIME, CURRENT_TIME);", newDocumentId)
+                "(documentId, creationTimestamp) " +
+                String.format("VALUES ('%s', CURRENT_TIME);", newDocumentId)
         ))
         {
             return false;
@@ -580,15 +657,15 @@ public class DatabaseParser
     {
         if(!sqlUpdate("INSERT INTO Documents " +
                 "(documentId, creationTimestamp) " +
-                String.format("VALUES ('%s', CURRENT_TIME", payload[4]))
+                String.format("VALUES ('%s', CURRENT_TIME)", payload[2]))
         )
         {
             return false;
         }
 
         return sqlUpdate("INSERT INTO Review " +
-                "(revieweeId, dueBy, firstReviewerId, secondReviewerId, documentId)" +
-                String.format("'%s', %s, '%s', '%s', '%s'", payload[0], payload[1], payload[2], payload[3], payload[4]));
+                "(revieweeId, dueBy, documentId, firstReviewerId, secondReviewerId)" +
+                String.format("VALUES ('%s', '%s', '%s', '%s', '%s')", payload[0], payload[1], payload[2], payload[3], payload[4]));
     }
 
     /**
@@ -808,16 +885,18 @@ public class DatabaseParser
      */
     boolean updateReview(String documentId, String[] payload, ArrayList<String[]> updatedPastPerformance, ArrayList<String> updatedFuturePerformance)
     {
+        payload = filterNulls(payload);
+        payload = filterTruesToCurrentDate(payload);
         if(!sqlUpdate("UPDATE Review " +
-                String.format("SET firstReviewerId = '%s', " +
-                                "secondReviewerId= '%s', " +
-                                "revieweeSigned = '%s', " +
-                                "firstReviewerSigned = '%s', " +
-                                "secondReviewerSigned = '%s', " +
-                                "meetingDate = '%s', " +
-                                "performanceSummary = '%s', " +
-                                "reviewerComments = '%s', " +
-                                "recommendation = '%s' " +
+                String.format("SET firstReviewerId = %s, " +
+                                "secondReviewerId= %s, " +
+                                "revieweeSigned = %s, " +
+                                "firstReviewerSigned = %s, " +
+                                "secondReviewerSigned = %s, " +
+                                "meetingDate = %s, " +
+                                "performanceSummary = %s, " +
+                                "reviewerComments = %s, " +
+                                "recommendation = %s " +
                                 "WHERE documentId = '%s'",
                         payload[3], payload[4], payload[5], payload[6], payload[7], payload[8],
                         payload[9], payload[10], payload[11], documentId
@@ -827,7 +906,7 @@ public class DatabaseParser
             return false;
         }
 
-        if(!sqlUpdate("DELETE * FROM PastPerformance " +
+        if(!sqlUpdate("DELETE FROM PastPerformance " +
                 String.format("WHERE documentId = '%s'", documentId))
         ) // records must be deleted before being updated as row may be removed during editing
         {
@@ -846,7 +925,7 @@ public class DatabaseParser
             i++;
         }
 
-        if(!sqlUpdate("DELETE * FROM FuturePerformance " +
+        if(!sqlUpdate("DELETE FROM FuturePerformance " +
                 String.format("WHERE documentId = '%s'", documentId))
         ) // records must be deleted before being updated as row may be removed during editing
         {
@@ -856,7 +935,7 @@ public class DatabaseParser
         i = 0;
         for(String record : updatedFuturePerformance)
         {
-            if(!sqlUpdate("INSERT INTO PastPerformance " +
+            if(!sqlUpdate("INSERT INTO FuturePerformance " +
                     "(documentId, num, objective) " +
                     String.format("VALUES ('%s', %d, '%s')", documentId, i, record)))
             {
@@ -866,5 +945,34 @@ public class DatabaseParser
         }
 
         return true;
+    }
+
+    /**
+     * fetches all the pairs of employeeIds and dueBys for reviews in the database
+     * @return payload of pairs (String Arrays) of employeeIds and dueBys
+     */
+    ArrayList<String[]> fetchAllReviewKeys()
+    {
+        ArrayList<String[]> payload = new ArrayList<>();
+        sqlRead("SELECT revieweeId, dueBy FROM Review");
+
+        try
+        {
+            while(result.next())
+            {
+                String[] pair = new String[2];
+
+                pair[0] = result.getString("revieweeId");
+                pair[1] = result.getString("dueBy");
+                payload.add(pair);
+            }
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 }
