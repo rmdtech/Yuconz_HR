@@ -465,4 +465,70 @@ public class Authorise
         dp.recordAuthorisationAttempt("User that was not logged in", action.toString(), null, null);
         return false;
     }
+
+    /**
+     * Gets all reviews currently in the Database. Only to be used by HR Staff
+     * @param user The currently logged in member of HR
+     * @return An ArrayList containing all the keys required to fetch a review
+     */
+    public static ArrayList<String[]> getAllReviews(User user)
+    {
+        if (user.getDepartment().equals(Position.Department.HR))
+        {
+            return dp.fetchAllReviewKeys();
+        }
+        else
+        {
+            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Read.toString(), "UI Restraint error - tried loading all Reviews", false);
+            return null;
+        }
+    }
+
+    /**
+     * Returns all reviews where a User is registered as a Reviewer (only to be used by managers or above)
+     * @param user
+     * @return an ArrayList containing all the keys required to fetch a certain review
+     */
+    public static ArrayList<String[]> getReviewsAsReviewer(User user)
+    {
+        ArrayList<String[]> allReviews = dp.fetchAllReviewKeys();
+        ArrayList<String[]> reviewerReviews = new ArrayList<>();
+        if (user.getRole().level > 0)
+        {
+            for (int i = 0; i < allReviews.size(); i++)
+            {
+                String docId = dp.fetchReviewDocumentId(allReviews.get(i)[0], allReviews.get(i)[1]);
+                if (dp.isReviewer(docId, user.getEmployeeId()))
+                {
+                    reviewerReviews.add(allReviews.get(i));
+                }
+            }
+        }
+        else
+        {
+            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Read.toString(), "UI Error - tried accessing all reviews where User is a Reviewer", false);
+        }
+        return reviewerReviews;
+    }
+
+    /**
+     * Returns all reviews of a certain User
+     * @param user the User currently logged in, trying to read their own reviews
+     * @return an ArrayList containing all the keys fetch all relevant reviews
+     */
+    public static ArrayList<String[]> getReviewsAsReviewee(User user)
+    {
+        ArrayList<String[]> allReviews = dp.fetchAllReviewKeys();
+        ArrayList<String[]> revieweeReviews = new ArrayList<>();
+
+        for (int i = 0; i < allReviews.size(); i++)
+        {
+            String docId = dp.fetchReviewDocumentId(allReviews.get(i)[0], allReviews.get(i)[1]);
+            if (dp.isReviewee(docId, user.getEmployeeId()))
+            {
+                revieweeReviews.add(allReviews.get(i));
+            }
+        }
+        return revieweeReviews;
+    }
 }
