@@ -412,6 +412,31 @@ public class DatabaseParser
     }
 
     /**
+     * returns an ArrayList of all employeeIds in the database
+     * @return payload of employeeIds
+     */
+    ArrayList<String> fetchAllUsers()
+    {
+        ArrayList<String> payload = new ArrayList<>();
+        sqlRead("SELECT employeeId FROM User");
+
+        try
+        {
+            while(result.next())
+            {
+                payload.add(result.getString("employeeId"));
+            }
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    /**
      * creates a session for a newly logged in user
      * @param employeeId the employeeId of the user who's creating a session
      * @param sessionId the UUID generated for the session
