@@ -295,6 +295,7 @@ public class YuconzGui extends Application {
 
             recommendationLabel = (Label) scene.lookup("#recommendationLabel");
             recommendationLabel.setText("Recommendation: " + mainReview[11]);
+
         }
         else
         {
