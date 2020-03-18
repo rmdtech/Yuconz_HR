@@ -15,12 +15,10 @@ public class User{
      * @param employeeId String value given from GUI
      * @param sessionId SessionID for this user
      */
-    public User(String employeeId, String firstName, String lastName, String sessionId)
+    public User(String employeeId, String sessionId)
     {
         dp = new DatabaseParser();
         this.employeeId= employeeId;
-        this.firstName = firstName;
-        this.lastName = lastName;
         this.sessionId = sessionId;
         this.directSupervisor = null;
         department = null;
