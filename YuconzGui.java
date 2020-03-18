@@ -41,9 +41,15 @@ public class YuconzGui extends Application {
     public Button hrPortalButton;
     public ComboBox<String> reviewsDropdown;
     public Label reviewHeader;
+    public TextField revieweeTextField;
+    public TextField firstReviewerTextField;
+    public TextField secondReviewerTextField;
+    public TextField dueByTextField;
 
     //Initialising other  elements
     public static User user;
+
+
 
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
@@ -252,6 +258,15 @@ public class YuconzGui extends Application {
             }
 
         }
+    }
+
+    public void initialiseInitialiseReview(ActionEvent actionEvent) throws Exception {
+        changeScene("InitialiseReview.fxml");
+    }
+
+    public void doCreateReview() throws Exception {
+        Authorise.createPerformanceReview(user, new String[]{revieweeTextField.getText(), secondReviewerTextField.getText(), dueByTextField.getText()});
+        changeScene("HrPortal.fxml");
     }
 
     public void initialisePerformanceReview()
