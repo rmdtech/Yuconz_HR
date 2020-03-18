@@ -27,7 +27,7 @@ public class User{
      * This method returns a new Salt
      * @return new unique salt
      */
-    public static String generateSalt()
+    public static String generateUUID()
     {
         return  UUID.randomUUID().toString().replace("-", "");
     }
@@ -78,7 +78,7 @@ public class User{
      */
     public boolean isLoggedIn()
     {
-        return Authenticate.isUserLoggedIn(employeeId);
+        return Authenticate.isUserLoggedIn(this);
     }
 
     /**
