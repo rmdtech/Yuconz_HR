@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,7 +69,7 @@ public class Authorise
             {
                 return false;
             }
-            return dp.createPersonalDetailsRecord(details, User.generateSalt());
+            return dp.createPersonalDetailsRecord(details, User.generateUUID());
         }
         return false;
     }
@@ -83,43 +82,68 @@ public class Authorise
      */
     public static boolean createPerformanceReview(User user, String[] content)
     {
-        //0: revieweeId           		[String]
-        //1: dueBy                		[Date]
-        //2: firstReviewerId
-        //3: secondReviewerId     	    [String, empId]
-        //4: documentId          		[String]
-        if (!dp.checkEmployeeId(content[0]))
+        if (user == null)
+        {
+            System.out.println("No User provided");
+            return false;
+        }
+
+        if (!dp.checkEmployeeId(content[revieweeIdIndex]))
         {
             System.out.println("Invalid employeeId provided");
             return false;
         }
+        String firstReviewer = dp.fetchDirectSupervisor(content[revieweeIdIndex]);
+
+        if ((firstReviewer + content[secondReviewerIdIndex - 1]).contains(content[revieweeIdIndex]))
+        {
+            System.out.println("Reviewee can't also be a reviewer");
+            return false;
+        }
+
+        if (content[dueByIndex] == null)
+        {
+            System.out.println("Due-date has not been set");
+            return false;
+        }
 
         Pattern dateRegex = Pattern.compile("[2][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]");
-        Matcher dateMatch = dateRegex.matcher(content[1]);
+        Matcher dateMatch = dateRegex.matcher(content[dueByIndex]);
         if (!dateMatch.matches())
         {
             System.out.println("Date format provided is not valid\n   Use 'yyyy-mm-dd");
             return false;
         }
 
-        content[2] = user.getDirectSupervisor();
-        if (!dp.checkEmployeeId(content[2]))
+        if (content[documentIdIndex] == null)
         {
-            System.out.println(content[2] + " is no longer registered on the system");
+            System.out.println("No document ID has been provided");
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[3]))
+        if (!dp.checkEmployeeId(firstReviewer))
+        {
+            System.out.println(firstReviewer + " is no longer registered on the system");
+            return false;
+        }
+
+        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 1]))
         {
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
         }
+        String[] payload = new String[content.length + 1];
+        payload[0] = content[0];
+        payload[1] = content[1];
+        payload[2] = content[2];
+        payload[3] = firstReviewer;
+        payload[4] = content[3];
 
-        if (AuthorisationAttempt(Action.Create, "Performance Review", user, content))
+        if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
             // Generate a documentID for this review
-            content[4] = User.generateSalt();
-            return dp.createReview(content);
+            // content[documentIdIndex] = User.generateUUID();
+            return dp.createReview(payload);
         }
         return false;
     }
@@ -151,18 +175,29 @@ public class Authorise
      *         [1] PastPerformance
      *         [2] FuturePerformance
      */
-    public static Object[] readPerformanceReview(User user, String revieweeId, String dueBy)
+    public static boolean readPerformanceReview(User user, String revieweeId, String dueBy)
     {
         String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
         if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
         {
-            String[] mainDocument = dp.fetchReview(docId);
-            pastPerformance = dp.fetchPastPerformance(docId);
-            futurePerformance = dp.fetchFuturePerformance(docId);
-
-            return new Object[] { mainDocument, pastPerformance, futurePerformance };
+            return true;
         }
-        return null;
+        return false;
+    }
+
+    public static String[] readReviewMain(String documentId)
+    {
+        return dp.fetchReview(documentId);
+    }
+
+    public static ArrayList<String[]> readPastPerformance(String documentId)
+    {
+        return dp.fetchPastPerformance(documentId);
+    }
+
+    public static ArrayList<String> readFuturePerformance(String documentId)
+    {
+        return dp.fetchFuturePerformance(documentId);
     }
 
     /**
@@ -203,83 +238,49 @@ public class Authorise
     {
         String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
         String[] currentMainDocument = dp.fetchReview(docId);
-        pastPerformance = dp.fetchPastPerformance(docId);
-        futurePerformance = dp.fetchFuturePerformance(docId);
-
-        boolean justSigning = true;
-        for (int i = meetingDateIndex; i < currentMainDocument.length-1; i++)
-        {
-            // Are there differences in the main document?
-            if (!currentMainDocument[i].equals(updatedDocument[i]))
-            {
-                justSigning = false;
-                break;
-            }
-            // Are there differences in the future Performance section?
-            if (!futurePerformance.equals(updatedFuturePerformance))
-            {
-                justSigning = false;
-                break;
-            }
-        }
-
-        if (justSigning)
-        {
-            // Are there differences in the past Performance section?
-            for (int i = 0; i < pastPerformance.size(); i++)
-            {
-                if (!Arrays.equals(pastPerformance.get(i), updatedPastPerformance.get(i)))
-                {
-                    justSigning = false;
-                    break;
-                }
-            }
-
-            // Are there differences in the future Performance section?
-            for (int i = 0; i < futurePerformance.size(); i++)
-            {
-                if (!futurePerformance.get(i).equals(updatedFuturePerformance.get(i)))
-                {
-                    justSigning = false;
-                    break;
-                }
-            }
-        }
-
-        // If there are any signatures on this document, remove them as it will be updated and need to be reviewed again
-        if (!justSigning)
-        {
-            currentMainDocument[revieweeSignatureIndex] = null;
-            currentMainDocument[reviewer1SignatureIndex] = null;
-            currentMainDocument[reviewer2SignatureIndex] = null;
-        }
 
         // Only allow users to sign their own signature box
-        if (dp.isReviewee(docId, user.getEmployeeId()) && updatedDocument[revieweeSignatureIndex] != null)
+        if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && updatedDocument[revieweeSignatureIndex] != null)
         {
-            currentMainDocument[revieweeSignatureIndex] = updatedDocument[revieweeSignatureIndex];
+            System.out.println("Reviewee signature accepted");
         }
-        // If this Reviewer is the reviewee's Line Manager -> first reviewer
-        else if (dp.isReviewer(docId, user.getEmployeeId()) && user.getDirectSupervisor().equals(dp.fetchDirectSupervisor(currentMainDocument[revieweeIdIndex]))  && updatedDocument[reviewer1SignatureIndex] != null)
+        else
         {
-            currentMainDocument[reviewer1SignatureIndex] = updatedDocument[reviewer1SignatureIndex];
-        }
-        // If this Reviewer is just another Reviewer
-        else if (dp.isReviewer(docId, user.getEmployeeId()) && updatedDocument[reviewer2SignatureIndex] != null)
-        {
-            // 2nd Reviewer as they are not a line manager
-            currentMainDocument[reviewer2SignatureIndex] = updatedDocument[reviewer2SignatureIndex];
+            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[revieweeIdIndex] + "'s behalf");
         }
 
-        // Overwrite any changes in the main document
-        if (!justSigning)
+        // If this Reviewer is the reviewee's Line Manager -> first reviewer
+        if (currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()) && updatedDocument[reviewer1SignatureIndex] != null)
         {
-            currentMainDocument = updatedDocument;
+            System.out.println("Direct Manager's signature accepted");
+        }
+        else
+        {
+            updatedDocument[reviewer1SignatureIndex] = currentMainDocument[reviewer1SignatureIndex];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[firstReviewerIdIndex] + "'s behalf");
+        }
+
+        // If this Reviewer is just another Reviewer
+        if (currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()) && updatedDocument[reviewer2SignatureIndex] != null)
+        {
+            System.out.println("Second Reviewer's signature accepted");
+        }
+        else
+        {
+            updatedDocument[reviewer2SignatureIndex] = currentMainDocument[reviewer2SignatureIndex];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[secondReviewerIdIndex] + "'s behalf");
+        }
+
+        if (currentMainDocument[revieweeSignatureIndex] != null && currentMainDocument[reviewer1SignatureIndex] != null && currentMainDocument[reviewer2SignatureIndex] != null)
+        {
+            System.out.println("This Review has already been completed and cannot be updated");
+            return false;
         }
 
         if (AuthorisationAttempt(Action.Update, "Performance Review", user, new String[] { docId }))
         {
-            return dp.updateReview(docId, currentMainDocument, updatedPastPerformance, updatedFuturePerformance);
+            return dp.updateReview(docId, updatedDocument, updatedPastPerformance, updatedFuturePerformance);
         }
         return false;
     }
@@ -332,7 +333,7 @@ public class Authorise
                     {
                         if (user.getDepartment().equals(Position.Department.HR))
                         {
-                            if (payload[0] != null && dp.checkEmployeeId(payload[2]) && dp.checkEmployeeId(payload[3]))
+                            if (payload[revieweeIdIndex] != null && dp.checkEmployeeId(payload[firstReviewerIdIndex]) && dp.checkEmployeeId(payload[secondReviewerIdIndex]))
                             {
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
@@ -420,7 +421,7 @@ public class Authorise
                             {
                                 String[] content = dp.fetchReview(payload[0]);
                                 // Has this already been signed off?
-                                if (content[revieweeSignatureIndex].equals("true") && content[reviewer1SignatureIndex].equals("true") && content[reviewer2SignatureIndex].equals("true"))
+                                if (content[revieweeSignatureIndex] != null && content[reviewer1SignatureIndex] != null && content[reviewer2SignatureIndex] != null)
                                 {
                                     System.out.println("Changes to this review are not allowed as it has been signed off already");
                                     dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
@@ -466,4 +467,71 @@ public class Authorise
         dp.recordAuthorisationAttempt("User that was not logged in", action.toString(), null, null);
         return false;
     }
+
+    /**
+     * Gets all reviews currently in the Database. Only to be used by HR Staff
+     * @param user The currently logged in member of HR
+     * @return An ArrayList containing all the keys required to fetch a review
+     */
+    public static ArrayList<String[]> getAllReviews(User user)
+    {
+        if (user.getDepartment().equals(Position.Department.HR))
+        {
+            return dp.fetchAllReviewKeys();
+        }
+        else
+        {
+            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Read.toString(), "UI Restraint error - tried loading all Reviews", false);
+            return null;
+        }
+    }
+
+    /**
+     * Returns all reviews where a User is registered as a Reviewer (only to be used by managers or above)
+     * @param user
+     * @return an ArrayList containing all the keys required to fetch a certain review
+     */
+    public static ArrayList<String[]> getReviewsAsReviewer(User user)
+    {
+        ArrayList<String[]> allReviews = dp.fetchAllReviewKeys();
+        ArrayList<String[]> reviewerReviews = new ArrayList<>();
+        if (user.getRole().level > 0)
+        {
+            for (int i = 0; i < allReviews.size(); i++)
+            {
+                String docId = dp.fetchReviewDocumentId(allReviews.get(i)[0], allReviews.get(i)[1]);
+                if (dp.isReviewer(docId, user.getEmployeeId()))
+                {
+                    reviewerReviews.add(allReviews.get(i));
+                }
+            }
+        }
+        else
+        {
+            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Read.toString(), "UI Error - tried accessing all reviews where User is a Reviewer", false);
+        }
+        return reviewerReviews;
+    }
+
+    /**
+     * Returns all reviews of a certain User
+     * @param user the User currently logged in, trying to read their own reviews
+     * @return an ArrayList containing all the keys fetch all relevant reviews
+     */
+    public static ArrayList<String[]> getReviewsAsReviewee(User user)
+    {
+        ArrayList<String[]> allReviews = dp.fetchAllReviewKeys();
+        ArrayList<String[]> revieweeReviews = new ArrayList<>();
+
+        for (int i = 0; i < allReviews.size(); i++)
+        {
+            String docId = dp.fetchReviewDocumentId(allReviews.get(i)[0], allReviews.get(i)[1]);
+            if (dp.isReviewee(docId, user.getEmployeeId()))
+            {
+                revieweeReviews.add(allReviews.get(i));
+            }
+        }
+        return revieweeReviews;
+    }
+
 }
