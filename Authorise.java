@@ -78,6 +78,10 @@ public class Authorise
      * Creates a Review record. revieweeId and reviewers are mandatory fields
      * @param user the user logged in and trying to perform the action
      * @param content the initial, mandatory content for this review
+     *                [0] employeeId
+     *                [1] dueBy Date (yyyy-mm-dd)
+     *                [2] documentId (see User.generateUUID)
+     *                [3] Second Reviewer
      * @return whether the operation has been successful or not
      */
     public static boolean createPerformanceReview(User user, String[] content)
