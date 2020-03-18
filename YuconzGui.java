@@ -251,7 +251,8 @@ public class YuconzGui extends Application {
             {
                 reviewDatesForDisplay.add(rev[1]);
             }
-            reviewsDropdown = new ComboBox<>(reviewDatesForDisplay);
+            reviewsDropdown = (ComboBox<String>) scene.lookup("#reviewsDropdown");
+            reviewsDropdown.setItems(reviewDatesForDisplay);
 
             noPortalsLabel = (Label) scene.lookup("#noPortalsLabel");
             portalsPane = (Pane) scene.lookup("#portalsPane");
