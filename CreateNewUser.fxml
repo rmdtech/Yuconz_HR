@@ -11,8 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="YuconzGui">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="YuconzGui">
    <children>
       <GridPane prefHeight="401.0" prefWidth="601.0">
         <columnConstraints>
@@ -33,7 +32,7 @@
                         <Font size="30.0" />
                      </font>
                   </Label>
-                  <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="🏠" />
+                  <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#goHome" text="🏠" />
                </children>
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
