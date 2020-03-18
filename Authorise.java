@@ -561,4 +561,14 @@ public class Authorise
     {
         return new String[]{ dp.fetchPersonalDetails(employeeId)[2], dp.fetchPersonalDetails(employeeId)[1]};
     }
+
+    public static Position.Department getDepartment(String employeeId)
+    {
+        return dp.fetchDepartment(employeeId);
+    }
+
+    public static Position.Role getRole(String employeeId)
+    {
+        return dp.fetchRole(employeeId);
+    }
 }
