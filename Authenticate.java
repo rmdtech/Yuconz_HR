@@ -3,7 +3,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
 
 public class Authenticate{
     private static DatabaseParser dp = new DatabaseParser();
@@ -50,7 +49,7 @@ public class Authenticate{
      */
     public static boolean addNewUser(String employeeId, String password, String supervisor, Position.Department department, Position.Role role)
     {
-        String passwordSalt = User.generateSalt();
+        String passwordSalt = User.generateUUID();
 
         Matcher employeeIdMatcher = Pattern.compile("[a-z]{3}[0-9]{3}").matcher(employeeId);
         if (!employeeIdMatcher.matches())
@@ -68,14 +67,10 @@ public class Authenticate{
             System.out.println("No supervisor with this ID exists");
             return false;
         }
-
-        if (dp.fetchRole(supervisor) != null)
+        if (dp.fetchRole(supervisor) != null && dp.fetchRole(supervisor).level <= (Position.Role.Employee.level))
         {
-            if (dp.fetchRole(supervisor).level <= Position.Role.Employee.level)
-            {
-                System.out.println("Supervisor cannot be of the same or lower level than the User you are trying to add");
-                return false;
-            }
+            System.out.println("Supervisor cannot be of the same or lower level than the User you are trying to add");
+            return false;
         }
 
         dp.newEmployee(employeeId, passwordSalt, sha512Encrypt(password, passwordSalt), supervisor ,department.label, role.label);
