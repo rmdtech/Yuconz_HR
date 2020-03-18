@@ -78,6 +78,10 @@ public class Authorise
      * Creates a Review record. revieweeId and reviewers are mandatory fields
      * @param user the user logged in and trying to perform the action
      * @param content the initial, mandatory content for this review
+     *                [0] employeeId
+     *                [1] dueBy Date (yyyy-mm-dd)
+     *                [2] documentId (see User.generateUUID)
+     *                [3] Second Reviewer
      * @return whether the operation has been successful or not
      */
     public static boolean createPerformanceReview(User user, String[] content)
@@ -546,5 +550,25 @@ public class Authorise
             dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Read.toString(), "UI Restraint error - tried loading all Users", false);
             return null;
         }
+    }
+
+    /**
+     * Returns the full name of a given employee based on their name
+     * @param employeeId the employeeId of the user
+     * @return an array in form of [0] First Name [1] Last name
+     */
+    public static String[] getUserName(String employeeId)
+    {
+        return new String[]{ dp.fetchPersonalDetails(employeeId)[2], dp.fetchPersonalDetails(employeeId)[1]};
+    }
+
+    public static Position.Department getDepartment(String employeeId)
+    {
+        return dp.fetchDepartment(employeeId);
+    }
+
+    public static Position.Role getRole(String employeeId)
+    {
+        return dp.fetchRole(employeeId);
     }
 }
