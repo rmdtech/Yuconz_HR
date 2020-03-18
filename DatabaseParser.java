@@ -954,7 +954,7 @@ public class DatabaseParser
     ArrayList<String[]> fetchAllReviewKeys()
     {
         ArrayList<String[]> payload = new ArrayList<>();
-        sqlRead("SELECT employeeId, dueBy FROM Review");
+        sqlRead("SELECT revieweeId, dueBy FROM Review");
 
         try
         {
@@ -962,7 +962,7 @@ public class DatabaseParser
             {
                 String[] pair = new String[2];
 
-                pair[0] = result.getString("employeeId");
+                pair[0] = result.getString("revieweeId");
                 pair[1] = result.getString("dueBy");
                 payload.add(pair);
             }
