@@ -45,6 +45,7 @@ public class YuconzGui extends Application {
     public Button managerPortalButton;
     public Button hrPortalButton;
     public ComboBox reviewsDropdown;
+    public Label reviewHeader;
 
     //Initialising other  elements
     public static User user;
@@ -252,6 +253,13 @@ public class YuconzGui extends Application {
             }
 
         }
+    }
+
+    public void initialisePerformanceReview()
+    {
+        reviewHeader = (Label) scene.lookup("#reviewHeader");
+        reviewHeader.setText("Performance Review ( Insert Date )");
+
     }
 
     public void updatePersonalDetailsForm() {
