@@ -41,6 +41,10 @@ public class YuconzGui extends Application {
     public Button hrPortalButton;
     public ComboBox<String> reviewsDropdown;
     public Label reviewHeader;
+    public Label nameLabel;
+    public Label reviewer1Label;
+    public Label reviewer2Label;
+    public Label recommendationLabel;
     public TextField revieweeTextField;
     public TextField firstReviewerTextField;
     public TextField secondReviewerTextField;
@@ -48,8 +52,6 @@ public class YuconzGui extends Application {
 
     //Initialising other  elements
     public static User user;
-
-
 
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
@@ -260,6 +262,7 @@ public class YuconzGui extends Application {
         }
     }
 
+
     public void initialiseInitialiseReview(ActionEvent actionEvent) throws Exception {
         changeScene("InitialiseReview.fxml");
     }
@@ -269,10 +272,37 @@ public class YuconzGui extends Application {
         changeScene("HrPortal.fxml");
     }
 
-    public void initialisePerformanceReview()
+    public void initialisePerformanceReviewView(String revieweeId, String dueBy, String documentId)
     {
-        reviewHeader = (Label) scene.lookup("#reviewHeader");
-        reviewHeader.setText("Performance Review ( Insert Date )");
+        String[] mainReview = null;
+        if(Authorise.readPerformanceReview(user, revieweeId, dueBy))
+        {
+            mainReview = Authorise.readReviewMain(documentId);
+            reviewHeader = (Label) scene.lookup("#reviewHeader");
+            reviewHeader.setText("Performance Review (" + dueBy +")");
+
+            employeeIdLabel = (Label) scene.lookup("#employeeIdField");
+            employeeIdLabel.setText("Employee ID: " + revieweeId);
+
+            nameLabel = (Label) scene.lookup("#nameLabel");
+            nameLabel.setText("Name: " + Authorise.getUserName(revieweeId));
+
+            reviewer1Label = (Label) scene.lookup("#reviewer1Label");
+            reviewer1Label.setText("Reviewer 1: " + mainReview[3]);
+
+            reviewer2Label = (Label) scene.lookup("#reviewer2Label");
+            reviewer2Label.setText("Reviewer 2: " + mainReview[4]);
+
+            recommendationLabel = (Label) scene.lookup("#recommendationLabel");
+            recommendationLabel.setText("Recommendation: " + mainReview[11]);
+        }
+        else
+        {
+            showError("Permissions Error", "You do not have permission to view this document.");
+        }
+
+
+
 
     }
 

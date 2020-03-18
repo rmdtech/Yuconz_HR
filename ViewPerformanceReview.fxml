@@ -34,22 +34,22 @@
                   <Font size="30.0" />
                </font>
             </Label>
-            <Label text="EmployeeID:" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
+            <Label fx:id="employeeIdLabel" text="EmployeeID:" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
                <padding>
                   <Insets right="4.0" />
                </padding>
             </Label>
-            <Label text="Name:" GridPane.columnIndex="2">
+            <Label fx:id="nameLabel" text="Name:" GridPane.columnIndex="2">
                <padding>
                   <Insets left="4.0" />
                </padding>
             </Label>
-            <Label alignment="BOTTOM_RIGHT" contentDisplay="CENTER" layoutX="240.0" layoutY="69.0" text="Reviewer 1: " textAlignment="RIGHT" translateY="20.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
+            <Label fx:id="reviewer1Label" alignment="BOTTOM_RIGHT" contentDisplay="CENTER" layoutX="240.0" layoutY="69.0" text="Reviewer 1: " textAlignment="RIGHT" translateY="20.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
                <padding>
                   <Insets right="4.0" />
                </padding>
             </Label>
-            <Label layoutX="310.0" layoutY="69.0" text="Reviewer 2: " translateY="20.0" GridPane.columnIndex="2">
+            <Label fx:id="reviewer2Label" layoutX="310.0" layoutY="69.0" text="Reviewer 2: " translateY="20.0" GridPane.columnIndex="2">
                <padding>
                   <Insets left="4.0" />
                </padding>
