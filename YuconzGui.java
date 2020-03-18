@@ -3,7 +3,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -12,11 +11,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Array;
-import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -44,7 +39,7 @@ public class YuconzGui extends Application {
     public Button savePersonalDetailsButton;
     public Button managerPortalButton;
     public Button hrPortalButton;
-    public ComboBox reviewsDropdown;
+    public ComboBox<String> reviewsDropdown;
     public Label reviewHeader;
 
     //Initialising other  elements
@@ -219,14 +214,13 @@ public class YuconzGui extends Application {
     {
         if(user.isLoggedIn())
         {
-            ObservableList<Object> reviewObjs = FXCollections.observableArrayList();
+            ObservableList<String> reviewDatesForDisplay = FXCollections.observableArrayList();
 
-            for(rev:/**get all reviews*/)
+            for(String[] rev:Authorise.getReviewsAsReviewee(user))
             {
-                reviewObjs.add(rev.dueDate); // something like this
+                reviewDatesForDisplay.add(rev[1]);
             }
-
-            reviewsDropdown.setItems(reviewObjs);
+            reviewsDropdown = new ComboBox<>(reviewDatesForDisplay);
 
             noPortalsLabel = (Label) scene.lookup("#noPortalsLabel");
             portalsPane = (Pane) scene.lookup("#portalsPane");
