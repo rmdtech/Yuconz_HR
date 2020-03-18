@@ -58,7 +58,7 @@
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <children>
-                  <Button layoutX="71.0" layoutY="12.0" mnemonicParsing="false" text="Log Out" />
+                  <Button layoutX="71.0" layoutY="12.0" mnemonicParsing="false" text="Log Out" onAction="#logout"/>
                </children>
             </Pane>
          </children>

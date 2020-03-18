@@ -210,6 +210,11 @@ public class YuconzGui extends Application {
         }
     }
 
+    public void logout(ActionEvent actionEvent) throws Exception {
+        Authenticate.logout(user);
+        changeScene("Login.fxml");
+    }
+
     public void initialiseProfilePage()
     {
         if(user.isLoggedIn())
