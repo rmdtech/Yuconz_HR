@@ -946,4 +946,33 @@ public class DatabaseParser
 
         return true;
     }
+
+    /**
+     * fetches all the pairs of employeeIds and dueBys for reviews in the database
+     * @return payload of pairs (String Arrays) of employeeIds and dueBys
+     */
+    ArrayList<String[]> fetchAllReviewKeys()
+    {
+        ArrayList<String[]> payload = new ArrayList<>();
+        sqlRead("SELECT employeeId, dueBy FROM Review");
+
+        try
+        {
+            while(result.next())
+            {
+                String[] pair = new String[2];
+
+                pair[0] = result.getString("employeeId");
+                pair[1] = result.getString("dueBy");
+                payload.add(pair);
+            }
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
 }
