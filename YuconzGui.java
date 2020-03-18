@@ -49,9 +49,27 @@ public class YuconzGui extends Application {
     public TextField firstReviewerTextField;
     public TextField secondReviewerTextField;
     public TextField dueByTextField;
+    public TextField newEmployeeIdTextField;
+    public PasswordField newPasswordTextField;
+    public TextField newNameTextField;
+    public TextField newSurnameTextField;
+    public TextField newSupervisorTextField;
+    public TextField newDateOfBirthTextField;
+    public TextField newAddressTextField;
+    public TextField newCityTextField;
+    public TextField newCountyTextField;
+    public TextField newPostcodeTextField;
+    public TextField newPhoneTextField;
+    public TextField newMobileTextField;
+    public TextField newEmergencyContactTextField;
+    public TextField newEmergencyNumberTextField;
+    public ComboBox<String> newRoleComboBox;
+    public TextField newDepartmentTextField;
 
     //Initialising other  elements
     public static User user;
+
+
 
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
@@ -267,6 +285,11 @@ public class YuconzGui extends Application {
         changeScene("InitialiseReview.fxml");
     }
 
+    public void autofillSupervisor()
+    {
+        //firstReviewerTextField.setText();
+    }
+
     public void doCreateReview() throws Exception {
         Authorise.createPerformanceReview(user, new String[]{revieweeTextField.getText(), secondReviewerTextField.getText(), dueByTextField.getText()});
         changeScene("HrPortal.fxml");
@@ -301,10 +324,6 @@ public class YuconzGui extends Application {
         {
             showError("Permissions Error", "You do not have permission to view this document.");
         }
-
-
-
-
     }
 
     public void updatePersonalDetailsForm() {
@@ -443,6 +462,47 @@ public class YuconzGui extends Application {
         {
             showError("Saving Error!", "Check the details you have entered!");
         }
+    }
+
+    public void initialiseCreateNewUser() throws Exception {
+        newRoleComboBox = (ComboBox<String>) scene.lookup("#newRoleComboBox");
+        newRoleComboBox.setItems(FXCollections.observableArrayList(
+                "Employee",
+                "Manager",
+                "Director"
+        ));
+    }
+
+    public void doCreateUser(ActionEvent actionEvent)
+    {
+        Authenticate.addNewUser(
+            newEmployeeIdTextField.getText(),
+            newPasswordTextField.getText(),
+            newSupervisorTextField.getText(),
+            Position.Department.valueOf(newDepartmentTextField.getText()),
+            Position.Role.valueOf(newRoleComboBox.getValue())
+        );
+
+        Authorise.createPersonalDetailsRecord(user, new String[] {
+            newEmployeeIdTextField.getText(),
+            newSurnameTextField.getText(),
+            newNameTextField.getText(),
+            newDateOfBirthTextField.getText(),
+            newAddressTextField.getText(),
+            newCityTextField.getText(),
+            newCountyTextField.getText(),
+            newPostcodeTextField.getText(),
+            newPhoneTextField.getText(),
+            newMobileTextField.getText(),
+            newEmergencyContactTextField.getText(),
+            newEmergencyNumberTextField.getText()
+        });
+    }
+
+    public void viewCreateNewUser(ActionEvent actionEvent) throws Exception
+    {
+        changeScene("CreateNewUser.fxml");
+        initialiseCreateNewUser();
     }
 
     public void viewPersonalDetails(ActionEvent actionEvent) throws Exception
