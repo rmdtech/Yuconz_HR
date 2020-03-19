@@ -1,3 +1,4 @@
+import com.sun.jdi.Value;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -250,7 +251,7 @@ public class YuconzGui extends Application {
         {
             ObservableList<String> reviewDatesForDisplay = FXCollections.observableArrayList();
 
-            for(String[] rev:Authorise.getReviewsAsReviewee(user))
+            for(String[] rev: View.getReviewsAsReviewee(user))
             {
                 reviewDatesForDisplay.add(rev[1]);
             }
@@ -312,7 +313,7 @@ public class YuconzGui extends Application {
             employeeIdLabel.setText("Employee ID: " + revieweeId);
 
             nameLabel = (Label) scene.lookup("#nameLabel");
-            nameLabel.setText("Name: " + Authorise.getUserName(revieweeId));
+            nameLabel.setText("Name: " + View.getUserName(revieweeId));
 
             reviewer1Label = (Label) scene.lookup("#reviewer1Label");
             reviewer1Label.setText("Reviewer 1: " + mainReview[3]);
@@ -521,7 +522,7 @@ public class YuconzGui extends Application {
     public void initialiseHrPortal()
     {
         ObservableList<String> users = FXCollections.observableArrayList();
-        users.addAll(Objects.requireNonNull(Authorise.getAllUsers(user)));
+        users.addAll(Objects.requireNonNull(View.getAllUsers(user)));
 
         otherUserDetailsComboBox = (ComboBox<String>) scene.lookup("#otherUserDetailsComboBox");
         otherUserDetailsComboBox.setItems(users);
