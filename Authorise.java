@@ -99,7 +99,7 @@ public class Authorise
         }
         String firstReviewer = dp.fetchDirectSupervisor(content[revieweeIdIndex]);
 
-        if ((firstReviewer + content[secondReviewerIdIndex - 1]).contains(content[revieweeIdIndex]))
+        if ((firstReviewer + content[secondReviewerIdIndex - 2]).contains(content[revieweeIdIndex]))
         {
             System.out.println("Reviewee can't also be a reviewer");
             return false;
