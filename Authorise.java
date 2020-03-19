@@ -131,7 +131,7 @@ public class Authorise
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 1]))
+        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 2]))
         {
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
