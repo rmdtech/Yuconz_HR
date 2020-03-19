@@ -2,6 +2,7 @@ import com.sun.jdi.Value;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -306,20 +307,21 @@ public class YuconzGui extends Application {
         changeScene("HrPortal.fxml");
     }
 
-    public void initialisePerformanceReviewView(String revieweeId, String dueBy, String documentId)
+    public void initialisePerformanceReviewView(String revieweeId, String dueBy)
     {
         String[] mainReview = null;
+        String documentId = View.getReviewDocId(revieweeId, dueBy);
         if(Authorise.readPerformanceReview(user, revieweeId, dueBy))
         {
             mainReview = Authorise.readReviewMain(documentId);
             reviewHeader = (Label) scene.lookup("#reviewHeader");
             reviewHeader.setText("Performance Review (" + dueBy +")");
 
-            employeeIdLabel = (Label) scene.lookup("#employeeIdField");
+            employeeIdLabel = (Label) scene.lookup("#employeeIdLabel");
             employeeIdLabel.setText("Employee ID: " + revieweeId);
 
             nameLabel = (Label) scene.lookup("#nameLabel");
-            nameLabel.setText("Name: " + View.getUserName(revieweeId));
+            nameLabel.setText("Name: " + View.getUserName(revieweeId)[0] + " " + View.getUserName(revieweeId)[1]);
 
             reviewer1Label = (Label) scene.lookup("#reviewer1Label");
             reviewer1Label.setText("Reviewer 1: " + mainReview[3]);
@@ -327,7 +329,26 @@ public class YuconzGui extends Application {
             reviewer2Label = (Label) scene.lookup("#reviewer2Label");
             reviewer2Label.setText("Reviewer 2: " + mainReview[4]);
 
+            pastPerformanceTable = (TableView) scene.lookup("#pastPerformanceTable");
+            ppNumberCol = new TableColumn("No.");
+            ppObjectivesCol = new TableColumn("Objective");
+            ppAchievementsCol = new TableColumn("Achievement");
+            ppNumberCol.setCellValueFactory(new PropertyValueFactory<>("no"));
+            ppObjectivesCol.setCellValueFactory(new PropertyValueFactory<>("objective"));
+            ppAchievementsCol.setCellValueFactory(new PropertyValueFactory<>("achievement"));
+            pastPerformanceTable.getColumns().addAll(ppNumberCol, ppObjectivesCol, ppAchievementsCol);
+
+            ObservableList<PastPerformanceTableTemplate> ppList = FXCollections.observableArrayList(
+                    new PastPerformanceTableTemplate("1", "work", "worked")
+            );
+            pastPerformanceTable.getItems().add(new PastPerformanceTableTemplate("1", "work", "worked"));
+
+
             recommendationLabel = (Label) scene.lookup("#recommendationLabel");
+            if(mainReview[11] == null)
+            {
+                mainReview[11] = "";
+            }
             recommendationLabel.setText("Recommendation: " + mainReview[11]);
 
         }
@@ -552,12 +573,20 @@ public class YuconzGui extends Application {
         initialiseHrPortal();
     }
 
-    public void viewManagerPortal(ActionEvent actionEvent) throws Exception {
+    public void viewManagerPortal(ActionEvent actionEvent) throws Exception
+    {
         changeScene("ManagerPortal.fxml");
     }
 
-    public void viewInitialiseReview(ActionEvent actionEvent) throws Exception {
+    public void viewInitialiseReview(ActionEvent actionEvent) throws Exception
+    {
         changeScene("InitialiseReview.fxml");
+    }
+
+    public void viewViewPerformanceReview() throws Exception
+    {
+        changeScene("viewPerformanceReview.fxml");
+        initialisePerformanceReviewView(user.getEmployeeId(), reviewsDropdown.getValue());
     }
 
     public void goHome(ActionEvent actionEvent) throws Exception {
