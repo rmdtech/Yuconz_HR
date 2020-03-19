@@ -31,7 +31,7 @@
                         <Font size="30.0" />
                      </font>
                   </Label>
-                  <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="🏠" />
+                  <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="🏠" onAction="#goHome"/>
                </children>
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
