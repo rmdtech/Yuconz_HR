@@ -31,15 +31,15 @@
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
                   <Label layoutX="56.0" layoutY="14.0" text="Create New User" />
-                  <Button layoutX="74.0" layoutY="31.0" mnemonicParsing="false" text="Create" />
-                  <ComboBox layoutX="-1.0" layoutY="94.0" prefWidth="150.0" />
+                  <Button layoutX="74.0" layoutY="31.0" mnemonicParsing="false" text="Create" onAction="#viewCreateNewUser"/>
+                  <ComboBox layoutX="-1.0" layoutY="94.0" prefWidth="150.0" promptText="Select User..." fx:id="otherUserDetailsComboBox"/>
                   <Label layoutX="-6.0" layoutY="77.0" text="View and Modify User's Personal Details" />
                   <Button layoutX="158.0" layoutY="94.0" mnemonicParsing="false" text="View" />
                </children>
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="🏠" />
+                  <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="🏠" onAction="#goHome"/>
                </children>
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -48,7 +48,7 @@
                   <ComboBox layoutY="30.0" prefWidth="150.0" />
                   <Button layoutX="158.0" layoutY="30.0" mnemonicParsing="false" text="View" />
                   <Label layoutX="54.0" layoutY="67.0" text="Initialise a Review" />
-                  <Button layoutX="75.0" layoutY="84.0" mnemonicParsing="false" text="Create" />
+                  <Button layoutX="75.0" layoutY="84.0" mnemonicParsing="false" text="Create" onAction="#initialiseInitialiseReview"/>
                </children>
             </Pane>
          </children>
