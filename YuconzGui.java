@@ -291,7 +291,11 @@ public class YuconzGui extends Application {
     }
 
     public void doCreateReview() throws Exception {
-        Authorise.createPerformanceReview(user, new String[]{revieweeTextField.getText(), secondReviewerTextField.getText(), dueByTextField.getText()});
+        Authorise.createPerformanceReview(user, new String[]{
+                revieweeTextField.getText(),
+                dueByTextField.getText(),
+                secondReviewerTextField.getText()
+                });
         changeScene("HrPortal.fxml");
     }
 
