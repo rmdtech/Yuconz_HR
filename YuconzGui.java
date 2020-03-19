@@ -65,6 +65,7 @@ public class YuconzGui extends Application {
     public TextField newEmergencyNumberTextField;
     public ComboBox<String> newRoleComboBox;
     public TextField newDepartmentTextField;
+    public ComboBox<String> newDepartmentComboBox;
 
     //Initialising other  elements
     public static User user;
@@ -466,6 +467,16 @@ public class YuconzGui extends Application {
     }
 
     public void initialiseCreateNewUser() throws Exception {
+        newDepartmentComboBox = (ComboBox<String>) scene.lookup("#newDepartmentComboBox");
+        newDepartmentComboBox.setItems(FXCollections.observableArrayList(
+                "HR",
+                "IT",
+                "Admin",
+                "BI",
+                "MC",
+                "SalesAndMarketing"
+        ));
+
         newRoleComboBox = (ComboBox<String>) scene.lookup("#newRoleComboBox");
         newRoleComboBox.setItems(FXCollections.observableArrayList(
                 "Employee",
