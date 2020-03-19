@@ -571,4 +571,9 @@ public class Authorise
     {
         return dp.fetchRole(employeeId);
     }
+
+    public static String getDirectSupervisor(String employeeId)
+    {
+        return dp.fetchDirectSupervisor(employeeId);
+    }
 }
