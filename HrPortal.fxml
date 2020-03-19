@@ -48,7 +48,7 @@
                   <ComboBox layoutY="30.0" prefWidth="150.0" />
                   <Button layoutX="158.0" layoutY="30.0" mnemonicParsing="false" text="View" />
                   <Label layoutX="54.0" layoutY="67.0" text="Initialise a Review" />
-                  <Button layoutX="75.0" layoutY="84.0" mnemonicParsing="false" text="Create" onAction="#initialiseInitialiseReview"/>
+                  <Button layoutX="75.0" layoutY="84.0" mnemonicParsing="false" text="Create" onAction="#viewInitialiseReview"/>
                </children>
             </Pane>
          </children>
