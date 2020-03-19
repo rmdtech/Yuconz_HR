@@ -126,4 +126,16 @@ public class View
     {
         return dp.fetchDirectSupervisor(employeeId);
     }
+
+    /**
+     * Returns an array containing the information stored in a Review record
+     * @param revieweeId the employeeId of the user who's review is trying to be accessed (makes composite key)
+     * @param dueBy the year of the review for that employeeId that is trying to be accessed (makes composite key)
+     * @return the documentID
+     */
+    public static String getReviewDocId(String revieweeId, String dueBy)
+    {
+        String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
+        return docId;
+    }
 }
