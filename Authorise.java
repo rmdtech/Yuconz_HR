@@ -139,9 +139,9 @@ public class Authorise
         String[] payload = new String[content.length + 1];
         payload[0] = content[0];
         payload[1] = content[1];
-        payload[2] = content[2];
+        payload[2] = User.generateUUID();
         payload[3] = firstReviewer;
-        payload[4] = content[3];
+        payload[4] = content[2];
 
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
