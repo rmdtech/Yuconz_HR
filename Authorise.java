@@ -136,7 +136,7 @@ public class Authorise
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
         }
-        String[] payload = new String[content.length + 1];
+        String[] payload = new String[content.length + 2];
         payload[0] = content[0];
         payload[1] = content[1];
         payload[2] = User.generateUUID();
@@ -145,8 +145,6 @@ public class Authorise
 
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
-            // Generate a documentID for this review
-            // content[documentIdIndex] = User.generateUUID();
             return dp.createReview(payload);
         }
         return false;
