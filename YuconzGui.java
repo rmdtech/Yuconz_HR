@@ -285,14 +285,9 @@ public class YuconzGui extends Application {
         }
     }
 
-
-    public void initialiseInitialiseReview(ActionEvent actionEvent) throws Exception {
-        changeScene("InitialiseReview.fxml");
-    }
-
     public void autofillSupervisor()
     {
-        //firstReviewerTextField.setText();
+        firstReviewerTextField.setText(View.getDirectSupervisor(revieweeTextField.getText()));
     }
 
     public void doCreateReview() throws Exception {
@@ -548,6 +543,10 @@ public class YuconzGui extends Application {
 
     public void viewManagerPortal(ActionEvent actionEvent) throws Exception {
         changeScene("ManagerPortal.fxml");
+    }
+
+    public void viewInitialiseReview(ActionEvent actionEvent) throws Exception {
+        changeScene("InitialiseReview.fxml");
     }
 
     public void goHome(ActionEvent actionEvent) throws Exception {
