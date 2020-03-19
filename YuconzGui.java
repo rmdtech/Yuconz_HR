@@ -1,11 +1,13 @@
 import com.sun.jdi.Value;
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -13,6 +15,7 @@ import javafx.stage.Window;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -51,6 +54,10 @@ public class YuconzGui extends Application {
     public TextField firstReviewerTextField;
     public TextField secondReviewerTextField;
     public TextField dueByTextField;
+    public TableView pastPerformanceTable;
+    public TableColumn ppNumberCol;
+    public TableColumn ppObjectivesCol;
+    public TableColumn ppAchievementsCol;
     public TextField newEmployeeIdTextField;
     public PasswordField newPasswordTextField;
     public TextField newNameTextField;
