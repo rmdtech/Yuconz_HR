@@ -20,8 +20,6 @@ public class Authenticate{
             if (verifyPassword(employeeId, password))
             {
                 User newUser = new User(employeeId, UUID.randomUUID().toString().replace("-", ""));
-                newUser.setFirstName(dp.fetchPersonalDetails(employeeId)[1]);
-                newUser.setLastName(dp.fetchPersonalDetails(employeeId)[2]);
                 newUser.setDepartment(dp.fetchDepartment(employeeId));
                 newUser.setRole(dp.fetchRole(employeeId));
                 newUser.setDirectSupervisor(dp.fetchDirectSupervisor(newUser.getEmployeeId()));
