@@ -70,11 +70,11 @@
                   <Font size="20.0" />
                </font>
             </Label>
-            <TableView maxHeight="-Infinity" minWidth="-Infinity" prefHeight="108.0" prefWidth="591.0" translateY="25.0" GridPane.rowIndex="1">
+            <TableView fx:id="pastPerformanceTable" maxHeight="-Infinity" minWidth="-Infinity" prefHeight="108.0" prefWidth="591.0" translateY="25.0" GridPane.rowIndex="1">
               <columns>
-                <TableColumn prefWidth="33.0" text="No." />
-                <TableColumn prefWidth="265.0" text="Objectives" />
-                  <TableColumn prefWidth="292.0" text="Achievement" />
+                <TableColumn fx:id="ppNumberCol" prefWidth="33.0" text="No." />
+                <TableColumn fx:id="ppObjectivesCol" prefWidth="265.0" text="Objectives" />
+                  <TableColumn fx:id="ppAchievementsCol" prefWidth="292.0" text="Achievement" />
               </columns>
                <GridPane.margin>
                   <Insets left="4.0" right="4.0" />
