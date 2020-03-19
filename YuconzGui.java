@@ -489,11 +489,16 @@ public class YuconzGui extends Application {
 
     public void doCreateUser(ActionEvent actionEvent)
     {
+        String supervisor = newSupervisorTextField.getText();
+        if(supervisor.equals(""))
+        {
+            supervisor = null;
+        }
         Authenticate.addNewUser(
             newEmployeeIdTextField.getText(),
             newPasswordTextField.getText(),
-            newSupervisorTextField.getText(),
-            Position.Department.valueOf(newDepartmentTextField.getText()),
+            supervisor,
+            Position.Department.valueOf(newDepartmentComboBox.getValue()),
             Position.Role.valueOf(newRoleComboBox.getValue())
         );
 
