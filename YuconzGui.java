@@ -12,6 +12,7 @@ import javafx.stage.Window;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 
@@ -66,6 +67,7 @@ public class YuconzGui extends Application {
     public ComboBox<String> newRoleComboBox;
     public TextField newDepartmentTextField;
     public ComboBox<String> newDepartmentComboBox;
+    public ComboBox<String> otherUserDetailsComboBox;
 
     //Initialising other  elements
     public static User user;
@@ -511,6 +513,15 @@ public class YuconzGui extends Application {
         });
     }
 
+    public void initialiseHrPortal()
+    {
+        ObservableList<String> users = FXCollections.observableArrayList();
+        users.addAll(Objects.requireNonNull(Authorise.getAllUsers(user)));
+
+        otherUserDetailsComboBox = (ComboBox<String>) scene.lookup("#otherUserDetailsComboBox");
+        otherUserDetailsComboBox.setItems(users);
+    }
+
     public void viewCreateNewUser(ActionEvent actionEvent) throws Exception
     {
         changeScene("CreateNewUser.fxml");
@@ -526,6 +537,7 @@ public class YuconzGui extends Application {
     public void viewHrPortal(ActionEvent actionEvent) throws Exception
     {
         changeScene("HrPortal.fxml");
+        initialiseHrPortal();
     }
 
     public void viewManagerPortal(ActionEvent actionEvent) throws Exception {
