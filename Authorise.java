@@ -78,6 +78,10 @@ public class Authorise
      * Creates a Review record. revieweeId and reviewers are mandatory fields
      * @param user the user logged in and trying to perform the action
      * @param content the initial, mandatory content for this review
+     *                [0] employeeId
+     *                [1] dueBy Date (yyyy-mm-dd)
+     *                [2] documentId (see User.generateUUID)
+     *                [3] Second Reviewer
      * @return whether the operation has been successful or not
      */
     public static boolean createPerformanceReview(User user, String[] content)
@@ -95,7 +99,7 @@ public class Authorise
         }
         String firstReviewer = dp.fetchDirectSupervisor(content[revieweeIdIndex]);
 
-        if ((firstReviewer + content[secondReviewerIdIndex - 1]).contains(content[revieweeIdIndex]))
+        if ((firstReviewer + content[secondReviewerIdIndex - 2]).contains(content[revieweeIdIndex]))
         {
             System.out.println("Reviewee can't also be a reviewer");
             return false;
@@ -560,5 +564,20 @@ public class Authorise
     public static String[] getUserName(String employeeId)
     {
         return new String[]{ dp.fetchPersonalDetails(employeeId)[2], dp.fetchPersonalDetails(employeeId)[1]};
+    }
+
+    public static Position.Department getDepartment(String employeeId)
+    {
+        return dp.fetchDepartment(employeeId);
+    }
+
+    public static Position.Role getRole(String employeeId)
+    {
+        return dp.fetchRole(employeeId);
+    }
+
+    public static String getDirectSupervisor(String employeeId)
+    {
+        return dp.fetchDirectSupervisor(employeeId);
     }
 }

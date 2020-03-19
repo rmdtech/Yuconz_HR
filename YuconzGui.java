@@ -12,6 +12,7 @@ import javafx.stage.Window;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 
@@ -41,9 +42,37 @@ public class YuconzGui extends Application {
     public Button hrPortalButton;
     public ComboBox<String> reviewsDropdown;
     public Label reviewHeader;
+    public Label nameLabel;
+    public Label reviewer1Label;
+    public Label reviewer2Label;
+    public Label recommendationLabel;
+    public TextField revieweeTextField;
+    public TextField firstReviewerTextField;
+    public TextField secondReviewerTextField;
+    public TextField dueByTextField;
+    public TextField newEmployeeIdTextField;
+    public PasswordField newPasswordTextField;
+    public TextField newNameTextField;
+    public TextField newSurnameTextField;
+    public TextField newSupervisorTextField;
+    public TextField newDateOfBirthTextField;
+    public TextField newAddressTextField;
+    public TextField newCityTextField;
+    public TextField newCountyTextField;
+    public TextField newPostcodeTextField;
+    public TextField newPhoneTextField;
+    public TextField newMobileTextField;
+    public TextField newEmergencyContactTextField;
+    public TextField newEmergencyNumberTextField;
+    public ComboBox<String> newRoleComboBox;
+    public TextField newDepartmentTextField;
+    public ComboBox<String> newDepartmentComboBox;
+    public ComboBox<String> otherUserDetailsComboBox;
 
     //Initialising other  elements
     public static User user;
+
+
 
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
@@ -225,7 +254,8 @@ public class YuconzGui extends Application {
             {
                 reviewDatesForDisplay.add(rev[1]);
             }
-            reviewsDropdown = new ComboBox<>(reviewDatesForDisplay);
+            reviewsDropdown = (ComboBox<String>) scene.lookup("#reviewsDropdown");
+            reviewsDropdown.setItems(reviewDatesForDisplay);
 
             noPortalsLabel = (Label) scene.lookup("#noPortalsLabel");
             portalsPane = (Pane) scene.lookup("#portalsPane");
@@ -254,11 +284,50 @@ public class YuconzGui extends Application {
         }
     }
 
-    public void initialisePerformanceReview()
-    {
-        reviewHeader = (Label) scene.lookup("#reviewHeader");
-        reviewHeader.setText("Performance Review ( Insert Date )");
 
+    public void initialiseInitialiseReview(ActionEvent actionEvent) throws Exception {
+        changeScene("InitialiseReview.fxml");
+    }
+
+    public void autofillSupervisor()
+    {
+        //firstReviewerTextField.setText();
+    }
+
+    public void doCreateReview() throws Exception {
+        Authorise.createPerformanceReview(user, new String[]{revieweeTextField.getText(), secondReviewerTextField.getText(), dueByTextField.getText()});
+        changeScene("HrPortal.fxml");
+    }
+
+    public void initialisePerformanceReviewView(String revieweeId, String dueBy, String documentId)
+    {
+        String[] mainReview = null;
+        if(Authorise.readPerformanceReview(user, revieweeId, dueBy))
+        {
+            mainReview = Authorise.readReviewMain(documentId);
+            reviewHeader = (Label) scene.lookup("#reviewHeader");
+            reviewHeader.setText("Performance Review (" + dueBy +")");
+
+            employeeIdLabel = (Label) scene.lookup("#employeeIdField");
+            employeeIdLabel.setText("Employee ID: " + revieweeId);
+
+            nameLabel = (Label) scene.lookup("#nameLabel");
+            nameLabel.setText("Name: " + Authorise.getUserName(revieweeId));
+
+            reviewer1Label = (Label) scene.lookup("#reviewer1Label");
+            reviewer1Label.setText("Reviewer 1: " + mainReview[3]);
+
+            reviewer2Label = (Label) scene.lookup("#reviewer2Label");
+            reviewer2Label.setText("Reviewer 2: " + mainReview[4]);
+
+            recommendationLabel = (Label) scene.lookup("#recommendationLabel");
+            recommendationLabel.setText("Recommendation: " + mainReview[11]);
+
+        }
+        else
+        {
+            showError("Permissions Error", "You do not have permission to view this document.");
+        }
     }
 
     public void updatePersonalDetailsForm() {
@@ -399,6 +468,71 @@ public class YuconzGui extends Application {
         }
     }
 
+    public void initialiseCreateNewUser() throws Exception {
+        newDepartmentComboBox = (ComboBox<String>) scene.lookup("#newDepartmentComboBox");
+        newDepartmentComboBox.setItems(FXCollections.observableArrayList(
+                "HR",
+                "IT",
+                "Admin",
+                "BI",
+                "MC",
+                "SalesAndMarketing"
+        ));
+
+        newRoleComboBox = (ComboBox<String>) scene.lookup("#newRoleComboBox");
+        newRoleComboBox.setItems(FXCollections.observableArrayList(
+                "Employee",
+                "Manager",
+                "Director"
+        ));
+    }
+
+    public void doCreateUser(ActionEvent actionEvent)
+    {
+        String supervisor = newSupervisorTextField.getText();
+        if(supervisor.equals(""))
+        {
+            supervisor = null;
+        }
+        Authenticate.addNewUser(
+            newEmployeeIdTextField.getText(),
+            newPasswordTextField.getText(),
+            supervisor,
+            Position.Department.valueOf(newDepartmentComboBox.getValue()),
+            Position.Role.valueOf(newRoleComboBox.getValue())
+        );
+
+        Authorise.createPersonalDetailsRecord(user, new String[] {
+            newEmployeeIdTextField.getText(),
+            newSurnameTextField.getText(),
+            newNameTextField.getText(),
+            newDateOfBirthTextField.getText(),
+            newAddressTextField.getText(),
+            newCityTextField.getText(),
+            newCountyTextField.getText(),
+            newPostcodeTextField.getText(),
+            newPhoneTextField.getText(),
+            newMobileTextField.getText(),
+            newEmergencyContactTextField.getText(),
+            newEmergencyNumberTextField.getText()
+        });
+    }
+
+    public void initialiseHrPortal()
+    {
+        ObservableList<String> users = FXCollections.observableArrayList();
+        users.addAll(Objects.requireNonNull(Authorise.getAllUsers(user)));
+
+        otherUserDetailsComboBox = (ComboBox<String>) scene.lookup("#otherUserDetailsComboBox");
+        otherUserDetailsComboBox.setItems(users);
+    }
+
+    public void viewCreateNewUser(ActionEvent actionEvent) throws Exception
+    {
+        changeScene("CreateNewUser.fxml");
+        initialiseCreateNewUser();
+    }
+
     public void viewPersonalDetails(ActionEvent actionEvent) throws Exception
     {
         changeScene("ViewPersonalDetails.fxml");
@@ -408,6 +542,7 @@ public class YuconzGui extends Application {
     public void viewHrPortal(ActionEvent actionEvent) throws Exception
     {
         changeScene("HrPortal.fxml");
+        initialiseHrPortal();
     }
 
     public void viewManagerPortal(ActionEvent actionEvent) throws Exception {
