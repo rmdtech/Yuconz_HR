@@ -13,6 +13,7 @@ import javafx.stage.Window;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -310,9 +311,11 @@ public class YuconzGui extends Application {
     {
         String[] mainReview = null;
         String documentId = View.getReviewDocId(revieweeId, dueBy);
+
         if(Authorise.readPerformanceReview(user, revieweeId, dueBy))
         {
             mainReview = Authorise.readReviewMain(documentId);
+            ArrayList<String[]> pastPerformance = Authorise.readPastPerformance(documentId);
             reviewHeader = (Label) scene.lookup("#reviewHeader");
             reviewHeader.setText("Performance Review (" + dueBy +")");
 
@@ -359,9 +362,9 @@ public class YuconzGui extends Application {
             ppAchievementsCol.setCellValueFactory(new PropertyValueFactory<>("achievement"));
             pastPerformanceTable.getColumns().addAll(ppNumberCol, ppObjectivesCol, ppAchievementsCol);
 
-            for(int i = 1; i < 11; i++)
+            for(int i = 0; i < pastPerformance.size(); i++)
             {
-                pastPerformanceTable.getItems().add(new ReviewGuiTableWrapper("" + i, "work", "worked"));
+                pastPerformanceTable.getItems().add(new ReviewGuiTableWrapper("" + (i+1), pastPerformance.get(i)[0], pastPerformance.get(i)[1]));
             }
 
         }
