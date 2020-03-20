@@ -1,14 +1,20 @@
-public class PastPerformanceTableTemplate
+public class ReviewGuiTableWrapper
 {
     private String no;
     private String objective;
     private String achievement;
 
-    public PastPerformanceTableTemplate(String no, String objective, String achievement)
+    public ReviewGuiTableWrapper(String no, String objective, String achievement)
     {
         this.no = no;
         this.objective = objective;
         this.achievement = achievement;
+    }
+
+    public ReviewGuiTableWrapper(String no, String objective)
+    {
+        this.no = no;
+        this.objective = objective;
     }
 
     public String getNo() {

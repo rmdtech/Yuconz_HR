@@ -1,8 +1,5 @@
-import com.sun.jdi.Value;
 import javafx.application.Application;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +13,6 @@ import javafx.stage.Window;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -338,10 +334,10 @@ public class YuconzGui extends Application {
             ppAchievementsCol.setCellValueFactory(new PropertyValueFactory<>("achievement"));
             pastPerformanceTable.getColumns().addAll(ppNumberCol, ppObjectivesCol, ppAchievementsCol);
 
-            ObservableList<PastPerformanceTableTemplate> ppList = FXCollections.observableArrayList(
-                    new PastPerformanceTableTemplate("1", "work", "worked")
+            ObservableList<ReviewGuiTableWrapper> ppList = FXCollections.observableArrayList(
+                    new ReviewGuiTableWrapper("1", "work", "worked")
             );
-            pastPerformanceTable.getItems().add(new PastPerformanceTableTemplate("1", "work", "worked"));
+            pastPerformanceTable.getItems().add(new ReviewGuiTableWrapper("1", "work", "worked"));
 
 
             recommendationLabel = (Label) scene.lookup("#recommendationLabel");
