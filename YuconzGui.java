@@ -329,6 +329,8 @@ public class YuconzGui extends Application {
             ppNumberCol = new TableColumn("No.");
             ppObjectivesCol = new TableColumn("Objective");
             ppAchievementsCol = new TableColumn("Achievement");
+            pastPerformanceTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            ppNumberCol.setMaxWidth(300.00);
             ppNumberCol.setCellValueFactory(new PropertyValueFactory<>("no"));
             ppObjectivesCol.setCellValueFactory(new PropertyValueFactory<>("objective"));
             ppAchievementsCol.setCellValueFactory(new PropertyValueFactory<>("achievement"));

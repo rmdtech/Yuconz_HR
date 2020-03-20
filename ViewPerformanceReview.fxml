@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="YuconzGui">
+<AnchorPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="YuconzGui">
    <children>
       <GridPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -29,7 +29,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label fx:id="reviewHeader" alignment="CENTER" minWidth="-Infinity" prefHeight="45.0" prefWidth="301.0" text="My Review" textAlignment="CENTER" translateY="-30.0" GridPane.columnIndex="1">
+            <Label fx:id="reviewHeader" alignment="CENTER" minWidth="-Infinity" prefHeight="45.0" prefWidth="600.0" text="My Review" textAlignment="CENTER" translateY="-30.0">
                <font>
                   <Font size="30.0" />
                </font>
