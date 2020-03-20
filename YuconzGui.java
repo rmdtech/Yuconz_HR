@@ -51,6 +51,8 @@ public class YuconzGui extends Application {
     public TextField firstReviewerTextField;
     public TextField secondReviewerTextField;
     public TextField dueByTextField;
+    public Label departmentLabel;
+    public Label roleLabel;
     public TableView pastPerformanceTable;
     public TableColumn ppNumberCol;
     public TableColumn ppObjectivesCol;
@@ -73,6 +75,7 @@ public class YuconzGui extends Application {
     public TextField newDepartmentTextField;
     public ComboBox<String> newDepartmentComboBox;
     public ComboBox<String> otherUserDetailsComboBox;
+    public ChoiceBox<String> recommendationChoiceBox;
 
     //Initialising other  elements
     public static User user;
@@ -325,6 +328,26 @@ public class YuconzGui extends Application {
             reviewer2Label = (Label) scene.lookup("#reviewer2Label");
             reviewer2Label.setText("Reviewer 2: " + mainReview[4]);
 
+            departmentLabel = (Label) scene.lookup("#departmentLabel");
+            departmentLabel.setText("Department: " + View.getDepartment(revieweeId));
+
+            roleLabel = (Label) scene.lookup("#roleLabel");
+            roleLabel.setText("Role: " + View.getRole(revieweeId));
+
+            recommendationLabel = (Label) scene.lookup("#recommendationLabel");
+            if(mainReview[11] == null)
+            {
+                mainReview[11] = "";
+            }
+            recommendationLabel.setText("Recommendation: " + mainReview[11]);
+
+            recommendationChoiceBox = (ChoiceBox<String>) scene.lookup("#recommendationChoiceBox");
+            recommendationChoiceBox.getItems().add("Stay in post");
+            recommendationChoiceBox.getItems().add("Salary increase");
+            recommendationChoiceBox.getItems().add("Promotion");
+            recommendationChoiceBox.getItems().add("Probation");
+            recommendationChoiceBox.getItems().add("Termination");
+
             pastPerformanceTable = (TableView) scene.lookup("#pastPerformanceTable");
             ppNumberCol = new TableColumn("No.");
             ppObjectivesCol = new TableColumn("Objective");
@@ -336,18 +359,10 @@ public class YuconzGui extends Application {
             ppAchievementsCol.setCellValueFactory(new PropertyValueFactory<>("achievement"));
             pastPerformanceTable.getColumns().addAll(ppNumberCol, ppObjectivesCol, ppAchievementsCol);
 
-            ObservableList<ReviewGuiTableWrapper> ppList = FXCollections.observableArrayList(
-                    new ReviewGuiTableWrapper("1", "work", "worked")
-            );
-            pastPerformanceTable.getItems().add(new ReviewGuiTableWrapper("1", "work", "worked"));
-
-
-            recommendationLabel = (Label) scene.lookup("#recommendationLabel");
-            if(mainReview[11] == null)
+            for(int i = 1; i < 11; i++)
             {
-                mainReview[11] = "";
+                pastPerformanceTable.getItems().add(new ReviewGuiTableWrapper("" + i, "work", "worked"));
             }
-            recommendationLabel.setText("Recommendation: " + mainReview[11]);
 
         }
         else
