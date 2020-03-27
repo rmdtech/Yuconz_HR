@@ -2,6 +2,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -77,6 +78,7 @@ public class YuconzGui extends Application {
     public ComboBox<String> newDepartmentComboBox;
     public ComboBox<String> otherUserDetailsComboBox;
     public ChoiceBox<String> recommendationChoiceBox;
+    public Button viewOtherUsersPersonalDetailsButton;
 
     //Initialising other  elements
     public static User user;
@@ -241,6 +243,8 @@ public class YuconzGui extends Application {
         {
             changeScene("ProfilePage.fxml");
             initialiseProfilePage();
+            Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
+            stage.setTitle("Yuconz - Logged in as: " + employeeId);
         }
         else
         {
@@ -249,6 +253,8 @@ public class YuconzGui extends Application {
     }
 
     public void logout(ActionEvent actionEvent) throws Exception {
+        Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
+        stage.setTitle("Yuconz");
         Authenticate.logout(user);
         changeScene("Login.fxml");
     }
@@ -414,6 +420,47 @@ public class YuconzGui extends Application {
         emergencyContactNumberField.setText(payload[11].toString());
     }
 
+    public void viewOtherUsersPersonalDetailsForm(String employeeId)
+    {
+        String[] payload = Authorise.readPersonalDetails(user, employeeId);
+
+        employeeIdLabel = (Label) scene.lookup("#employeeIdLabel");
+        employeeIdLabel.setText("Employee ID: " + payload[0].toString());
+
+        surnameField = (TextField) scene.lookup("#surnameField");
+        surnameField.setText(payload[1].toString());
+
+        firstNameField = (TextField) scene.lookup("#firstNameField");
+        firstNameField.setText(payload[2].toString());
+
+        dobField = (TextField) scene.lookup("#dobField");
+        dobField.setText(payload[3].toString());
+
+        addressField = (TextField) scene.lookup("#addressField");
+        addressField.setText(payload[4].toString());
+
+        cityField = (TextField) scene.lookup("#cityField");
+        cityField.setText(payload[5].toString());
+
+        countyField = (TextField) scene.lookup("#countyField");
+        countyField.setText(payload[6].toString());
+
+        postcodeField = (TextField) scene.lookup("#postcodeField");
+        postcodeField.setText(payload[7].toString());
+
+        telephoneField = (TextField) scene.lookup("#telephoneField");
+        telephoneField.setText(payload[8].toString());
+
+        mobileField = (TextField) scene.lookup("#mobileField");
+        mobileField.setText(payload[9].toString());
+
+        emergencyContactNameField = (TextField) scene.lookup("#emergencyContactNameField");
+        emergencyContactNameField.setText(payload[10].toString());
+
+        emergencyContactNumberField = (TextField) scene.lookup("#emergencyContactNumberField");
+        emergencyContactNumberField.setText(payload[11].toString());
+    }
+
     /**
      * Initialises the HR Director user which can then create additional users who can log into the sytsem.
      * @param actionEvent
@@ -531,8 +578,7 @@ public class YuconzGui extends Application {
         ));
     }
 
-    public void doCreateUser(ActionEvent actionEvent)
-    {
+    public void doCreateUser(ActionEvent actionEvent) throws Exception {
         String supervisor = newSupervisorTextField.getText();
         if(supervisor.equals(""))
         {
@@ -560,6 +606,9 @@ public class YuconzGui extends Application {
             newEmergencyContactTextField.getText(),
             newEmergencyNumberTextField.getText()
         });
+        showInfo("Database Updated", "New User Added Successfully!");
+        changeScene("HrPortal.fxml");
+        initialiseHrPortal();
     }
 
     public void initialiseHrPortal()
@@ -569,6 +618,14 @@ public class YuconzGui extends Application {
 
         otherUserDetailsComboBox = (ComboBox<String>) scene.lookup("#otherUserDetailsComboBox");
         otherUserDetailsComboBox.setItems(users);
+        viewOtherUsersPersonalDetailsButton = (Button) getScene().lookup("#viewOtherUsersPersonalDetailsButton");
+
+    }
+
+    public void initialiseOtherUsersPersonalDetailsForm() throws Exception {
+        String selectedEmpId = otherUserDetailsComboBox.getValue();
+        changeScene("ViewPersonalDetails.fxml");
+        viewOtherUsersPersonalDetailsForm(selectedEmpId);
     }
 
     public void viewCreateNewUser(ActionEvent actionEvent) throws Exception
