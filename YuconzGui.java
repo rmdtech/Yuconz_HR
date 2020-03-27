@@ -77,6 +77,8 @@ public class YuconzGui extends Application {
     public ComboBox<String> newDepartmentComboBox;
     public ComboBox<String> otherUserDetailsComboBox;
     public ChoiceBox<String> recommendationChoiceBox;
+    public Button viewReviewsButton;
+    public Label youAreADirectorLabel;
 
     //Initialising other  elements
     public static User user;
@@ -97,7 +99,6 @@ public class YuconzGui extends Application {
     public String getAbsPath(String filename)
     {
         String path =  "file:///" + new File(filename).getAbsolutePath();
-        System.out.println(path);
         return path;
     }
 
@@ -288,6 +289,14 @@ public class YuconzGui extends Application {
                     managerPortalButton.setTranslateX(80);
                 }
                 managerPortalButton.setVisible(true);
+            }
+            if(user.getRole().level == 2)
+            {
+                viewReviewsButton = (Button) scene.lookup("#viewReviewsButton");
+                youAreADirectorLabel = (Label) scene.lookup("#youAreADirectorLabel");
+                reviewsDropdown.setVisible(false);
+                viewReviewsButton.setVisible(false);
+                youAreADirectorLabel.setVisible(true);
             }
 
         }
