@@ -2,7 +2,6 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -77,7 +76,7 @@ public class YuconzGui extends Application {
     public TextField newDepartmentTextField;
     public ComboBox<String> newDepartmentComboBox;
     public ComboBox<String> otherUserDetailsComboBox;
-    public ChoiceBox<String> recommendationChoiceBox;
+    public ComboBox<String> recommendationComboBox;
     public Button viewOtherUsersPersonalDetailsButton;
     public Button viewReviewsButton;
     public Label youAreADirectorLabel;
@@ -359,12 +358,12 @@ public class YuconzGui extends Application {
             }
             recommendationLabel.setText("Recommendation: " + mainReview[11]);
 
-            recommendationChoiceBox = (ChoiceBox<String>) scene.lookup("#recommendationChoiceBox");
-            recommendationChoiceBox.getItems().add("Stay in post");
-            recommendationChoiceBox.getItems().add("Salary increase");
-            recommendationChoiceBox.getItems().add("Promotion");
-            recommendationChoiceBox.getItems().add("Probation");
-            recommendationChoiceBox.getItems().add("Termination");
+            recommendationComboBox = (ComboBox<String>) scene.lookup("#recommendationComboBox");
+            recommendationComboBox.getItems().add("Stay in post");
+            recommendationComboBox.getItems().add("Salary increase");
+            recommendationComboBox.getItems().add("Promotion");
+            recommendationComboBox.getItems().add("Probation");
+            recommendationComboBox.getItems().add("Termination");
 
             pastPerformanceTable = (TableView) scene.lookup("#pastPerformanceTable");
             ppNumberCol = new TableColumn("No.");
