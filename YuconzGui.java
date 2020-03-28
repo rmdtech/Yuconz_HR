@@ -1,5 +1,7 @@
 import javafx.application.Application;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -80,6 +82,7 @@ public class YuconzGui extends Application {
     public Button viewOtherUsersPersonalDetailsButton;
     public Button viewReviewsButton;
     public Label youAreADirectorLabel;
+    public ComboBox<String> manageReviewsDropdown;
 
     //Initialising other  elements
     public static User user;
@@ -628,7 +631,19 @@ public class YuconzGui extends Application {
         otherUserDetailsComboBox = (ComboBox<String>) scene.lookup("#otherUserDetailsComboBox");
         otherUserDetailsComboBox.setItems(users);
         viewOtherUsersPersonalDetailsButton = (Button) getScene().lookup("#viewOtherUsersPersonalDetailsButton");
+    }
 
+    public void initialiseManagerPortal()
+    {
+        ArrayList<String[]> myReviews = View.getReviewsAsReviewer(user);
+        ObservableList<String> myReviewsAsStrings = FXCollections.observableArrayList();
+        for (String[] pair : myReviews)
+        {
+            myReviewsAsStrings.add(pair[0] + " (" + pair[1]+ ")");
+        }
+        manageReviewsDropdown = (ComboBox<String>) scene.lookup("#manageReviewsDropdown");
+        System.out.println(manageReviewsDropdown);
+        manageReviewsDropdown.setItems(myReviewsAsStrings);
     }
 
     public void initialiseOtherUsersPersonalDetailsForm() throws Exception {
@@ -658,6 +673,7 @@ public class YuconzGui extends Application {
     public void viewManagerPortal(ActionEvent actionEvent) throws Exception
     {
         changeScene("ManagerPortal.fxml");
+        initialiseManagerPortal();
     }
 
     public void viewInitialiseReview(ActionEvent actionEvent) throws Exception
