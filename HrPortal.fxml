@@ -28,7 +28,7 @@
                   <Button layoutX="74.0" layoutY="31.0" mnemonicParsing="false" onAction="#viewCreateNewUser" text="Create" />
                   <ComboBox fx:id="otherUserDetailsComboBox" layoutX="-1.0" layoutY="94.0" prefWidth="150.0" promptText="Select User..." />
                   <Label layoutX="-6.0" layoutY="77.0" text="View and Modify User's Personal Details" />
-                  <Button fx:id="viewOtherUsersPersonalDetailsButton" layoutX="158.0" layoutY="94.0" mnemonicParsing="false" onAction="#initialiseOtherUsersPersonalDetailsForm" text="View" />
+                  <Button fx:id="viewOtherUsersPersonalDetailsButton" layoutX="158.0" layoutY="94.0" mnemonicParsing="false" onAction="#viewOtherUsersPersonalDetailsForm" text="View" />
                </children>
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0">

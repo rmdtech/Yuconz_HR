@@ -390,47 +390,7 @@ public class YuconzGui extends Application {
         }
     }
 
-    public void updatePersonalDetailsForm() {
-        String[] payload = Authorise.readPersonalDetails(user, user.getEmployeeId());
-
-        employeeIdLabel = (Label) scene.lookup("#employeeIdLabel");
-        employeeIdLabel.setText("Employee ID: " + payload[0].toString());
-
-        surnameField = (TextField) scene.lookup("#surnameField");
-        surnameField.setText(payload[1].toString());
-
-        firstNameField = (TextField) scene.lookup("#firstNameField");
-        firstNameField.setText(payload[2].toString());
-
-        dobField = (TextField) scene.lookup("#dobField");
-        dobField.setText(payload[3].toString());
-
-        addressField = (TextField) scene.lookup("#addressField");
-        addressField.setText(payload[4].toString());
-
-        cityField = (TextField) scene.lookup("#cityField");
-        cityField.setText(payload[5].toString());
-
-        countyField = (TextField) scene.lookup("#countyField");
-        countyField.setText(payload[6].toString());
-
-        postcodeField = (TextField) scene.lookup("#postcodeField");
-        postcodeField.setText(payload[7].toString());
-
-        telephoneField = (TextField) scene.lookup("#telephoneField");
-        telephoneField.setText(payload[8].toString());
-
-        mobileField = (TextField) scene.lookup("#mobileField");
-        mobileField.setText(payload[9].toString());
-
-        emergencyContactNameField = (TextField) scene.lookup("#emergencyContactNameField");
-        emergencyContactNameField.setText(payload[10].toString());
-
-        emergencyContactNumberField = (TextField) scene.lookup("#emergencyContactNumberField");
-        emergencyContactNumberField.setText(payload[11].toString());
-    }
-
-    public void viewOtherUsersPersonalDetailsForm(String employeeId)
+    public void initialiseViewPersonalDetails(String employeeId)
     {
         String[] payload = Authorise.readPersonalDetails(user, employeeId);
 
@@ -651,10 +611,10 @@ public class YuconzGui extends Application {
         manageReviewsDropdown.setItems(myReviewsAsStrings);
     }
 
-    public void initialiseOtherUsersPersonalDetailsForm() throws Exception {
+    public void viewOtherUsersPersonalDetailsForm() throws Exception {
         String selectedEmpId = otherUserDetailsComboBox.getValue();
         changeScene("ViewPersonalDetails.fxml");
-        viewOtherUsersPersonalDetailsForm(selectedEmpId);
+        initialiseViewPersonalDetails(selectedEmpId);
     }
 
     public void viewCreateNewUser(ActionEvent actionEvent) throws Exception
@@ -666,7 +626,7 @@ public class YuconzGui extends Application {
     public void viewPersonalDetails(ActionEvent actionEvent) throws Exception
     {
         changeScene("ViewPersonalDetails.fxml");
-        updatePersonalDetailsForm();
+        initialiseViewPersonalDetails(user.getEmployeeId());
     }
 
     public void viewHrPortal(ActionEvent actionEvent) throws Exception
