@@ -180,11 +180,7 @@ public class Authorise
     public static boolean readPerformanceReview(User user, String revieweeId, String dueBy)
     {
         String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
-        if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
-        {
-            return true;
-        }
-        return false;
+        return AuthorisationAttempt(Action.Read, "Performance Review", user, new String[]{docId});
     }
 
     public static String[] readReviewMain(String documentId)

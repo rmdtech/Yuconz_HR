@@ -1,7 +1,5 @@
 import javafx.application.Application;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -75,7 +73,6 @@ public class YuconzGui extends Application {
     public TextField newEmergencyContactTextField;
     public TextField newEmergencyNumberTextField;
     public ComboBox<String> newRoleComboBox;
-    public TextField newDepartmentTextField;
     public ComboBox<String> newDepartmentComboBox;
     public ComboBox<String> otherUserDetailsComboBox;
     public ComboBox<String> recommendationComboBox;
@@ -92,10 +89,9 @@ public class YuconzGui extends Application {
 
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
+    private ActionEvent actionEvent;
 
-    public YuconzGui() {
-
-    }
+    public YuconzGui(){} // Empty constructor required for JFX
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -103,8 +99,7 @@ public class YuconzGui extends Application {
 
     public String getAbsPath(String filename)
     {
-        String path =  "file:///" + new File(filename).getAbsolutePath();
-        return path;
+        return "file:///" + new File(filename).getAbsolutePath();
     }
 
     /**
@@ -142,15 +137,15 @@ public class YuconzGui extends Application {
     /**
      * Changes the scene the user can see to whatever is passed in via fxml
      * @param fxml a string in the format (document.fxml)
-     * @throws Exception
+     * @throws Exception Required for JFX
      */
     public void changeScene(String fxml) throws Exception
     {
         Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
         loader.setLocation(new URL(getAbsPath(fxml)));
-        AnchorPane anchorPane = loader.<AnchorPane>load();
+        AnchorPane anchorPane = loader.load();
         scene = new Scene(anchorPane);
-        stage.setScene(scene);
+        Objects.requireNonNull(stage).setScene(scene);
         stage.show();
         stage.setResizable(false);
     }
@@ -181,50 +176,50 @@ public class YuconzGui extends Application {
     /**
      * Checks that the data being entered in the Personal Details payload is valid data.
      * @param payload the data being added
-     * @return
+     * @return whether or not the operation was successful
      */
     public boolean validatePersonalDetailsPayload(String[] payload)
     {
-        if(payload[0].toString().length() != 6)
+        if(payload[0].length() != 6)
         {
             showError("EmployeeID Error!", "The EmployeeID must be 6 Characters.");
             return false;
         }
-        if(payload[1].toString().length() < 1)
+        if(payload[1].length() < 1)
         {
             showError("Surname Error!", "You must enter your Surname.");
             return false;
         }
-        if(payload[2].toString().length() < 1)
+        if(payload[2].length() < 1)
         {
             showError("First Name Error!", "You must enter your First Name.");
             return false;
         }
         Pattern datePattern = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
-        if(!datePattern.matcher(payload[3].toString()).matches())
+        if(!datePattern.matcher(payload[3]).matches())
         {
             showError("Birth Date Error!", "The Date should fit the format YYYY-MM-DD");
             return false;
         }
         Pattern postcodePattern = Pattern.compile("^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$");
-        if(!postcodePattern.matcher(payload[7].toString()).matches())
+        if(!postcodePattern.matcher(payload[7]).matches())
         {
             showError("Postcode Error!", "Please use a valid UK Postcode. Example: CT2 7SG");
             return false;
         }
         Pattern telephonePattern = Pattern.compile("^(?:(?:\\(?(?:0(?:0|11)\\)?[\\s-]?\\(?|\\+)44\\)?[\\s-]?(?:\\(?0\\)?[\\s-]?)?)|(?:\\(?0))(?:(?:\\d{5}\\)?[\\s-]?\\d{4,5})|(?:\\d{4}\\)?[\\s-]?(?:\\d{5}|\\d{3}[\\s-]?\\d{3}))|(?:\\d{3}\\)?[\\s-]?\\d{3}[\\s-]?\\d{3,4})|(?:\\d{2}\\)?[\\s-]?\\d{4}[\\s-]?\\d{4}))(?:[\\s-]?(?:x|ext\\.?|\\#)\\d{3,4})?$");
-        if(!telephonePattern.matcher(payload[8].toString()).matches())
+        if(!telephonePattern.matcher(payload[8]).matches())
         {
             showError("Telephone Number Error!", "The telephone number must be 11 numbers long, including no spaces.");
             return false;
         }
         Pattern mobilePattern = Pattern.compile("((\\+44(\\s\\(0\\)\\s|\\s0\\s|\\s)?)|0)7\\d{3}(\\s)?\\d{6}");
-        if(!mobilePattern.matcher(payload[9].toString()).matches())
+        if(!mobilePattern.matcher(payload[9]).matches())
         {
             showError("Mobile Number Error!", "The mobile number must be 11 numbers long, including no spaces.");
             return false;
         }
-        if((!mobilePattern.matcher(payload[11].toString()).matches()) && (!telephonePattern.matcher(payload[11].toString()).matches()))
+        if((!mobilePattern.matcher(payload[11]).matches()) && (!telephonePattern.matcher(payload[11]).matches()))
         {
             showError("Emergency Contact Number Error!", "The emergency contact number must be a valid UK phone number.");
             return false;
@@ -234,10 +229,11 @@ public class YuconzGui extends Application {
 
     /**
      * Takes the user to their profile page if they entered correct details, displays an error if they did not.
-     * @param actionEvent
-     * @throws Exception
+     * @param actionEvent required for JFX
+     * @throws Exception required for JFX
      */
     public void login(ActionEvent actionEvent) throws Exception {
+        this.actionEvent = actionEvent;
 
         String employeeId = employeeIdField.getText();
         String password = passwordField.getText();
@@ -248,7 +244,7 @@ public class YuconzGui extends Application {
             changeScene("ProfilePage.fxml");
             initialiseProfilePage();
             Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
-            stage.setTitle("Yuconz - Logged in as: " + employeeId);
+            Objects.requireNonNull(stage).setTitle("Yuconz - Logged in as: " + employeeId);
         }
         else
         {
@@ -257,8 +253,9 @@ public class YuconzGui extends Application {
     }
 
     public void logout(ActionEvent actionEvent) throws Exception {
+        this.actionEvent = actionEvent;
         Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
-        stage.setTitle("Yuconz");
+        Objects.requireNonNull(stage).setTitle("Yuconz");
         Authenticate.logout(user);
         changeScene("Login.fxml");
     }
@@ -327,7 +324,7 @@ public class YuconzGui extends Application {
 
     public void initialisePerformanceReviewView(String revieweeId, String dueBy)
     {
-        String[] mainReview = null;
+        String[] mainReview;
         String documentId = View.getReviewDocId(revieweeId, dueBy);
 
         if(Authorise.readPerformanceReview(user, revieweeId, dueBy))
@@ -403,48 +400,49 @@ public class YuconzGui extends Application {
         }
 
         employeeIdLabel = (Label) scene.lookup("#employeeIdLabel");
-        employeeIdLabel.setText("Employee ID: " + payload[0].toString());
+        employeeIdLabel.setText("Employee ID: " + Objects.requireNonNull(payload)[0]);
 
         surnameField = (TextField) scene.lookup("#surnameField");
-        surnameField.setText(payload[1].toString());
+        surnameField.setText(payload[1]);
 
         firstNameField = (TextField) scene.lookup("#firstNameField");
-        firstNameField.setText(payload[2].toString());
+        firstNameField.setText(payload[2]);
 
         dobField = (TextField) scene.lookup("#dobField");
-        dobField.setText(payload[3].toString());
+        dobField.setText(payload[3]);
 
         addressField = (TextField) scene.lookup("#addressField");
-        addressField.setText(payload[4].toString());
+        addressField.setText(payload[4]);
 
         cityField = (TextField) scene.lookup("#cityField");
-        cityField.setText(payload[5].toString());
+        cityField.setText(payload[5]);
 
         countyField = (TextField) scene.lookup("#countyField");
-        countyField.setText(payload[6].toString());
+        countyField.setText(payload[6]);
 
         postcodeField = (TextField) scene.lookup("#postcodeField");
-        postcodeField.setText(payload[7].toString());
+        postcodeField.setText(payload[7]);
 
         telephoneField = (TextField) scene.lookup("#telephoneField");
-        telephoneField.setText(payload[8].toString());
+        telephoneField.setText(payload[8]);
 
         mobileField = (TextField) scene.lookup("#mobileField");
-        mobileField.setText(payload[9].toString());
+        mobileField.setText(payload[9]);
 
         emergencyContactNameField = (TextField) scene.lookup("#emergencyContactNameField");
-        emergencyContactNameField.setText(payload[10].toString());
+        emergencyContactNameField.setText(payload[10]);
 
         emergencyContactNumberField = (TextField) scene.lookup("#emergencyContactNumberField");
-        emergencyContactNumberField.setText(payload[11].toString());
+        emergencyContactNumberField.setText(payload[11]);
     }
 
     /**
-     * Initialises the HR Director user which can then create additional users who can log into the sytsem.
-     * @param actionEvent
-     * @throws Exception
+     * Initialises the HR Director user which can then create additional users who can log into the system.
+     * @param actionEvent required for JFX
+     * @throws Exception required for JFX
      */
     public void initialiseUser(ActionEvent actionEvent) throws Exception {
+        this.actionEvent = actionEvent;
         String employeeId = employeeIdField.getText();
         String password = initialisePasswordField.getText();
         String firstName = firstNameField.getText();
@@ -465,9 +463,11 @@ public class YuconzGui extends Application {
         {
             //Initialise the database.
             File dir = new File("./databases");
-            dir.mkdir();
-            DatabaseParser dp = new DatabaseParser();
-            dp.setupDatabase();
+            if(dir.mkdir())
+            {
+                DatabaseParser dp = new DatabaseParser();
+                dp.setupDatabase();
+            }
 
             if (Authenticate.addNewUser(employeeId, password, null, Position.Department.HR, Position.Role.Director))
             {
@@ -488,6 +488,7 @@ public class YuconzGui extends Application {
 
     public void unlockPersonalDetails(ActionEvent actionEvent)
     {
+        this.actionEvent = actionEvent;
         surnameField.setDisable(false);
         firstNameField.setDisable(false);
         dobField.setDisable(false);
@@ -507,6 +508,7 @@ public class YuconzGui extends Application {
     }
 
     public void lockPersonalDetails(ActionEvent actionEvent) {
+        this.actionEvent = actionEvent;
         String id = employeeIdLabel.getText().substring(employeeIdLabel.getText().length() - 6);
         String[] payload = new String[]{id, surnameField.getText(), firstNameField.getText(), dobField.getText(), addressField.getText(), cityField.getText(), countyField.getText(), postcodeField.getText(), telephoneField.getText(), mobileField.getText(), emergencyContactNameField.getText(), emergencyContactNumberField.getText()};
 
@@ -537,7 +539,8 @@ public class YuconzGui extends Application {
         }
     }
 
-    public void initialiseCreateNewUser() throws Exception {
+    public void initialiseCreateNewUser()
+    {
         newDepartmentComboBox = (ComboBox<String>) scene.lookup("#newDepartmentComboBox");
         newDepartmentComboBox.setItems(FXCollections.observableArrayList(
                 "HR",
@@ -558,6 +561,7 @@ public class YuconzGui extends Application {
 
     public void doCreateUser(ActionEvent actionEvent) throws Exception
     {
+        this.actionEvent = actionEvent;
         String supervisor = newSupervisorTextField.getText();
         if(supervisor.equals(""))
         {
@@ -599,7 +603,7 @@ public class YuconzGui extends Application {
         users.addAll(Objects.requireNonNull(View.getAllUsers(user)));
 
         ObservableList<String> completedReviews = FXCollections.observableArrayList();
-        for(String[] pair : View.getAllReviews(user)) //CHANGE THIS TO COMPLETED ONLY ASAP
+        for(String[] pair : Objects.requireNonNull(View.getAllReviews(user))) //CHANGE THIS TO COMPLETED ONLY ASAP
         {
             completedReviews.add(pair[0] + " (" + pair[1] + ")");
         }
@@ -630,30 +634,35 @@ public class YuconzGui extends Application {
 
     public void viewCreateNewUser(ActionEvent actionEvent) throws Exception
     {
+        this.actionEvent = actionEvent;
         changeScene("CreateNewUser.fxml");
         initialiseCreateNewUser();
     }
 
     public void viewPersonalDetails(ActionEvent actionEvent) throws Exception
     {
+        this.actionEvent = actionEvent;
         changeScene("ViewPersonalDetails.fxml");
         initialiseViewPersonalDetails(user.getEmployeeId());
     }
 
     public void viewHrPortal(ActionEvent actionEvent) throws Exception
     {
+        this.actionEvent = actionEvent;
         changeScene("HrPortal.fxml");
         initialiseHrPortal();
     }
 
     public void viewManagerPortal(ActionEvent actionEvent) throws Exception
     {
+        this.actionEvent = actionEvent;
         changeScene("ManagerPortal.fxml");
         initialiseManagerPortal();
     }
 
     public void viewInitialiseReview(ActionEvent actionEvent) throws Exception
     {
+        this.actionEvent = actionEvent;
         changeScene("InitialiseReview.fxml");
     }
 
@@ -671,6 +680,7 @@ public class YuconzGui extends Application {
     }
 
     public void goHome(ActionEvent actionEvent) throws Exception {
+        this.actionEvent = actionEvent;
         changeScene("ProfilePage.fxml");
         initialiseProfilePage();
     }
