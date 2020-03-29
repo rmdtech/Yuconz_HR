@@ -84,9 +84,11 @@ public class YuconzGui extends Application {
     public Label youAreADirectorLabel;
     public ComboBox<String> manageReviewsDropdown;
     public Label personalDetailsHeader;
+    public ComboBox<String> viewCompletedReviewsDropdown;
 
     //Initialising other  elements
     public static User user;
+
 
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
@@ -590,12 +592,21 @@ public class YuconzGui extends Application {
 
     public void initialiseHrPortal()
     {
+        otherUserDetailsComboBox = (ComboBox<String>) scene.lookup("#otherUserDetailsComboBox");
+        viewCompletedReviewsDropdown = (ComboBox<String>) scene.lookup("#viewCompletedReviewsDropdown");
+
         ObservableList<String> users = FXCollections.observableArrayList();
         users.addAll(Objects.requireNonNull(View.getAllUsers(user)));
 
-        otherUserDetailsComboBox = (ComboBox<String>) scene.lookup("#otherUserDetailsComboBox");
+        ObservableList<String> completedReviews = FXCollections.observableArrayList();
+        for(String[] pair : View.getAllReviews(user)) //CHANGE THIS TO COMPLETED ONLY ASAP
+        {
+            completedReviews.add(pair[0] + " (" + pair[1] + ")");
+        }
+
         otherUserDetailsComboBox.setItems(users);
-        viewOtherUsersPersonalDetailsButton = (Button) getScene().lookup("#viewOtherUsersPersonalDetailsButton");
+        viewCompletedReviewsDropdown.setItems(completedReviews);
+
     }
 
     public void initialiseManagerPortal()
@@ -650,6 +661,13 @@ public class YuconzGui extends Application {
     {
         changeScene("viewPerformanceReview.fxml");
         initialisePerformanceReviewView(user.getEmployeeId(), reviewsDropdown.getValue());
+    }
+
+    public void viewViewPerformanceReviewAsHr() throws Exception {
+        String employeeIdOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[0];
+        String dateOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[1].replace("(", "").replace(")", "");
+        changeScene("viewPerformanceReview.fxml");
+        initialisePerformanceReviewView(employeeIdOfReview, dateOfReview);
     }
 
     public void goHome(ActionEvent actionEvent) throws Exception {
