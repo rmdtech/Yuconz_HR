@@ -83,11 +83,10 @@ public class YuconzGui extends Application {
     public Button viewReviewsButton;
     public Label youAreADirectorLabel;
     public ComboBox<String> manageReviewsDropdown;
+    public Label personalDetailsHeader;
 
     //Initialising other  elements
     public static User user;
-
-
 
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
@@ -434,6 +433,12 @@ public class YuconzGui extends Application {
     public void viewOtherUsersPersonalDetailsForm(String employeeId)
     {
         String[] payload = Authorise.readPersonalDetails(user, employeeId);
+
+        personalDetailsHeader = (Label) scene.lookup("#personalDetailsHeader");
+        if(!user.getEmployeeId().equals(employeeId))
+        {
+            personalDetailsHeader.setText(employeeId + "'s Details");
+        }
 
         employeeIdLabel = (Label) scene.lookup("#employeeIdLabel");
         employeeIdLabel.setText("Employee ID: " + payload[0].toString());
