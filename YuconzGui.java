@@ -622,7 +622,6 @@ public class YuconzGui extends Application {
             myReviewsAsStrings.add(pair[0] + " (" + pair[1]+ ")");
         }
         manageReviewsDropdown = (ComboBox<String>) scene.lookup("#manageReviewsDropdown");
-        System.out.println(manageReviewsDropdown);
         manageReviewsDropdown.setItems(myReviewsAsStrings);
     }
 
