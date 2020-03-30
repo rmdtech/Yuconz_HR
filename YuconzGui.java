@@ -603,7 +603,7 @@ public class YuconzGui extends Application {
         users.addAll(Objects.requireNonNull(View.getAllUsers(user)));
 
         ObservableList<String> completedReviews = FXCollections.observableArrayList();
-        for(String[] pair : Objects.requireNonNull(View.getAllReviews(user))) //CHANGE THIS TO COMPLETED ONLY ASAP
+        for(String[] pair : Objects.requireNonNull(View.getAllCompletedReviewKeys(user)))
         {
             completedReviews.add(pair[0] + " (" + pair[1] + ")");
         }
