@@ -160,10 +160,8 @@ public class Authorise
     {
         if (AuthorisationAttempt(Action.Read, "Personal Details", user, new String[] { pdEmpId } ))
         {
-            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Update.label, "Personal Details", true);
             return dp.fetchPersonalDetails(pdEmpId);
         }
-        dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Update.label, "Personal Details", false);
         return null;
     }
 
