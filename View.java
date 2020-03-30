@@ -26,21 +26,22 @@ public class View
      * @param user The currently logged in member of HR
      * @return An ArrayList containing all the main elements of a completed review
      */
-    static ArrayList<String[]> getAllCompletedReview(User user)
+    static ArrayList<String[]> getAllCompletedReviewKeys(User user)
     {
         if (user.getDepartment().equals(Position.Department.HR))
         {
             ArrayList<String[]> allReviews = dp.fetchAllReviewKeys();
-            ArrayList<String[]> completedReviews = new ArrayList<>();
+            ArrayList<String[]> completedReviewKeys = new ArrayList<>();
             for(int i = 0; i < allReviews.size(); i++)
             {
-                String[] current = allReviews.get(i);
+                String[] currentKeys = allReviews.get(i);
+                String[] current = dp.fetchReview(dp.fetchReviewDocumentId(currentKeys[0], currentKeys[1]));
                 if (current[5] != null && current[6] != null && current[7] != null)
                 {
-                    completedReviews.add(current);
+                    completedReviewKeys.add(currentKeys);
                 }
             }
-            return completedReviews;
+            return completedReviewKeys;
         }
         else
         {
