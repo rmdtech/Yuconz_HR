@@ -22,6 +22,34 @@ public class View
     }
 
     /**
+     * Gets all completed reviews currently in the Database. Only to be used by HR Staff
+     * @param user The currently logged in member of HR
+     * @return An ArrayList containing all the main elements of a completed review
+     */
+    static ArrayList<String[]> getAllCompletedReview(User user)
+    {
+        if (user.getDepartment().equals(Position.Department.HR))
+        {
+            ArrayList<String[]> allReviews = dp.fetchAllReviewKeys();
+            ArrayList<String[]> completedReviews = new ArrayList<>();
+            for(int i = 0; i < allReviews.size(); i++)
+            {
+                String[] current = allReviews.get(i);
+                if (current[5] != null && current[6] != null && current[7] != null)
+                {
+                    completedReviews.add(current);
+                }
+            }
+            return completedReviews;
+        }
+        else
+        {
+            dp.recordAuthorisationAttempt(user.getEmployeeId(), Authorise.Action.Read.toString(), "UI Restraint error - tried loading all completed Reviews", false);
+            return null;
+        }
+    }
+
+    /**
      * Returns all reviews where a User is registered as a Reviewer (only to be used by managers or above)
      * @param user the User object that is performing this action
      * @return an ArrayList containing all the keys required to fetch a certain review
