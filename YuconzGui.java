@@ -322,6 +322,11 @@ public class YuconzGui extends Application {
         changeScene("HrPortal.fxml");
     }
 
+    public void signPerformanceReview()
+    {
+        System.out.println("Insert Sign Code");
+    }
+
     public void initialisePerformanceReviewView(String revieweeId, String dueBy)
     {
         String[] mainReview;
