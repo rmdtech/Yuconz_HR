@@ -630,10 +630,18 @@ public class YuconzGui extends Application {
         manageReviewsDropdown.setItems(myReviewsAsStrings);
     }
 
-    public void viewOtherUsersPersonalDetailsForm() throws Exception {
-        String selectedEmpId = otherUserDetailsComboBox.getValue();
-        changeScene("ViewPersonalDetails.fxml");
-        initialiseViewPersonalDetails(selectedEmpId);
+    public void viewOtherUsersPersonalDetailsForm() throws Exception
+    {
+        if(otherUserDetailsComboBox.getValue() == null)
+        {
+            showError("Details Selection Error", "Please select a personal details document from the dropdown menu");
+        }
+        else
+        {
+            String selectedEmpId = otherUserDetailsComboBox.getValue();
+            changeScene("ViewPersonalDetails.fxml");
+            initialiseViewPersonalDetails(selectedEmpId);
+        }
     }
 
     public void viewCreateNewUser(ActionEvent actionEvent) throws Exception
@@ -685,10 +693,17 @@ public class YuconzGui extends Application {
     }
 
     public void viewViewPerformanceReviewAsHr() throws Exception {
-        String employeeIdOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[0];
-        String dateOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[1].replace("(", "").replace(")", "");
-        changeScene("viewPerformanceReview.fxml");
-        initialisePerformanceReviewView(employeeIdOfReview, dateOfReview);
+        if(viewCompletedReviewsDropdown.getValue() == null)
+        {
+            showError("Review Selection Error", "Please select a review from the dropdown menu");
+        }
+        else
+        {
+            String employeeIdOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[0];
+            String dateOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[1].replace("(", "").replace(")", "");
+            changeScene("viewPerformanceReview.fxml");
+            initialisePerformanceReviewView(employeeIdOfReview, dateOfReview);
+        }
     }
 
     public void goHome(ActionEvent actionEvent) throws Exception {
