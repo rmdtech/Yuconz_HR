@@ -680,8 +680,15 @@ public class YuconzGui extends Application {
 
     public void viewViewPerformanceReview() throws Exception
     {
-        changeScene("viewPerformanceReview.fxml");
-        initialisePerformanceReviewView(user.getEmployeeId(), reviewsDropdown.getValue());
+        if(reviewsDropdown.getValue() == null)
+        {
+            showError("Review Selection Error", "Please select a review from the dropdown menu");
+        }
+        else
+        {
+            changeScene("viewPerformanceReview.fxml");
+            initialisePerformanceReviewView(user.getEmployeeId(), reviewsDropdown.getValue());
+        }
     }
 
     public void viewViewPerformanceReviewAsReviewer() throws Exception
