@@ -227,6 +227,40 @@ public class YuconzGui extends Application {
         return true;
     }
 
+    public boolean validateUserAttributes(String employeeId, String password, String supervisor, String department, String role)
+    {
+        if(employeeId.length() != 6)
+        {
+            showError("Employee ID Error!", "The Employee ID must be 6 Characters.");
+            return false;
+        }
+
+        if(password.length() < 1)
+        {
+            showError("Password Error", "Please enter a password");
+            return false;
+        }
+
+        if(!(supervisor == null || supervisor.length() == 6))
+        {
+            showError("Supervisor ID Error!", "The supervisor must be a valid employee ID or be left blank for directors");
+            return false;
+        }
+
+        if(department == null)
+        {
+            showError("Department Error!", "Please select a department from the dropdown menu");
+            return false;
+        }
+
+        if(role == null)
+        {
+            showError("Role Error!", "Please select a role from the dropdown menu");
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Takes the user to their profile page if they entered correct details, displays an error if they did not.
      * @param actionEvent required for JFX
@@ -572,31 +606,53 @@ public class YuconzGui extends Application {
         {
             supervisor = null;
         }
-        Authenticate.addNewUser(
-            newEmployeeIdTextField.getText(),
-            newPasswordTextField.getText(),
-            supervisor,
-            Position.Department.valueOf(newDepartmentComboBox.getValue()),
-            Position.Role.valueOf(newRoleComboBox.getValue())
+
+        String[] personalDetailsPayload = new String[] {
+                newEmployeeIdTextField.getText(),
+                newSurnameTextField.getText(),
+                newNameTextField.getText(),
+                newDateOfBirthTextField.getText(),
+                newAddressTextField.getText(),
+                newCityTextField.getText(),
+                newCountyTextField.getText(),
+                newPostcodeTextField.getText(),
+                newPhoneTextField.getText(),
+                newMobileTextField.getText(),
+                newEmergencyContactTextField.getText(),
+                newEmergencyNumberTextField.getText()
+        };
+
+        boolean areDetailsValid = validateUserAttributes(
+                newEmployeeIdTextField.getText(),
+                newPasswordTextField.getText(),
+                supervisor,
+                newDepartmentComboBox.getValue(),
+                newRoleComboBox.getValue()
         );
 
-        Authorise.createPersonalDetailsRecord(user, new String[] {
-            newEmployeeIdTextField.getText(),
-            newSurnameTextField.getText(),
-            newNameTextField.getText(),
-            newDateOfBirthTextField.getText(),
-            newAddressTextField.getText(),
-            newCityTextField.getText(),
-            newCountyTextField.getText(),
-            newPostcodeTextField.getText(),
-            newPhoneTextField.getText(),
-            newMobileTextField.getText(),
-            newEmergencyContactTextField.getText(),
-            newEmergencyNumberTextField.getText()
-        });
-        showInfo("Database Updated", "New User Added Successfully!");
-        changeScene("HrPortal.fxml");
-        initialiseHrPortal();
+        if(areDetailsValid && validatePersonalDetailsPayload(personalDetailsPayload))
+        {
+            if(!Authenticate.addNewUser(
+                    newEmployeeIdTextField.getText(),
+                    newPasswordTextField.getText(),
+                    supervisor,
+                    Position.Department.valueOf(newDepartmentComboBox.getValue()),
+                    Position.Role.valueOf(newRoleComboBox.getValue())
+            ))
+            {
+                showError("General Error", "A general error occurred, please make sure all data has been entered correctly and the user does not already exist");
+                return;
+            }
+
+            if(!Authorise.createPersonalDetailsRecord(user, personalDetailsPayload))
+            {
+                showError("General Error", "A general error occurred, please make sure all data has been entered correctly and the user does not already exist");
+                return;
+            }
+            showInfo("Database Updated", "New User Added Successfully!");
+            changeScene("HrPortal.fxml");
+            initialiseHrPortal();
+        }
     }
 
     public void initialiseHrPortal()
