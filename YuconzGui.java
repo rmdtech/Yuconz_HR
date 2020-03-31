@@ -693,10 +693,17 @@ public class YuconzGui extends Application {
 
     public void viewViewPerformanceReviewAsReviewer() throws Exception
     {
-        String employeeIdOfReview = manageReviewsDropdown.getValue().split(" ")[0];
-        String dateOfReview = manageReviewsDropdown.getValue().split(" ")[1].replace("(", "").replace(")", "");
-        changeScene("viewPerformanceReview.fxml");
-        initialisePerformanceReviewView(employeeIdOfReview, dateOfReview);
+        if(manageReviewsDropdown.getValue() == null)
+        {
+            showError("Review Selection Error", "Please select a review from the dropdown menu");
+        }
+        else
+        {
+            String employeeIdOfReview = manageReviewsDropdown.getValue().split(" ")[0];
+            String dateOfReview = manageReviewsDropdown.getValue().split(" ")[1].replace("(", "").replace(")", "");
+            changeScene("viewPerformanceReview.fxml");
+            initialisePerformanceReviewView(employeeIdOfReview, dateOfReview);
+        }
     }
 
     public void viewViewPerformanceReviewAsHr() throws Exception {
