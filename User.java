@@ -57,6 +57,7 @@ public class User{
         directSupervisor = managerId;
     }
 
+
     /**
      * Checks whether this User object is logged in
      * @return Logged in status
