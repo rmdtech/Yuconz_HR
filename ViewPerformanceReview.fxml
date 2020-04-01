@@ -73,21 +73,13 @@
                   <Font size="20.0" />
                </font>
             </Label>
-            <TextField minHeight="-Infinity" minWidth="-Infinity" prefHeight="61.0" prefWidth="591.0" promptText="Performance Summary" GridPane.rowIndex="2">
-               <GridPane.margin>
-                  <Insets left="4.0" />
-               </GridPane.margin>
-            </TextField>
             <Label alignment="CENTER" layoutX="160.0" layoutY="363.0" minWidth="-Infinity" prefHeight="45.0" prefWidth="301.0" text="Preview of Future Performance" textAlignment="CENTER" translateY="60.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <font>
                   <Font size="20.0" />
                </font>
             </Label>
-            <TableView maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="294.0" translateY="-30.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-              <columns>
-                <TableColumn prefWidth="30.0" text="No." />
-                <TableColumn prefWidth="263.0" text="Objective" />
-              </columns>
+            <TextArea fx:id="performanceSummaryTextArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="92.0" prefWidth="580.0" scaleY="0.8" translateX="-140.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TableView fx:id="futurePerformanceTable" editable="true" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="294.0" translateY="-30.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets left="4.0" />
                </GridPane.margin>
@@ -97,11 +89,6 @@
                   <Font size="20.0" />
                </font>
             </Label>
-            <TextField layoutX="14.0" layoutY="380.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="61.0" prefWidth="591.0" promptText="Reviewer Comments" translateY="-70.0" GridPane.rowIndex="4">
-               <GridPane.margin>
-                  <Insets left="4.0" />
-               </GridPane.margin>
-            </TextField>
             <Label alignment="CENTER" layoutX="160.0" layoutY="548.0" minWidth="-Infinity" prefHeight="45.0" prefWidth="301.0" text="Signed By" textAlignment="CENTER" translateY="10.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                <font>
                   <Font size="20.0" />
@@ -119,6 +106,9 @@
                   <Button layoutX="101.0" layoutY="134.0" mnemonicParsing="false" onAction="#signPerformanceReview" text="Sign Document" />
                </children>
             </Pane>
+            <Button fx:id="addFPRowButton" mnemonicParsing="false" onAction="#addFPRow" text="Add Row" translateY="-30.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <Button mnemonicParsing="false" onAction="#deleteSelectedFPRow" text="Delete Row" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <TextArea fx:id="reviewerCommentsTextArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="583.0" scaleY="0.25" translateX="10.0" translateY="80.0" GridPane.rowIndex="3" />
          </children>
       </GridPane>
    </children>
