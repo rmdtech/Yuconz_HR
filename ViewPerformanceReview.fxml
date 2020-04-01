@@ -103,7 +103,8 @@
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="4">
                <children>
                   <ComboBox fx:id="recommendationComboBox" layoutX="61.0" layoutY="47.0" prefHeight="25.0" prefWidth="178.0" promptText="Select Recomendation..." />
-                  <Button layoutX="101.0" layoutY="134.0" mnemonicParsing="false" onAction="#signPerformanceReview" text="Sign Document" />
+                  <Button layoutX="101.0" layoutY="134.0" mnemonicParsing="false" onAction="#signPerformanceReview" text="Save &amp; Sign" translateX="-40.0" />
+                  <Button layoutX="166.0" layoutY="122.0" mnemonicParsing="false" text="Save &amp; Exit" translateX="-5.0" translateY="12.0" />
                </children>
             </Pane>
             <Button fx:id="addFPRowButton" mnemonicParsing="false" onAction="#addFPRow" text="Add Row" translateY="-30.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
