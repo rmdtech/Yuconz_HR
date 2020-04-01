@@ -233,43 +233,52 @@ public class Authorise
         String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
         String[] currentMainDocument = dp.fetchReview(docId);
 
-        // Only allow users to sign their own signature box
-        if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && updatedDocument[revieweeSignatureIndex] != null)
+        if (currentMainDocument[revieweeSignatureIndex].equals("true") && currentMainDocument[reviewer1SignatureIndex].equals("true") && currentMainDocument[reviewer2SignatureIndex].equals("true"))
         {
-            System.out.println("Reviewee signature accepted");
-        }
-        else
-        {
-            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
-            System.out.println("Cannot overwrite signature on " + currentMainDocument[revieweeIdIndex] + "'s behalf");
+            System.out.println("This Review has already been completed and cannot be updated");
+            return false;
         }
 
-        // If this Reviewer is the reviewee's Line Manager -> first reviewer
-        if (currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()) && updatedDocument[reviewer1SignatureIndex] != null)
+        // Reject other users signing this box
+        if (!currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()))
         {
-            System.out.println("Direct Manager's signature accepted");
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[revieweeIdIndex] + "'s behalf");
+            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
         }
-        else
+        // Cannot un-sign Review
+        else if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && (currentMainDocument[revieweeSignatureIndex] != null && updatedDocument[revieweeSignatureIndex].equals("false")))
+        {
+            System.out.println("You have already signed this review off. Cannot un-sign document");
+            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
+        }
+
+
+
+        // If this Reviewer is the reviewee's Line Manager -> first reviewer
+        if (!currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()))
         {
             updatedDocument[reviewer1SignatureIndex] = currentMainDocument[reviewer1SignatureIndex];
             System.out.println("Cannot overwrite signature on " + currentMainDocument[firstReviewerIdIndex] + "'s behalf");
         }
+        // Cannot un-sign Review
+        else if (currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()) && (currentMainDocument[reviewer1SignatureIndex] != null && updatedDocument[reviewer1SignatureIndex].equals("false")))
+        {
+            System.out.println("You have already signed this review off. Cannot un-sign document");
+            updatedDocument[reviewer1SignatureIndex] = currentMainDocument[reviewer1SignatureIndex];
+        }
+
 
         // If this Reviewer is just another Reviewer
-        if (currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()) && updatedDocument[reviewer2SignatureIndex] != null)
-        {
-            System.out.println("Second Reviewer's signature accepted");
-        }
-        else
+        if (!currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()))
         {
             updatedDocument[reviewer2SignatureIndex] = currentMainDocument[reviewer2SignatureIndex];
             System.out.println("Cannot overwrite signature on " + currentMainDocument[secondReviewerIdIndex] + "'s behalf");
         }
-
-        if (currentMainDocument[revieweeSignatureIndex] != null && currentMainDocument[reviewer1SignatureIndex] != null && currentMainDocument[reviewer2SignatureIndex] != null)
+        // Cannot un-sign Review
+        else if (currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()) && (currentMainDocument[reviewer2SignatureIndex] != null && updatedDocument[reviewer2SignatureIndex].equals("false")))
         {
-            System.out.println("This Review has already been completed and cannot be updated");
-            return false;
+            updatedDocument[reviewer2SignatureIndex] = currentMainDocument[reviewer2SignatureIndex];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[secondReviewerIdIndex] + "'s behalf");
         }
 
         if (AuthorisationAttempt(Action.Update, "Performance Review", user, new String[] { docId }))
