@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,8 +13,7 @@ public class Authorise
     public enum Action{
         Create("Create"),
         Read("Read"),
-        Update("Update"),
-        Delete("Delete");
+        Update("Update");
 
         public final String label;
 
@@ -282,17 +280,6 @@ public class Authorise
     }
 
     /**
-     * Records that a User attempted to delete a Document
-     * @param user the user attemping the operation
-     * @return whether or not the operation has been successful
-     */
-    public static boolean deletePersonalDetails(User user)
-    {
-        AuthorisationAttempt(Action.Delete, "Personal Details", user,null );
-        return false;
-    }
-
-    /**
      * Any action must first be authorised by this method
      * @param action Authorise.Action Enum (CRUD)
      * @param target The target document ("Personal Details" or "Performance Review")
@@ -304,7 +291,6 @@ public class Authorise
      *                Read Performance Review - Document ID in position 0
      *                Update Personal Details - Associated Employee in position 0
      *                Update Performance Review -
-     *                Delete * - null
      * @return whether the action has been successful or not
      */
     private static boolean AuthorisationAttempt(Action action, String target, User user, String[] payload)
@@ -429,22 +415,6 @@ public class Authorise
                         }
                         System.out.println("Internal Error: No documentId provided when attempting to update review");
                         dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", null);
-                        return false;
-                    }
-                    else
-                    {
-                        System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
-                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), null, null);
-                        return false;
-                    }
-                case("Delete"):
-                    if (target.equals("Personal Details"))
-                    {
-                        return false;
-                    }
-                    // Stage 5
-                    else if (target.equals("Performance Review"))
-                    {
                         return false;
                     }
                     else
