@@ -4,20 +4,22 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DatabaseParserTest {
-    DatabaseParser dp = new DatabaseParser();
+    static DatabaseParser dp = new DatabaseParser();
 
-    String[] createDemoEmployee()
+    static String[] createDemoEmployee()  // needed for compatibility with stage4 tests
     {
         dp.newEmployee("abc123",
                 "5583f71e39554054b1aa1ce16fd520f2",
                 "8c78ab1466456a50c569849e39ec9909eaf3fce9a7ee91660da9d4da4a18fe10f93842473b05d38a828c2e0e130b7fed1dc4cef83459a8bda95162c87abf19ce",
+                null,
                 "HR",
                 "0");
-        String[] payload = {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+        String[] payload = {"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
                 "01634289431", "07499274509", "Jane Smith", "07286308174"};
         dp.createPersonalDetailsRecord(payload, "33d8bd019d4b4662bdbc8efd6048d1d9");
         return payload;
     }
+
 
     static void generateTestUsers() {
         Authenticate.addNewUser("dir123", "password", null, Position.Department.HR, Position.Role.Director);
@@ -28,57 +30,74 @@ class DatabaseParserTest {
     }
 
 
+    static void teardownDatabase() {
+        dp.sqlUpdate("DROP TABLE IF EXISTS PersonalDetails");
+        dp.sqlUpdate("DROP TABLE IF EXISTS PastPerformance");
+        dp.sqlUpdate("DROP TABLE IF EXISTS FuturePerformance");
+        dp.sqlUpdate("DROP TABLE IF EXISTS Review");
+        dp.sqlUpdate("DROP TABLE IF EXISTS Documents");
+        dp.sqlUpdate("DROP TABLE IF EXISTS Session");
+        dp.sqlUpdate("DROP TABLE IF EXISTS AuthenticationLog");
+        dp.sqlUpdate("DROP TABLE IF EXISTS AuthorisationLog");
+        dp.sqlUpdate("DROP TABLE IF EXISTS User");
+        System.out.println("Teardown Complete");
+    }
+
+
     @org.junit.jupiter.api.Test
     void createValidPersonalDetailsRecord() {
+
+        teardownDatabase();
+        dp.setupDatabase();
+
         dp.newEmployee("abc123",
                 "5583f71e39554054b1aa1ce16fd520f2",
                 "8c78ab1466456a50c569849e39ec9909eaf3fce9a7ee91660da9d4da4a18fe10f93842473b05d38a828c2e0e130b7fed1dc4cef83459a8bda95162c87abf19ce",
+                null,
                 "HR",
-                "0");
-        String[] payload = {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+                "0"
+        );
+
+        String[] payload = {"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
                 "01634289431", "07499274509", "Jane Smith", "07286308174"};
+
         assertTrue(
                 dp.createPersonalDetailsRecord(payload, "33d8bd019d4b4662bdbc8efd6048d1d9")
         );
 
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
     @org.junit.jupiter.api.Test
-    void createDuplicatePersonalDetailsRecord()
-    {
+    void createDuplicatePersonalDetailsRecord() {  //should throw SQLITE_CONSTRAINT_PRIMARYKEY
+
+        teardownDatabase();
+        dp.setupDatabase();
+
         String[] payload = createDemoEmployee();
 
         assertFalse(
                 dp.createPersonalDetailsRecord(payload, "33d8bd019d4b4662bdbc8efd6048d1d9")
         );
 
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
     @org.junit.jupiter.api.Test
-    void updatePersonalDetails()
-    {
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+    void updatePersonalDetails() {
+        teardownDatabase();
+        dp.setupDatabase();
 
         dp.newEmployee("abc123",
                 "5583f71e39554054b1aa1ce16fd520f2",
                 "8c78ab1466456a50c569849e39ec9909eaf3fce9a7ee91660da9d4da4a18fe10f93842473b05d38a828c2e0e130b7fed1dc4cef83459a8bda95162c87abf19ce",
+                null,
                 "HR",
                 "0");
-        String[] payload = {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+        String[] payload = {"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
                 "01634289431", "07499274509", "Jane Smith", "07286308174"};
         dp.createPersonalDetailsRecord(payload, "33d8bd019d4b4662bdbc8efd6048d1d9");
-        String[] newPayload = {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+        String[] newPayload = {"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
                 "01622761848", "07499274509", "Jane Smith", "07286308174"};
 
         dp.updatePersonalDetails(newPayload);
@@ -91,34 +110,31 @@ class DatabaseParserTest {
             res = dp.result.getString("telephoneNumber");
 
         }
-        catch (SQLException e) {}
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
 
 
         assertEquals(res, "01622761848");
 
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
     @org.junit.jupiter.api.Test
-    void updateTwoPersonalDetailsRecords()
-    {
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+    void updateTwoPersonalDetailsRecords() {
+        teardownDatabase();
+        dp.setupDatabase();
 
         dp.newEmployee("abc123",
                 "5583f71e39554054b1aa1ce16fd520f2",
                 "8c78ab1466456a50c569849e39ec9909eaf3fce9a7ee91660da9d4da4a18fe10f93842473b05d38a828c2e0e130b7fed1dc4cef83459a8bda95162c87abf19ce",
+                null,
                 "HR",
                 "0");
-        String[] payload = {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+        String[] payload = {"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
                 "01634289431", "07499274509", "Jane Smith", "07286308174"};
         dp.createPersonalDetailsRecord(payload, "33d8bd019d4b4662bdbc8efd6048d1d9");
-        String[] newPayload = {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+        String[] newPayload = {"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
                 "01622761848", "07499274509", "Roger Bosch", "07117698761"};
 
         dp.updatePersonalDetails(newPayload);
@@ -133,35 +149,31 @@ class DatabaseParserTest {
             res2 = dp.result.getString("emergencyContactNumber");
 
         }
-        catch (SQLException e) {}
-
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         assertEquals(res1, "Roger Bosch");
         assertEquals(res2, "07117698761");
 
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
     @org.junit.jupiter.api.Test
-    void resetPersonalDetailsRecords()
-    {
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+    void resetPersonalDetailsRecords() {
+        teardownDatabase();
+        dp.setupDatabase();
 
         dp.newEmployee("abc123",
                 "5583f71e39554054b1aa1ce16fd520f2",
                 "8c78ab1466456a50c569849e39ec9909eaf3fce9a7ee91660da9d4da4a18fe10f93842473b05d38a828c2e0e130b7fed1dc4cef83459a8bda95162c87abf19ce",
+                null,
                 "HR",
                 "0");
-        String[] payload = {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+        String[] payload = {"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
                 "01634289431", "07499274509", "Jane Smith", "07286308174"};
         dp.createPersonalDetailsRecord(payload, "33d8bd019d4b4662bdbc8efd6048d1d9");
-        String[] newPayload = {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+        String[] newPayload = {"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
                 "01622761848", "07499274509", "Roger Bosch", "07117698761"};
 
         dp.updatePersonalDetails(newPayload);
@@ -176,14 +188,16 @@ class DatabaseParserTest {
             res2 = dp.result.getString("emergencyContactNumber");
 
         }
-        catch (SQLException e) {}
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
 
 
         assertEquals(res1, "Roger Bosch");
         assertEquals(res2, "07117698761");
 
 
-        String[] newPayload1 = {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+        String[] newPayload1 = {"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
                 "01622761848", "07499274509", "Jane Smith", "07286308174"};
 
         dp.updatePersonalDetails(newPayload1);
@@ -198,125 +212,74 @@ class DatabaseParserTest {
             res4 = dp.result.getString("emergencyContactNumber");
 
         }
-        catch (SQLException e) {}
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
 
 
         assertEquals(res3, "Jane Smith");
         assertEquals(res4, "07286308174");
 
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
     @org.junit.jupiter.api.Test
-    void fetchPersonalDetailsPermissions()
-    {
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+    void fetchPersonalDetails() {
+        teardownDatabase();
+        dp.setupDatabase();
 
         createDemoEmployee();
 
-        assertArrayEquals(dp.fetchPersonalDetailsPermissions("abc123"), new String[] {"0", null, null, null, null, null});
+        assertArrayEquals(dp.fetchPersonalDetails("abc123"), new String[]{"abc123", "Smith", "John", "1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
+                "01634289431", "07499274509", "Jane Smith", "07286308174"
+        });
 
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
-    @org.junit.jupiter.api.Test
-    void fetchPersonalDetails()
-    {
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
-
-        createDemoEmployee();
-
-        assertArrayEquals(dp.fetchPersonalDetails("abc123"), new String[] {"abc123","Smith","John","1992-03-28", "14 York Road", "Canterbury", "Kent", "CT1 3TA",
-                "01634289431", "07499274509", "Jane Smith", "07286308174"});
-
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
-
-
-    }
 
     @org.junit.jupiter.api.Test
-    void fetchNonExistentPersonalDetails()
-    {
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+    void fetchNonExistentPersonalDetails() {
+        teardownDatabase();
+        dp.setupDatabase();
 
         createDemoEmployee();
 
         assertArrayEquals(dp.fetchPersonalDetails("def754"), null);
 
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
     @org.junit.jupiter.api.Test
-    void isLoggedInTrue()
-    {
-        dp.sqlUpdate("DELETE FROM Session");
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+    void isLoggedInTrue() {
+        teardownDatabase();
+        dp.setupDatabase();
 
         createDemoEmployee();
         dp.createSession("abc123", "9d33cb975ff14580a3fb405efbc2cf22");
 
         assertTrue(dp.isLoggedIn("abc123", "9d33cb975ff14580a3fb405efbc2cf22"));
 
-        dp.sqlUpdate("DELETE FROM Session");
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
     @org.junit.jupiter.api.Test
-    void isLoggedInFalse()
-    {
-        dp.sqlUpdate("DELETE FROM Session");
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+    void isLoggedInFalse() {
+        teardownDatabase();
+        dp.setupDatabase();
 
         createDemoEmployee();
         dp.createSession("abc123", "9d33cb975ff14580a3fb405efbc2cf22");
 
         assertFalse(dp.isLoggedIn("def456", "9d33cb975ff14580a3fb405efbc2cf22"));
 
-        dp.sqlUpdate("DELETE FROM Session");
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
     @org.junit.jupiter.api.Test
-    void isLoggedInAfterLogout()
-    {
-        dp.sqlUpdate("DELETE FROM Session");
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+    void isLoggedInAfterLogout() {
+        teardownDatabase();
+        dp.setupDatabase();
 
         createDemoEmployee();
         dp.createSession("abc123", "9d33cb975ff14580a3fb405efbc2cf22");
@@ -325,183 +288,213 @@ class DatabaseParserTest {
 
         assertFalse(dp.isLoggedIn("abc123", "9d33cb975ff14580a3fb405efbc2cf22"));
 
-        dp.sqlUpdate("DELETE FROM Session");
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
+        teardownDatabase();
     }
 
     @org.junit.jupiter.api.Test
-    void setupDatabase()
-    {
-        dp.sqlUpdate("DROP TABLE AuthorisationLog");
-        dp.sqlUpdate("DROP TABLE AuthenticationLog");
-        dp.sqlUpdate("DROP TABLE Session");
-        dp.sqlUpdate("DROP TABLE PersonalDetails");
-        dp.sqlUpdate("DROP TABLE Permissions");
-        dp.sqlUpdate("DROP TABLE Documents");
-        dp.sqlUpdate("DROP TABLE User");
+    void setupDatabase() {
+        teardownDatabase();
 
         dp.setupDatabase();
         createDemoEmployee();
 
         assertTrue(dp.checkEmployeeId("abc123"));
 
-        dp.sqlUpdate("DELETE FROM Session");
-        dp.sqlUpdate("DELETE FROM PersonalDetails");
-        dp.sqlUpdate("DELETE FROM Permissions");
-        dp.sqlUpdate("DELETE FROM Documents");
-        dp.sqlUpdate("DELETE FROM User");
-
-    @Test
-    void createReview() {
-        initDatabase();
-        generateTestUsers();
-        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
-        assertTrue(dp.createReview(payload));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+        teardownDatabase();
     }
 
     @Test
-    void createDuplicateReview() {
-        initDatabase();
+    void createReview() {
+        teardownDatabase();
+        dp.setupDatabase();
+
+        generateTestUsers();
+        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
+        assertTrue(dp.createReview(payload));
+
+        teardownDatabase();
+    }
+
+    @Test
+    void createDuplicateReview() {  // should throw SQLITE_CONSTRAINT_PRIMARYKEY
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.createReview(payload));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void fetchReviewDocumentId() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertEquals("69d76bd5a1ae48a284587698cf980fa6", dp.fetchReviewDocumentId("hre123", "2020-03-23"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void fetchNonExistentReviewDocumentId() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
-        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6",  "hrm123", "itm123"};
+        String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertNull(dp.fetchReviewDocumentId("hre123", "2021-01-01"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void isReviewer() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertTrue(dp.isReviewer("69d76bd5a1ae48a284587698cf980fa6", "hrm123"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void isNotReviewer() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewer("69d76bd5a1ae48a284587698cf980fa6", "ite123"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void isNonexistentReviewer() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewer("69d76bd5a1ae48a284587698cf980fa6", "abc456"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void isReviewerOnNonexistentDocument() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewer("c6d2ee23175f434781f79eb0b6f471b6", "hrm123"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void isReviewee() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertTrue(dp.isReviewee("69d76bd5a1ae48a284587698cf980fa6", "hre123"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void isNotReviewee() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewee("69d76bd5a1ae48a284587698cf980fa6", "ite123"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void isNonexistentReviewee() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewee("69d76bd5a1ae48a284587698cf980fa6", "abc456"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void isRevieweeOnNonexistentDocument() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertFalse(dp.isReviewer("c6d2ee23175f434781f79eb0b6f471b6", "hre123"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void fetchReview() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
-        String[] completePayload = new String[] {"hre123",
+        String[] completePayload = new String[]{"hre123",
                 "2020-03-23",
                 "69d76bd5a1ae48a284587698cf980fa6",
                 "hrm123",
                 "itm123",
                 null, null, null, null, null, null, null};
         assertArrayEquals(completePayload, dp.fetchReview("69d76bd5a1ae48a284587698cf980fa6"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void fetchNonexistentReview() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
         assertNull(dp.fetchReview("c6d2ee23175f434781f79eb0b6f471b6"));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void updateReviewPayloadOnly() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
@@ -515,13 +508,16 @@ class DatabaseParserTest {
                 "They did good",
                 "They can improve",
                 "Stay In Post"};
-        assertTrue(dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, new ArrayList<String[]>(), new ArrayList<String>()));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+        assertTrue(dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, new ArrayList<>(), new ArrayList<>()));
+
+        teardownDatabase();
     }
 
     @Test
     void updateReviewFullDataSet() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
@@ -545,12 +541,15 @@ class DatabaseParserTest {
         updatedFuturePerformance.add("work more");
 
         assertTrue(dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance));
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void fetchPastPerformance() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
@@ -576,12 +575,15 @@ class DatabaseParserTest {
         dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
 
         assertArrayEquals(updatedPastPerformance.toArray(), dp.fetchPastPerformance("69d76bd5a1ae48a284587698cf980fa6").toArray());
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void fetchNonexistentPastPerformance() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
@@ -607,12 +609,15 @@ class DatabaseParserTest {
         dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
 
         assertArrayEquals(new String[0], dp.fetchPastPerformance("c6d2ee23175f434781f79eb0b6f471b6").toArray());
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void fetchFuturePerformance() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
@@ -638,12 +643,15 @@ class DatabaseParserTest {
         dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
 
         assertArrayEquals(updatedFuturePerformance.toArray(), dp.fetchFuturePerformance("69d76bd5a1ae48a284587698cf980fa6").toArray());
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
 
     @Test
     void fetchNonexistentFuturePerformance() {
-        initDatabase();
+        teardownDatabase();
+        dp.setupDatabase();
+
         generateTestUsers();
         String[] payload = {"hre123", "2020-03-23", "69d76bd5a1ae48a284587698cf980fa6", "hrm123", "itm123"};
         dp.createReview(payload);
@@ -669,5 +677,7 @@ class DatabaseParserTest {
         dp.updateReview("69d76bd5a1ae48a284587698cf980fa6", updatedPayload, updatedPastPerformance, updatedFuturePerformance);
 
         assertArrayEquals(new String[0], dp.fetchFuturePerformance("c6d2ee23175f434781f79eb0b6f471b6").toArray());
-        //DATABASE FILE MUST BE MANUALLY DELETED AFTER TEST RUNS
+
+        teardownDatabase();
     }
+}
