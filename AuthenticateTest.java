@@ -90,15 +90,12 @@ class AuthenticateTest {
     void logout() {
         Authenticate.addNewUser("abc123", "password", null, Position.Department.HR, Position.Role.Employee);
         User testUser = Authenticate.login("abc123", "password");
-        String beforeLogout = sqlRead("SELECT * FROM Session", "employeeId");
+        String beforeLogout = sqlRead("SELECT * FROM Session;", "employeeId");
         Authenticate.logout(testUser);
-        String afterLogout = sqlRead("SELECT * FROM Session", "employeeId");
+        String afterLogout = sqlRead("SELECT * FROM Session;", "employeeId");
 
         assertNotEquals(beforeLogout, afterLogout);
     }
-
-
-
 
     private static boolean checkIsFirstBoot()
     {
@@ -122,37 +119,21 @@ class AuthenticateTest {
         }
     }
 
-    String sqlRead(String sql)
+    String sqlRead(String sql, String column)
     {
-        try
-        {
-            stmt = c.createStatement();
-            result = stmt.executeQuery(sql);
-            try
-            {
-                result.next(); // only ever be one result, while loop not required
-                String employeeId = result.getString("employeeId");
-                result.close();
-                stmt.close();
-                return employeeId;
-            }
-            catch (SQLException e)
-            {
-                e.printStackTrace();
-                return null; // keep compiler happy
-            }
+        dp = new DatabaseParser();
+        String row = "";
+        dp.sqlRead(sql);
+        try{
+            dp.result.next();
+            row = dp.result.getString(column);
+            dp.result.close();
+            dp.stmt.close();
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
-            return null;
-        }
 
-        catch(Exception e)
-        {
-            System.out.println("Error Occurred");
-            e.printStackTrace();
-            return null;
         }
+        return row;
     }
 }
