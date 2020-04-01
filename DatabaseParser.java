@@ -954,7 +954,7 @@ public class DatabaseParser
     ArrayList<String[]> fetchAllReviewKeys()
     {
         ArrayList<String[]> payload = new ArrayList<>();
-        sqlRead("SELECT revieweeId, dueBy FROM Review");
+        sqlRead("SELECT revieweeId, dueBy FROM Review ORDER BY dueBy");
 
         try
         {
