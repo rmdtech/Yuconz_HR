@@ -6,6 +6,8 @@ public class User{
     private Position.Department department;
     private Position.Role role;
     private String directSupervisor;
+    private String firstName;
+    private String lastName;
     private DatabaseParser dp;
 
     /**
@@ -90,10 +92,6 @@ public class User{
         return employeeId;
     }
 
-    /**
-     * Accessor method for the department
-     * @return the department enum
-     */
     public Position.Department getDepartment()
     {
         return department;

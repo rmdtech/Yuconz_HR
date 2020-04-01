@@ -412,6 +412,31 @@ public class DatabaseParser
     }
 
     /**
+     * returns an ArrayList of all employeeIds in the database
+     * @return payload of employeeIds
+     */
+    ArrayList<String> fetchAllUsers()
+    {
+        ArrayList<String> payload = new ArrayList<>();
+        sqlRead("SELECT employeeId FROM User");
+
+        try
+        {
+            while(result.next())
+            {
+                payload.add(result.getString("employeeId"));
+            }
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    /**
      * creates a session for a newly logged in user
      * @param employeeId the employeeId of the user who's creating a session
      * @param sessionId the UUID generated for the session
@@ -493,8 +518,8 @@ public class DatabaseParser
     boolean createPersonalDetailsRecord(String[] payload, String newDocumentId)
     {
         if(!sqlUpdate("INSERT INTO Documents " +
-                "(documentId, creationTimestamp, lastAccessed) " +
-                String.format("VALUES ('%s', CURRENT_TIME, CURRENT_TIME);", newDocumentId)
+                "(documentId, creationTimestamp) " +
+                String.format("VALUES ('%s', CURRENT_TIME);", newDocumentId)
         ))
         {
             return false;
@@ -920,5 +945,34 @@ public class DatabaseParser
         }
 
         return true;
+    }
+
+    /**
+     * fetches all the pairs of employeeIds and dueBys for reviews in the database
+     * @return payload of pairs (String Arrays) of employeeIds and dueBys
+     */
+    ArrayList<String[]> fetchAllReviewKeys()
+    {
+        ArrayList<String[]> payload = new ArrayList<>();
+        sqlRead("SELECT revieweeId, dueBy FROM Review");
+
+        try
+        {
+            while(result.next())
+            {
+                String[] pair = new String[2];
+
+                pair[0] = result.getString("revieweeId");
+                pair[1] = result.getString("dueBy");
+                payload.add(pair);
+            }
+            return payload;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 }

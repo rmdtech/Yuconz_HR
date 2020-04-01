@@ -78,6 +78,10 @@ public class Authorise
      * Creates a Review record. revieweeId and reviewers are mandatory fields
      * @param user the user logged in and trying to perform the action
      * @param content the initial, mandatory content for this review
+     *                [0] employeeId
+     *                [1] dueBy Date (yyyy-mm-dd)
+     *                [2] documentId (see User.generateUUID)
+     *                [3] Second Reviewer
      * @return whether the operation has been successful or not
      */
     public static boolean createPerformanceReview(User user, String[] content)
@@ -95,7 +99,7 @@ public class Authorise
         }
         String firstReviewer = dp.fetchDirectSupervisor(content[revieweeIdIndex]);
 
-        if ((firstReviewer + content[secondReviewerIdIndex - 1]).contains(content[revieweeIdIndex]))
+        if ((firstReviewer + content[secondReviewerIdIndex - 2]).contains(content[revieweeIdIndex]))
         {
             System.out.println("Reviewee can't also be a reviewer");
             return false;
@@ -127,22 +131,20 @@ public class Authorise
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 1]))
+        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 2]))
         {
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
         }
-        String[] payload = new String[content.length + 1];
+        String[] payload = new String[content.length + 2];
         payload[0] = content[0];
         payload[1] = content[1];
-        payload[2] = content[2];
+        payload[2] = User.generateUUID();
         payload[3] = firstReviewer;
-        payload[4] = content[3];
+        payload[4] = content[2];
 
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
-            // Generate a documentID for this review
-            // content[documentIdIndex] = User.generateUUID();
             return dp.createReview(payload);
         }
         return false;
@@ -158,10 +160,8 @@ public class Authorise
     {
         if (AuthorisationAttempt(Action.Read, "Personal Details", user, new String[] { pdEmpId } ))
         {
-            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Update.label, "Personal Details", true);
             return dp.fetchPersonalDetails(pdEmpId);
         }
-        dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Update.label, "Personal Details", false);
         return null;
     }
 
@@ -178,11 +178,7 @@ public class Authorise
     public static boolean readPerformanceReview(User user, String revieweeId, String dueBy)
     {
         String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
-        if (AuthorisationAttempt(Action.Read, "Performance Review", user, new String[] {docId}))
-        {
-            return true;
-        }
-        return false;
+        return AuthorisationAttempt(Action.Read, "Performance Review", user, new String[]{docId});
     }
 
     public static String[] readReviewMain(String documentId)
