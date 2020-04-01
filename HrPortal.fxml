@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="YuconzGui">
+   <children>
+      <GridPane prefHeight="400.0" prefWidth="601.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label alignment="CENTER" prefHeight="45.0" prefWidth="257.0" text="Hr Portal" GridPane.columnIndex="1">
+               <font>
+                  <Font size="30.0" />
+               </font></Label>
+            <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <Label layoutX="56.0" layoutY="14.0" text="Create New User" />
+                  <Button layoutX="74.0" layoutY="31.0" mnemonicParsing="false" onAction="#viewCreateNewUser" text="Create" />
+                  <ComboBox fx:id="otherUserDetailsComboBox" layoutX="-1.0" layoutY="94.0" prefWidth="150.0" promptText="Select User..." />
+                  <Label layoutX="-6.0" layoutY="77.0" text="View and Modify User's Personal Details" />
+                  <Button fx:id="viewOtherUsersPersonalDetailsButton" layoutX="158.0" layoutY="94.0" mnemonicParsing="false" onAction="#viewOtherUsersPersonalDetailsForm" text="View" />
+               </children>
+            </Pane>
+            <Pane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#goHome" text="🏠" />
+               </children>
+            </Pane>
+            <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <Label layoutX="34.0" layoutY="14.0" text="View Completed Reviews" />
+                  <ComboBox fx:id="viewCompletedReviewsDropdown" layoutY="30.0" prefWidth="150.0" promptText="Select Review..." />
+                  <Button layoutX="158.0" layoutY="30.0" mnemonicParsing="false" text="View" onAction="#viewViewPerformanceReviewAsHr"/>
+                  <Label layoutX="54.0" layoutY="67.0" text="Initialise a Review" />
+                  <Button layoutX="75.0" layoutY="84.0" mnemonicParsing="false" onAction="#viewInitialiseReview" text="Create" />
+               </children>
+            </Pane>
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>
