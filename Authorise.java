@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -130,9 +129,8 @@ public class Authorise
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 1]))
+        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 2]))
         {
-            System.out.println(content[secondReviewerIdIndex - 1]);
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
         }
@@ -143,10 +141,8 @@ public class Authorise
         payload[3] = firstReviewer;
         payload[4] = content[2];
 
-        System.out.println("Before If");
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
-            System.out.println("After if");
             return dp.createReview(payload);
         }
         return false;
@@ -237,43 +233,52 @@ public class Authorise
         String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
         String[] currentMainDocument = dp.fetchReview(docId);
 
-        // Only allow users to sign their own signature box
-        if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && updatedDocument[revieweeSignatureIndex]!= null)
+        if (currentMainDocument[revieweeSignatureIndex].equals("true") && currentMainDocument[reviewer1SignatureIndex].equals("true") && currentMainDocument[reviewer2SignatureIndex].equals("true"))
         {
-        System.out.println("Reviewee signature accepted");
-    }
-        else
-        {
-            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
-            System.out.println("Cannot overwrite signature on " + currentMainDocument[revieweeIdIndex] + "'s behalf");
+            System.out.println("This Review has already been completed and cannot be updated");
+            return false;
         }
 
-        // If this Reviewer is the reviewee's Line Manager -> first reviewer
-        if (currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()) && updatedDocument[reviewer1SignatureIndex] != null)
+        // Reject other users signing this box
+        if (!currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()))
         {
-            System.out.println("Direct Manager's signature accepted");
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[revieweeIdIndex] + "'s behalf");
+            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
         }
-        else
+        // Cannot un-sign Review
+        else if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && (currentMainDocument[revieweeSignatureIndex] != null && updatedDocument[revieweeSignatureIndex].equals("false")))
+        {
+            System.out.println("You have already signed this review off. Cannot un-sign document");
+            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
+        }
+
+
+
+        // If this Reviewer is the reviewee's Line Manager -> first reviewer
+        if (!currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()))
         {
             updatedDocument[reviewer1SignatureIndex] = currentMainDocument[reviewer1SignatureIndex];
             System.out.println("Cannot overwrite signature on " + currentMainDocument[firstReviewerIdIndex] + "'s behalf");
         }
+        // Cannot un-sign Review
+        else if (currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()) && (currentMainDocument[reviewer1SignatureIndex] != null && updatedDocument[reviewer1SignatureIndex].equals("false")))
+        {
+            System.out.println("You have already signed this review off. Cannot un-sign document");
+            updatedDocument[reviewer1SignatureIndex] = currentMainDocument[reviewer1SignatureIndex];
+        }
+
 
         // If this Reviewer is just another Reviewer
-        if (currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()) && updatedDocument[reviewer2SignatureIndex] != null)
-        {
-            System.out.println("Second Reviewer's signature accepted");
-        }
-        else
+        if (!currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()))
         {
             updatedDocument[reviewer2SignatureIndex] = currentMainDocument[reviewer2SignatureIndex];
             System.out.println("Cannot overwrite signature on " + currentMainDocument[secondReviewerIdIndex] + "'s behalf");
         }
-
-        if (currentMainDocument[revieweeSignatureIndex] != null && currentMainDocument[reviewer1SignatureIndex] != null && currentMainDocument[reviewer2SignatureIndex] != null)
+        // Cannot un-sign Review
+        else if (currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()) && (currentMainDocument[reviewer2SignatureIndex] != null && updatedDocument[reviewer2SignatureIndex].equals("false")))
         {
-            System.out.println("This Review has already been completed and cannot be updated");
-            return false;
+            updatedDocument[reviewer2SignatureIndex] = currentMainDocument[reviewer2SignatureIndex];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[secondReviewerIdIndex] + "'s behalf");
         }
 
         if (AuthorisationAttempt(Action.Update, "Performance Review", user, new String[] { docId }))
@@ -282,7 +287,6 @@ public class Authorise
         }
         return false;
     }
-
 
     /**
      * Any action must first be authorised by this method
@@ -320,7 +324,7 @@ public class Authorise
                     {
                         if (user.getDepartment().equals(Position.Department.HR))
                         {
-                            if (payload[revieweeIdIndex] != null && dp.checkEmployeeId(payload[firstReviewerIdIndex]) && dp.checkEmployeeId(payload[secondReviewerIdIndex - 1]))
+                            if (payload[revieweeIdIndex] != null && dp.checkEmployeeId(payload[firstReviewerIdIndex]) && dp.checkEmployeeId(payload[secondReviewerIdIndex]))
                             {
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
