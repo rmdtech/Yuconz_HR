@@ -183,7 +183,7 @@ class AuthoriseTest {
     @Test
     void updatePersonalDetailsNotLoggedIn()
     {
-        // Variant 6: Unexpected Use, User not logged in
+        // Variant 5: Unexpected Use, User not logged in
         String[] hre123PersonalDetails = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
         Authorise.createPersonalDetailsRecord(hrEmployee, hre123PersonalDetails);
         Authenticate.logout(hrEmployee);

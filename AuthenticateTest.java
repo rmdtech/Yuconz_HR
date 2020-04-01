@@ -1,6 +1,5 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,9 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthenticateTest {
 
     DatabaseParser dp;
-    Connection c = null;
-    Statement stmt = null;
-    ResultSet result = null;
 
     @BeforeEach
     void setUp()
@@ -22,12 +18,24 @@ class AuthenticateTest {
         dbSetup();
     }
 
+
+
+
+    /*
+        Misc Tests
+     */
     @Test
     void sha512encrypt()
     {
         assertEquals("fa6a2185b3e0a9a85ef41ffb67ef3c1fb6f74980f8ebf970e4e72e353ed9537d593083c201dfd6e43e1c8a7aac2bc8dbb119c7dfb7d4b8f131111395bd70e97f", Authenticate.sha512Encrypt("password", "salt"));
     }
 
+
+
+
+    /*
+        addUser Tests
+     */
     @Test
     void addUserNoSupervisor()
     {
@@ -73,6 +81,12 @@ class AuthenticateTest {
         assertFalse(Authenticate.addNewUser("abc123", "password", null, Position.Department.IT, Position.Role.Employee));
     }
 
+
+
+
+    /*
+        login Tests
+     */
     @Test
     void validLogin()
     {
@@ -96,6 +110,17 @@ class AuthenticateTest {
 
         assertNotEquals(beforeLogout, afterLogout);
     }
+
+
+
+
+    /*
+        Methods used by the tests
+     */
+
+    Connection c = null;
+    Statement stmt = null;
+    ResultSet result = null;
 
     private static boolean checkIsFirstBoot()
     {
