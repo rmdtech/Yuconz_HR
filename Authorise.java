@@ -14,8 +14,7 @@ public class Authorise
     public enum Action{
         Create("Create"),
         Read("Read"),
-        Update("Update"),
-        Delete("Delete");
+        Update("Update");
 
         public final String label;
 
@@ -131,8 +130,9 @@ public class Authorise
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 2]))
+        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 1]))
         {
+            System.out.println(content[secondReviewerIdIndex - 1]);
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
         }
@@ -143,8 +143,10 @@ public class Authorise
         payload[3] = firstReviewer;
         payload[4] = content[2];
 
+        System.out.println("Before If");
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
+            System.out.println("After if");
             return dp.createReview(payload);
         }
         return false;
@@ -236,10 +238,10 @@ public class Authorise
         String[] currentMainDocument = dp.fetchReview(docId);
 
         // Only allow users to sign their own signature box
-        if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && updatedDocument[revieweeSignatureIndex] != null)
+        if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && updatedDocument[revieweeSignatureIndex]!= null)
         {
-            System.out.println("Reviewee signature accepted");
-        }
+        System.out.println("Reviewee signature accepted");
+    }
         else
         {
             updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
@@ -281,16 +283,6 @@ public class Authorise
         return false;
     }
 
-    /**
-     * Records that a User attempted to delete a Document
-     * @param user the user attemping the operation
-     * @return whether or not the operation has been successful
-     */
-    public static boolean deletePersonalDetails(User user)
-    {
-        AuthorisationAttempt(Action.Delete, "Personal Details", user,null );
-        return false;
-    }
 
     /**
      * Any action must first be authorised by this method
@@ -304,7 +296,6 @@ public class Authorise
      *                Read Performance Review - Document ID in position 0
      *                Update Personal Details - Associated Employee in position 0
      *                Update Performance Review -
-     *                Delete * - null
      * @return whether the action has been successful or not
      */
     private static boolean AuthorisationAttempt(Action action, String target, User user, String[] payload)
@@ -329,7 +320,7 @@ public class Authorise
                     {
                         if (user.getDepartment().equals(Position.Department.HR))
                         {
-                            if (payload[revieweeIdIndex] != null && dp.checkEmployeeId(payload[firstReviewerIdIndex]) && dp.checkEmployeeId(payload[secondReviewerIdIndex]))
+                            if (payload[revieweeIdIndex] != null && dp.checkEmployeeId(payload[firstReviewerIdIndex]) && dp.checkEmployeeId(payload[secondReviewerIdIndex - 1]))
                             {
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
@@ -429,22 +420,6 @@ public class Authorise
                         }
                         System.out.println("Internal Error: No documentId provided when attempting to update review");
                         dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", null);
-                        return false;
-                    }
-                    else
-                    {
-                        System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
-                        dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), null, null);
-                        return false;
-                    }
-                case("Delete"):
-                    if (target.equals("Personal Details"))
-                    {
-                        return false;
-                    }
-                    // Stage 5
-                    else if (target.equals("Performance Review"))
-                    {
                         return false;
                     }
                     else

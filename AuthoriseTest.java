@@ -50,6 +50,153 @@ class AuthoriseTest {
         System.out.println("\n---- END OF SETUP OUTPUT ----\n");
     }
 
+    /*
+        createPersonalDetails Tests
+     */
+    @Test
+    void createPersonalDetailsTrue()
+    {
+        // Variant 1: HR Employee trying to create a new Personal Details record
+        String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        assertTrue(Authorise.createPersonalDetailsRecord(hrEmployee, ite123FullPayload));
+    }
+
+    @Test
+    void createPersonalDetailsNonHR()
+    {
+        // Variant 2: Non-HR Employee trying to create a new Personal Details record
+        String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        assertFalse(Authorise.createPersonalDetailsRecord(itEmployee, ite123FullPayload));
+    }
+
+    @Test
+    void createPersonalDetailsEmptyRecord()
+    {
+        // Variant 3: Empty record about to be submitted
+        String[] emptyPayload = { null, null, null, null, null, null, null, null, null, null, null };
+        assertFalse(Authorise.createPersonalDetailsRecord(hrEmployee, emptyPayload));
+    }
+
+    @Test
+    void createPersonalDetailsUserNotLoggedIn()
+    {
+        // Variant 4: User not logged in
+        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        Authenticate.logout(hrEmployee);
+        assertFalse(Authorise.createPersonalDetailsRecord(hrEmployee, hre123FullPayload));
+    }
+
+
+
+
+    /*
+        readPersonalDetails Tests
+     */
+    @Test
+    void readPersonalDetailsHROnOwn()
+    {
+        // Variant 1: HR Employee trying to access their own record
+        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        Authorise.createPersonalDetailsRecord(hrEmployee, hre123FullPayload);
+        assertArrayEquals(hre123FullPayload, Authorise.readPersonalDetails(hrEmployee, hrEmployee.getEmployeeId()));
+    }
+
+    @Test
+    void readPersonalDetailsOtherOnOwn()
+    {
+        // Variant 2: IT Employee trying to access their own record
+        String[] ite123FullPayload = { "ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        Authorise.createPersonalDetailsRecord(hrEmployee, ite123FullPayload);
+        assertArrayEquals(ite123FullPayload, Authorise.readPersonalDetails(itEmployee, itEmployee.getEmployeeId()));
+    }
+
+    @Test
+    void readPersonalDetailsNotExist()
+    {
+        // Variant 3: Trying to read a PersonalDetails record that doesn't exist
+        assertNull(Authorise.readPersonalDetails(hrEmployee, "err404"));
+    }
+
+    @Test
+    void readPersonalDetailsNotAuthorisedDepartment()
+    {
+        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        Authorise.createPersonalDetailsRecord(hrEmployee, hre123FullPayload);
+        assertNull(Authorise.readPersonalDetails(itEmployee, hrEmployee.getEmployeeId()));
+    }
+
+    @Test
+    void readPersonalDetailsNotLoggedIn()
+    {
+        String[] hre123FullPayload = { "hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        Authorise.createPersonalDetailsRecord(hrEmployee, hre123FullPayload);
+        Authenticate.logout(hrEmployee);
+        assertNull(Authorise.readPersonalDetails(hrEmployee, hrEmployee.getEmployeeId()));
+    }
+
+
+
+
+   /*
+        updatePersonalDetails Tests
+    */
+    @Test
+    void updatePersonalDetailsValidUserOwn()
+    {
+        // Variant 1: Expected Use, user updates their own info
+        String[] ite123PersonalDetails = {"ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        String[] updatedPayload = {"ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
+        Authorise.createPersonalDetailsRecord(hrManager, ite123PersonalDetails);
+        assertTrue(Authorise.updatePersonalDetails(itEmployee, updatedPayload));
+    }
+
+    @Test
+    void updatePersonalDetailsHROther()
+    {
+        // Variant 2: Expected Use, HR updates someone else's file
+        String[] ite123PersonalDetails = {"ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        String[] updatedPayload = {"ite123", "Smith", "John", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
+        Authorise.createPersonalDetailsRecord(hrManager, ite123PersonalDetails);
+        assertTrue(Authorise.updatePersonalDetails(hrEmployee, updatedPayload));
+    }
+
+    @Test
+    void updatePersonalDetailsEmptyUpdate()
+    {
+        // Variant 3: Unexpected Use, Try to update with empty payload
+        String[] hre123PersonalDetails = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        Authorise.createPersonalDetailsRecord(hrEmployee, hre123PersonalDetails);
+        String[] emptyPayload = {null, null, null, null, null, null, null, null, null, null, null};
+        assertFalse(Authorise.updatePersonalDetails(hrEmployee, emptyPayload));
+    }
+
+    @Test
+    void updatePersonalDetailsUnauthorised()
+    {
+        // Variant 4: Unexpected Use, User is neither HR or updating their own info
+        String[] hre123PersonalDetails = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        Authorise.createPersonalDetailsRecord(hrEmployee, hre123PersonalDetails);
+        String[] updatedPayload = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
+        assertFalse(Authorise.updatePersonalDetails(itEmployee, updatedPayload));
+    }
+
+    @Test
+    void updatePersonalDetailsNotLoggedIn()
+    {
+        // Variant 6: Unexpected Use, User not logged in
+        String[] hre123PersonalDetails = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "David Barnes", "01227827696"};
+        Authorise.createPersonalDetailsRecord(hrEmployee, hre123PersonalDetails);
+        Authenticate.logout(hrEmployee);
+        String[] updatedPayload = {"hre123", "Roman", "Miles", "01/01/1970", "University of Kent", "Canterbury", "Kent", "CT2 7NF", "01227748392", "07638270376", "Olaf Chitil", "01227824320"};
+        assertFalse(Authorise.updatePersonalDetails(hrEmployee, updatedPayload));
+    }
+
+
+
+
+    /*
+        createPerformanceReview Tests
+     */
     @Test
     void createPerformanceReviewBaseCase()
     {
@@ -106,6 +253,12 @@ class AuthoriseTest {
         assertFalse(Authorise.createPerformanceReview(hrEmployee, mainDocMandatoryPayload.get(0)));
     }
 
+
+
+
+    /*
+        readPerformanceReview Tests
+     */
     @Test
     void readPerformanceReview()
     {
@@ -176,6 +329,12 @@ class AuthoriseTest {
         assertFalse(Authorise.readPerformanceReview(itManager, "hre123", "2020-12-31"));
     }
 
+
+
+
+    /*
+        updatePerformanceReview Tests
+     */
     @Test
     void updatePerformanceReviewReviewee()
     {
@@ -353,6 +512,10 @@ class AuthoriseTest {
 
 
 
+
+    /*
+        Methods used by tests to simplify them
+     */
     String[] joinArrays(String[] first, String[] second)
     {
         String[] returned = new String[first.length + second.length];
@@ -516,20 +679,6 @@ class AuthoriseTest {
         mainDocUpdated[3] = dp.fetchDirectSupervisor(mainDocument[0]);
         mainDocUpdated[4] = mainDocument[3];
         return mainDocUpdated;
-    }
-
-    void writeReview(String revieweeId, String reviewer2)
-    {
-        dp = new DatabaseParser();
-        initialiseMainDocMandatoryPayload(revieweeId, reviewer2);
-        initialiseMainDocOptionalPayload();
-        initialiseFuturePerformanceCollection();
-        initialisePastPerformanceCollection();
-
-        String[] mainDocUpdated = insertSupervisor(mainDocMandatoryPayload.get(0));
-
-        dp.createReview(mainDocUpdated);
-        dp.updateReview(getMainReviewDocId(), joinArrays(mainDocUpdated, mainDocOptionalPayload.get(0)), pastperformanceDataCollection.get(0), futureperformanceDataCollection.get(0));
     }
 
     private static boolean checkIsFirstBoot()
