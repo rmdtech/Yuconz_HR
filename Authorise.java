@@ -233,7 +233,7 @@ public class Authorise
         String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
         String[] currentMainDocument = dp.fetchReview(docId);
 
-        if (currentMainDocument[revieweeSignatureIndex].equals("true") && currentMainDocument[reviewer1SignatureIndex].equals("true") && currentMainDocument[reviewer2SignatureIndex].equals("true"))
+        if (currentMainDocument[reviewer1SignatureIndex] != null && currentMainDocument[revieweeSignatureIndex] != null && currentMainDocument[reviewer2SignatureIndex] != null)
         {
             System.out.println("This Review has already been completed and cannot be updated");
             return false;
