@@ -14,6 +14,7 @@ import javafx.stage.Window;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -55,12 +56,12 @@ public class YuconzGui extends Application {
     public Label departmentLabel;
     public Label roleLabel;
     public TableView futurePerformanceTable;
-    public TableColumn fpNumberCol;
-    public TableColumn fpObjectiveColumn;
+    public static TableColumn fpNumberCol;
+    public static TableColumn fpObjectiveColumn;
     public TableView pastPerformanceTable;
-    public TableColumn ppNumberCol;
-    public TableColumn ppObjectivesCol;
-    public TableColumn ppAchievementsCol;
+    public static TableColumn ppNumberCol;
+    public static TableColumn ppObjectivesCol;
+    public static TableColumn ppAchievementsCol;
     public TextField newEmployeeIdTextField;
     public PasswordField newPasswordTextField;
     public TextField newNameTextField;
@@ -90,6 +91,7 @@ public class YuconzGui extends Application {
 
     //Initialising other  elements
     public static User user;
+    public static String[] mainReview;
 
 
     FXMLLoader loader = new FXMLLoader();
@@ -364,25 +366,109 @@ public class YuconzGui extends Application {
     public void signPerformanceReview()
     {
         System.out.println("Insert Sign Code");
-        String[] updatedDocument = new String[11];
-        updatedDocument[0] = employeeIdLabel.getText().substring(employeeIdLabel.getText().length() - 6); //Get employee ID
+        String[] updatedDocument = mainReview;
+
+        if(user.getEmployeeId() == updatedDocument[0])
+        {
+            updatedDocument[5] = "true";
+        }
+        if(user.getEmployeeId() == updatedDocument[3])
+        {
+            updatedDocument[6] = "true";
+        }
+        if(user.getEmployeeId() == updatedDocument[4])
+        {
+            updatedDocument[7] = "true";
+        }
+        savePerformanceReview(updatedDocument);
+    }
+
+    public void savePerformanceReviewWithoutSigning()
+    {
+        String[] updatedDocument = mainReview;
+        System.out.println("ID: " + updatedDocument[0]);
+        if(user.getEmployeeId().equals(updatedDocument[0]))
+        {
+            updatedDocument[5] = "false";
+        }
+        if(user.getEmployeeId().equals(updatedDocument[3]))
+        {
+            updatedDocument[6] = "false";
+            System.out.println("this should not run");
+        }
+        if(user.getEmployeeId().equals(updatedDocument[4]))
+        {
+            updatedDocument[7] = "false";
+            System.out.println("this should run");
+        }
+        System.out.println(Arrays.toString(updatedDocument));
+        savePerformanceReview(updatedDocument);
+    }
+
+    public void savePerformanceReview(String[] updatedDocument)
+    {
+
+        ArrayList<String[]> updatedPastPerformance = new ArrayList<>();
+        ArrayList<String> updatedFuturePerformance = new ArrayList<>();
+
+
         updatedDocument[1] = reviewHeader.getText().substring(20, 30); //Get dueBy date
         updatedDocument[2] = View.getReviewDocId(updatedDocument[0], updatedDocument[1]); //Get DocID
         updatedDocument[3] = reviewer1Label.getText().substring(reviewer1Label.getText().length() - 6);
         updatedDocument[4] = reviewer2Label.getText().substring(reviewer2Label.getText().length() - 6);
-        //updatedDocument[5] =
-        //Authorise.updatePerformanceReview(user, updatedDocument, updatedPastPerformance, updatedFuturePerformance);
+        updatedDocument[9] = performanceSummaryTextArea.getText();
+        updatedDocument[10] = reviewerCommentsTextArea.getText();
+        if(recommendationComboBox.getValue() != null)
+        {
+            updatedDocument[11] = recommendationComboBox.getValue();
+        }
 
+        //Begin preparing pastPerformance data
+        for (Object o : pastPerformanceTable.getItems()) {
+            String data[] = {ppObjectivesCol.getCellData(o).toString(), ppAchievementsCol.getCellData(o).toString()};
+            updatedPastPerformance.add(data);
+        }
+        //Finish preparing pastPerformance data
+
+
+        //Begin preparing futurePerformance data
+        if(futurePerformanceTable.getItems().size() > 0)
+        {
+            for (Object o : futurePerformanceTable.getItems()) {
+                updatedFuturePerformance.add(fpObjectiveColumn.getCellData(o).toString());
+            }
+        }
+
+        //Finish preparing futurePerformance data
+
+        Authorise.updatePerformanceReview(user, updatedDocument, updatedPastPerformance, updatedFuturePerformance);
+        showInfo("Review Changed", "You have updated the review with new data");
     }
+
+
 
     public void initialisePerformanceReviewView(String revieweeId, String dueBy)
     {
-        String[] mainReview;
+
         String documentId = View.getReviewDocId(revieweeId, dueBy);
 
         if(Authorise.readPerformanceReview(user, revieweeId, dueBy))
         {
+
             mainReview = Authorise.readReviewMain(documentId); //import existing review data from database
+            System.out.println(mainReview[8]);
+            if(mainReview[5] == null)
+            {
+                mainReview[5] = "false";
+            }
+            if(mainReview[6] == null)
+            {
+                mainReview[6] = "false";
+            }
+            if(mainReview[7] == null)
+            {
+                mainReview[7] = "false";
+            }
             ArrayList<String[]> pastPerformance = Authorise.readPastPerformance(documentId);
             ArrayList<String> futurePerformance = Authorise.readFuturePerformance(documentId);
             reviewHeader = (Label) scene.lookup("#reviewHeader");
@@ -444,6 +530,7 @@ public class YuconzGui extends Application {
 
             //Begin setting up futurePerformanceTable
             futurePerformanceTable = (TableView) scene.lookup("#futurePerformanceTable");
+
             fpNumberCol = new TableColumn("No.");
             fpObjectiveColumn = new TableColumn("Objective");
             futurePerformanceTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -461,6 +548,12 @@ public class YuconzGui extends Application {
             reviewerCommentsTextArea = (TextArea) scene.lookup("#reviewerCommentsTextArea");
             reviewerCommentsTextArea.setText(mainReview[10]);
 
+            //Disable inputs if all users have signed.
+            if(mainReview[5] == "true" && mainReview[6] == "true" && mainReview[7] == "true")
+            {
+                //Insert code here.
+            }
+
         }
         else
         {
@@ -476,7 +569,7 @@ public class YuconzGui extends Application {
         td.showAndWait();
         if(!futurePerformanceTable.getItems().contains("1"))
         {
-            futurePerformanceTable.getItems().add(new ReviewGuiTableWrapper("1", td.getEditor().getText()));
+            futurePerformanceTable.getItems().add(new ReviewGuiTableWrapper(""+(futurePerformanceTable.getItems().size()+1), td.getEditor().getText()));
         }
 
     }
