@@ -8,10 +8,10 @@ public class Authenticate{
     private static DatabaseParser dp = new DatabaseParser();
 
     /**
-     * This will create a sessionID for this user and add it to the local memory of logged in users
-     * @param employeeId the employeeID of the User that is to be logged in
-     * @param password the password of the User that is to be logged in
-     * @return the user object of them who is now logged in
+     * Creates a Session for this user and returns a User object
+     * @param employeeId the Employee ID of the User that is to be logged in
+     * @param password the Password of the User that is to be logged in
+     * @return the User object of them who is now logged in
      */
     public static User login(String employeeId, String password)
     {
@@ -31,8 +31,8 @@ public class Authenticate{
     }
 
     /**
-     * This will log the user out of the system
-     * @param user the user object that is to be logged out
+     * Log a User out of the system
+     * @param user the User object that is to be logged out
      */
     public static void logout(User user)
     {
@@ -40,12 +40,12 @@ public class Authenticate{
     }
 
     /**
-     * Creates and writes a new User to the database
-     * @param employeeId Their employeeID which will be verified within this function
-     * @param password Their chosen password (has no requirements yet)
-     * @param department The department which they are assigned to
-     * @param role Their role within the company
-     * @return If the action has been successful
+     * Writes a new User to the database
+     * @param employeeId a User's Employee ID
+     * @param password a User's password
+     * @param department a User's Department
+     * @param role a User's Role
+     * @return whether or not the operation has been successful
      */
     public static boolean addNewUser(String employeeId, String password, String supervisor, Position.Department department, Position.Role role)
     {
@@ -79,9 +79,9 @@ public class Authenticate{
     }
 
     /**
-     * Returns a given User object based on the employeeId given
-     * @param user The user object that should be checked
-     * @return The User with such employee ID. If not found, this is null
+     * Checks if a certain User has active sessions
+     * @param user the User object that should be checked
+     * @return whether or not this User is logged in
      */
     public static boolean isUserLoggedIn(User user)
     {
@@ -90,9 +90,9 @@ public class Authenticate{
 
     /**
      * Encrypts a given String using the SHA-512 standard
-     * @param password The password to be encrypted
-     * @param salt The associated salt
-     * @return The encrypted String
+     * @param password the string to be encrypted
+     * @param salt the associated salt
+     * @return the encrypted string
      */
     public static String sha512Encrypt(String password, String salt)
     {
@@ -119,10 +119,10 @@ public class Authenticate{
     }
 
     /**
-     * This verifies the password given in the constructor with the salt stored in the Database.
-     * @param employeeId the employeeId of the user that is to in logged in
-     * @param password the password of the user that is to be logged in
-     * @return If the passwords match
+     * Checks if the given credentials match those stored in the Database
+     * @param employeeId the employeeId of the User
+     * @param password the password of the User
+     * @return whether or not the credentials are correct
      */
     private static boolean verifyPassword(String employeeId, String password)
     {

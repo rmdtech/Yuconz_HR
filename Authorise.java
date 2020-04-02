@@ -38,12 +38,12 @@ public class Authorise
 
     static DatabaseParser dp = new DatabaseParser();
     static int rIndexRevieweeId, pIndexEmployeeId = 0;
-    static int rIndexDueBy, pIndexSurname = 1;
-    static int rIndexDocumentId, pIndexFirstName = 2;
-    static int rIndexReviewer1Id, pIndexDoB = 3;
-    static int rIndexReviewer2Id, pIndexAddress = 4;
-    static int rIndexRevieweeSignature, pIndexCity = 5;
-    static int rIndexReviewer1Signature, pIndexPostCode = 6;
+    static int rIndexDueBy = 1;
+    static int rIndexDocumentId = 2;
+    static int rIndexReviewer1Id = 3;
+    static int rIndexReviewer2Id = 4;
+    static int rIndexRevieweeSignature = 5;
+    static int rIndexReviewer1Signature = 6;
     static int rIndexReviewer2Signature = 7;
 
     /**
