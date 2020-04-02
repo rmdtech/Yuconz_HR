@@ -544,10 +544,20 @@ public class YuconzGui extends Application {
             ppAchievementsCol.setCellValueFactory(new PropertyValueFactory<>("achievement"));
             pastPerformanceTable.getColumns().addAll(ppNumberCol, ppObjectivesCol, ppAchievementsCol);
 
-
-            for(int i = 0; i < pastPerformance.size(); i++)
+            if(pastPerformance.size() > 0) {
+                for (int i = 0; i < pastPerformance.size(); i++) {
+                    pastPerformanceTable.getItems().add(new ReviewGuiTableWrapper("" + (i + 1), pastPerformance.get(i)[0], pastPerformance.get(i)[1]));
+                }
+            }
+            else // get info from futurePerformance of last previous review
             {
-                pastPerformanceTable.getItems().add(new ReviewGuiTableWrapper("" + (i+1), pastPerformance.get(i)[0], pastPerformance.get(i)[1]));
+                String prevReviewDoc = View.getPreviousReview(user, revieweeId);
+                ArrayList<String> previousFuturePerformance = Authorise.readFuturePerformance(prevReviewDoc);
+                for(int i = 0; i < previousFuturePerformance.size(); i++)
+                {
+                    pastPerformanceTable.getItems().add(new ReviewGuiTableWrapper("" + (i + 1), previousFuturePerformance.get(i), ""));
+                }
+
             }
             //Finish setting up pastPerformanceTable
 
