@@ -34,20 +34,20 @@ public class View
         {
             ArrayList<String[]> allKeys = dp.fetchAllReviewKeys();
             ArrayList<String[]> empIdsReviews = new ArrayList<>();
-            for (int i = 0; i < allKeys.size(); i++)
+            for (String[] key : allKeys)
             {
-                if (allKeys.get(i)[0].equals(employeeId))
+                if (key[0].equals(employeeId))
                 {
-                    empIdsReviews.add(allKeys.get(i));
+                    empIdsReviews.add(key);
                 }
             }
 
             int currentYear = Integer.parseInt(date.substring(0, 4));
-            for (int i = 0; i < empIdsReviews.size(); i++)
+            for (String[] review : empIdsReviews)
             {
-                if (Integer.parseInt(empIdsReviews.get(i)[1].substring(0, 4)) == (currentYear - 1))
+                if (Integer.parseInt(review[1].substring(0, 4)) == (currentYear - 1))
                 {
-                    return dp.fetchReviewDocumentId(empIdsReviews.get(i)[0], empIdsReviews.get(i)[1]);
+                    return dp.fetchReviewDocumentId(review[0], review[1]);
                 }
             }
         }
@@ -65,13 +65,12 @@ public class View
         {
             ArrayList<String[]> allReviews = dp.fetchAllReviewKeys();
             ArrayList<String[]> completedReviewKeys = new ArrayList<>();
-            for(int i = 0; i < allReviews.size(); i++)
+            for (String[] review : allReviews)
             {
-                String[] currentKeys = allReviews.get(i);
-                String[] current = dp.fetchReview(dp.fetchReviewDocumentId(currentKeys[0], currentKeys[1]));
+                String[] current = dp.fetchReview(dp.fetchReviewDocumentId(review[0], review[1]));
                 if (current[5] != null && current[6] != null && current[7] != null)
                 {
-                    completedReviewKeys.add(currentKeys);
+                    completedReviewKeys.add(review);
                 }
             }
             return completedReviewKeys;
@@ -94,12 +93,12 @@ public class View
         ArrayList<String[]> reviewerReviews = new ArrayList<>();
         if (user.getRole().level > 0)
         {
-            for (int i = 0; i < allReviews.size(); i++)
+            for (String[] review : allReviews)
             {
-                String docId = dp.fetchReviewDocumentId(allReviews.get(i)[0], allReviews.get(i)[1]);
+                String docId = dp.fetchReviewDocumentId(review[0], review[1]);
                 if (dp.isReviewer(docId, user.getEmployeeId()))
                 {
-                    reviewerReviews.add(allReviews.get(i));
+                    reviewerReviews.add(review);
                 }
             }
         }
@@ -120,12 +119,12 @@ public class View
         ArrayList<String[]> allReviews = dp.fetchAllReviewKeys();
         ArrayList<String[]> revieweeReviews = new ArrayList<>();
 
-        for (int i = 0; i < allReviews.size(); i++)
+        for (String[] review : allReviews)
         {
-            String docId = dp.fetchReviewDocumentId(allReviews.get(i)[0], allReviews.get(i)[1]);
+            String docId = dp.fetchReviewDocumentId(review[0], review[1]);
             if (dp.isReviewee(docId, user.getEmployeeId()))
             {
-                revieweeReviews.add(allReviews.get(i));
+                revieweeReviews.add(review);
             }
         }
         return revieweeReviews;
