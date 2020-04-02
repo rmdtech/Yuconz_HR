@@ -22,8 +22,8 @@ public class User{
     }
 
     /**
-     * This method returns a new Salt
-     * @return new unique salt
+     * Generates a new UUID
+     * @return 32bit long UUID
      */
     public static String generateUUID()
     {
@@ -50,7 +50,7 @@ public class User{
 
     /**
      * Mutator method for the Direct Manager
-     * @param managerId the employeeId of their Manager
+     * @param managerId the Employee ID of this User's Direct Manager
      */
     public void setDirectSupervisor(String managerId)
     {
@@ -68,8 +68,8 @@ public class User{
     }
 
     /**
-     * Accessor method for the employeeID
-     * @return the employeeID
+     * Accessor method for the Employee ID
+     * @return the Employee ID
      */
     public String getEmployeeId()
     {
@@ -87,7 +87,7 @@ public class User{
 
     /**
      * Accessor method for the role
-     * @return the role enum
+     * @return the Role enum
      */
     public Position.Role getRole()
     {
@@ -95,8 +95,8 @@ public class User{
     }
 
     /**
-     * Accessor method for the sessionID
-     * @return The Sesssion ID
+     * Accessor method for the Session ID
+     * @return The Session ID
      */
     public String getSessionId()
     {
@@ -104,8 +104,8 @@ public class User{
     }
 
     /**
-     * Accessor method for the directManagerID
-     * @return The employeeId of the direct manager
+     * Accessor method for the Direct Manager's Employee ID
+     * @return The Employee ID of the Direct Manager
      */
     public String getDirectSupervisor()
     {
