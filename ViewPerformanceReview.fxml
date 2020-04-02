@@ -78,7 +78,7 @@
                   <Font size="20.0" />
                </font>
             </Label>
-            <TextArea fx:id="performanceSummaryTextArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="92.0" prefWidth="580.0" promptText="Performance Sumary" scaleY="0.8" translateX="-140.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextArea fx:id="performanceSummaryTextArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="92.0" prefWidth="580.0" promptText="Performance Summary" scaleY="0.8" translateX="-140.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TableView fx:id="futurePerformanceTable" editable="true" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="294.0" translateY="-30.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets left="4.0" />
