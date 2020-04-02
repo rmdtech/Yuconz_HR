@@ -163,7 +163,7 @@ public class YuconzGui extends Application {
     }
 
     /**
-     * Displays an error message to the user
+     * Displays an error message box to the user
      * @param errorHeader String content of the header
      * @param errorContent String content of the content box
      */
@@ -176,6 +176,11 @@ public class YuconzGui extends Application {
         alert.showAndWait();
     }
 
+    /**
+     * Displays an info message box to the user
+     * @param infoHeader String content of the header
+     * @param infoContent String content of the content box
+     */
     public void showInfo(String infoHeader, String infoContent)
     {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -188,7 +193,7 @@ public class YuconzGui extends Application {
     /**
      * Checks that the data being entered in the Personal Details payload is valid data.
      * @param payload the data being added
-     * @return whether or not the operation was successful
+     * @return A Boolean whether or not validation was successful
      */
     public boolean validatePersonalDetailsPayload(String[] payload)
     {
@@ -239,6 +244,15 @@ public class YuconzGui extends Application {
         return true;
     }
 
+    /**
+     * Validates if the user details are valid prior to adding them to the Database
+     * @param employeeId The Employee ID which shall be given to the new user
+     * @param password The Password which shall be given to the new user
+     * @param supervisor The Employee ID of the user's supervisor
+     * @param department The Department the Employee will belong to
+     * @param role The Role of the Employee
+     * @return A Boolean stating whether or not the user details are valid
+     */
     public boolean validateUserAttributes(String employeeId, String password, String supervisor, String department, String role)
     {
         if(employeeId.length() != 6)
@@ -413,6 +427,10 @@ public class YuconzGui extends Application {
         savePerformanceReview(updatedDocument);
     }
 
+    /**
+     * Saves the performance review to the Database. Only to be used by members of a review.
+     * @param updatedDocument The review document including changes made by the user
+     */
     public void savePerformanceReview(String[] updatedDocument)
     {
 
