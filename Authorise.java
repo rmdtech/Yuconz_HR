@@ -150,7 +150,7 @@ public class Authorise
     /**
      * Read the Personal Details Record of a certain Employee
      * @param user logged in User performing this action
-     * @param pdEmpId the Employee ID of which the user is accessing the Personal Details record from
+     * @param employeeId the Employee ID of the Employee for whom the Personal Details record should be accessed
      * @return a string array containing the Personal Details record
      *                [0] Employee ID
      *                [1] Surname
@@ -164,61 +164,102 @@ public class Authorise
      *                [9] Emergency Contact
      *                [10] Emergency Contact Phone Number
      */
-    public static String[] readPersonalDetails (User user, String pdEmpId)
+    public static String[] readPersonalDetails (User user, String employeeId)
     {
-        if (AuthorisationAttempt(Action.Read, "Personal Details", user, new String[] { pdEmpId } ))
+        if (AuthorisationAttempt(Action.Read, "Personal Details", user, new String[] { employeeId } ))
         {
-            return dp.fetchPersonalDetails(pdEmpId);
+            return dp.fetchPersonalDetails(employeeId);
         }
         return null;
     }
 
     /**
-     * Returns an array containing the information stored in a Review record
-     * @param user the user logged in and performing the action
-     * @param revieweeId the employeeId of the user who's review is trying to be accessed (makes composite key)
-     * @param dueBy the year of the review for that employeeId that is trying to be accessed (makes composite key)
-     * @return a string array containing the full review as at current point
-     *         [0] Main document
-     *         [1] PastPerformance
-     *         [2] FuturePerformance
+     * Checks whether a User is authorised to access a Performance Review
+     * @param user the User logged in and performing the action
+     * @param revieweeId the Employee ID of the Reviewee
+     * @param dueBy the Due By Date of this Review
+     * @return whether this User is authorised to access this Performance Review
      */
     public static boolean readPerformanceReview(User user, String revieweeId, String dueBy)
     {
-        String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
-        return AuthorisationAttempt(Action.Read, "Performance Review", user, new String[]{docId});
+        return AuthorisationAttempt(Action.Read, "Performance Review", user, new String[]{ dp.fetchReviewDocumentId(revieweeId, dueBy) });
     }
 
+    /**
+     * Returns the main elements of a Performance Review. To be used after running readPerformanceReview
+     * @param documentId the Document ID of the Review that is to be accessed
+     * @return a string array containing the main content of this Review
+     *                [0] Reviewee Employee ID
+     *                [1] Due By Date
+     *                [2] Document ID
+     *                [3] Reviewer 1 Employee ID (Direct Supervisor)
+     *                [4] Reviewer 2 Employee ID (Allocated)
+     *                [5] Reviewee Signature (yyyy-mm-dd)
+     *                [6] Reviewer 1 Signature (yyyy-mm-dd)
+     *                [7] Reviewer 2 Signature (yyyy-mm-dd)
+     *                [8] Meeting Date (obsolete(?))
+     *                [9] Performance Summary
+     *                [10] Reviewer Comments
+     *                [11] Recommendation
+     **/
     public static String[] readReviewMain(String documentId)
     {
         return dp.fetchReview(documentId);
     }
 
+    /**
+     * Returns the past performance elements of a Performance Review. To be used after running readPerformanceReview
+     * @param documentId the Document ID of the Review that is to be accessed
+     * @return an ArrayList of string arrays
+     *                [0] [0] Document ID
+     *                [1] [0-n] Objective Number
+     *                [2] [0-n] Objectives
+     *                [3] [0-n] Achievements
+     */
     public static ArrayList<String[]> readPastPerformance(String documentId)
     {
         return dp.fetchPastPerformance(documentId);
     }
 
+    /**
+     * Returns the future performance elements of a Performance Review. To be used after running readPerformanceReview
+     * @param documentId the Document ID of the Review that is to be accessed
+     * @return an ArrayList of strings
+     *                [0] Document ID
+     *                [1] Objective Number
+     *                [2] Objective
+     */
     public static ArrayList<String> readFuturePerformance(String documentId)
     {
         return dp.fetchFuturePerformance(documentId);
     }
 
     /**
-     * Updates the Personal Details record for a User.
-     * @param user the user that performs the operation
-     * @param details the payload that is to be sent to the Database. [employeeID, surname, name, date of birth, address, city, postcode, telephoneNumber, mobileNumber, emergency contact, emergency contact number]
-     * @return whether or not the operation has been successful
+     * Updates the Personal Details record of a User.
+     * @param user logged in User object performing the action
+     * @param details the full updated Personal Details record that is to be written to the Database
+     *                [0] Employee ID
+     *                [1] Surname
+     *                [2] First Name
+     *                [3] Date of Birth (yyyy-mm-dd)
+     *                [4] Address
+     *                [5] City
+     *                [6] Postcode
+     *                [7] Telephone Number
+     *                [8] Mobile Number
+     *                [9] Emergency Contact
+     *                [10] Emergency Contact Phone Number
+     * @return whether this operation has been successful or not
      */
     public static boolean updatePersonalDetails(User user, String[] details)
     {
-        if (details == null || details[0] == null)
+        if (details == null || details[pIndexEmployeeId] == null)
         {
             dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", true);
             return false;
         }
 
-        String[] currentDetails = dp.fetchPersonalDetails(details[0]);
+        String[] currentDetails = dp.fetchPersonalDetails(details[pIndexEmployeeId]);
 
         for (int i = 0; i < details.length; i++)
         {
@@ -238,6 +279,33 @@ public class Authorise
         return false;
     }
 
+    /**
+     * Updates a Performance Review
+     * @param user the logged in User object performing the action
+     * @param updatedDocument a full updated main document element
+     *                [0] Reviewee Employee ID
+     *                [1] Due By Date
+     *                [2] Document ID
+     *                [3] Reviewer 1 Employee ID (Direct Supervisor)
+     *                [4] Reviewer 2 Employee ID (Allocated)
+     *                [5] Reviewee Signature (yyyy-mm-dd)
+     *                [6] Reviewer 1 Signature (yyyy-mm-dd)
+     *                [7] Reviewer 2 Signature (yyyy-mm-dd)
+     *                [8] Meeting Date (obsolete(?))
+     *                [9] Performance Summary
+     *                [10] Reviewer Comments
+     *                [11] Recommendation
+     * @param updatedPastPerformance a full updated Past Performance ArrayList of String Arrays
+     *                [0] [0] Document ID
+     *                [1] [0-n] Objective Number
+     *                [2] [0-n] Objectives
+     *                [3] [0-n] Achievements
+     * @param updatedFuturePerformance a full updated Future Performance ArrayList of Strings
+     *                [0] Document ID
+     *                [1] Objective Number
+     *                [2] Objective
+     * @return whether this operation has been successful
+     */
     public static boolean updatePerformanceReview(User user, String[] updatedDocument, ArrayList<String[]> updatedPastPerformance, ArrayList<String> updatedFuturePerformance)
     {
         String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
