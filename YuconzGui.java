@@ -551,7 +551,7 @@ public class YuconzGui extends Application {
             }
             else // get info from futurePerformance of last previous review
             {
-                String prevReviewDoc = View.getPreviousReview(user, revieweeId);
+                String prevReviewDoc = View.getPreviousReview(user, revieweeId, dueBy);
                 ArrayList<String> previousFuturePerformance = Authorise.readFuturePerformance(prevReviewDoc);
                 for(int i = 0; i < previousFuturePerformance.size(); i++)
                 {
