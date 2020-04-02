@@ -25,9 +25,9 @@ public class View
      * Returns the keys for last year's Review for a given Employee
      * @param user user object of the HR department or with the Employee ID equivalent to the Employee ID parameter
      * @param employeeId the Employee in question of who's review should be returned
-     * @return the Document ID required for the Review to be accessed to be accessed
+     * @return the keys required to access that Review
      */
-    static String getPreviousReview(User user, String employeeId)
+    static String[] getPreviousReview(User user, String employeeId)
     {
         if (user.getDepartment().equals(Position.Department.HR) || user.getEmployeeId().equals(employeeId))
         {
@@ -53,7 +53,7 @@ public class View
             {
                 if (Integer.parseInt(empIdsReviews.get(i)[1].substring(0, 4)) == (currentYear -1))
                 {
-                    return dp.fetchReviewDocumentId(empIdsReviews.get(i)[0], empIdsReviews.get(i)[1]);
+                    return empIdsReviews.get(i);
                 }
             }
         }

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class Authorise
 {
     /**
-     * Each CRUD operation is stored as an Enum to eliminate human error
+     * Each kind of operation is stored as an Enum to eliminate human error
      */
     public enum Action{
         Create("Create"),
@@ -37,37 +37,41 @@ public class Authorise
     }
 
     static DatabaseParser dp = new DatabaseParser();
-
-    static int revieweeIdIndex = 0;
-    static int dueByIndex = 1;
-    static int documentIdIndex = 2;
-    static int firstReviewerIdIndex = 3;
-    static int secondReviewerIdIndex = 4;
-    static int revieweeSignatureIndex = 5;
-    static int reviewer1SignatureIndex = 6;
-    static int reviewer2SignatureIndex = 7;
-    static int meetingDateIndex = 8;
-    static int performanceSummaryIndex = 9;
-    static int reviewerCommentsIndex = 10;
-    static int recommendationsIndex = 11;
-    static ArrayList<String[]> pastPerformance = new ArrayList<>();
-    static ArrayList<String> futurePerformance = new ArrayList<>();
+    static int rIndexRevieweeId, pIndexEmployeeId = 0;
+    static int rIndexDueBy, pIndexSurname = 1;
+    static int rIndexDocumentId, pIndexFirstName = 2;
+    static int rIndexReviewer1Id, pIndexDoB = 3;
+    static int rIndexReviewer2Id, pIndexAddress = 4;
+    static int rIndexRevieweeSignature, pIndexCity = 5;
+    static int rIndexReviewer1Signature, pIndexPostCode = 6;
+    static int rIndexReviewer2Signature = 7;
 
     /**
-     * Creates a new Personal Details record for a member of Staff
-     * @param user the user performing the action
-     * @param details the information that is to be written into the Personal Details record [employeeID, surname, name, date of birth, address, city, postcode, telephoneNumber, mobileNumber, emergency contact, emergency contact number]
-     * @return whether or not the action has been successful
+     * Creates a new Personal Details record for an Employee
+     * @param user logged in User performing the operation
+     * @param personalDetails the content of this Personal Details record
+     *                        [0] Employee ID
+     *                        [1] Surname
+     *                        [2] First Name
+     *                        [3] Date of Birth (yyyy-mm-dd)
+     *                        [4] Address
+     *                        [5] City
+     *                        [6] Postcode
+     *                        [7] Telephone Number
+     *                        [8] Mobile Phone Number
+     *                        [9] Emergency Contact Name
+     *                        [10] Emergency Contact Phone Number
+     * @return whether or not the action has been successful and written to the Database
      */
-    public static boolean createPersonalDetailsRecord(User user, String[] details)
+    public static boolean createPersonalDetailsRecord(User user, String[] personalDetails)
     {
-        if (AuthorisationAttempt(Action.Create, "Personal Details", user, details))
+        if (AuthorisationAttempt(Action.Create, "Personal Details", user, personalDetails))
         {
-            if (details[0] == null)
+            if (personalDetails[pIndexEmployeeId] == null)
             {
                 return false;
             }
-            return dp.createPersonalDetailsRecord(details, User.generateUUID());
+            return dp.createPersonalDetailsRecord(personalDetails, User.generateUUID());
         }
         return false;
     }
@@ -75,14 +79,14 @@ public class Authorise
     /**
      * Creates a Review record. revieweeId and reviewers are mandatory fields
      * @param user the user logged in and trying to perform the action
-     * @param content the initial, mandatory content for this review
-     *                [0] employeeId
-     *                [1] dueBy Date (yyyy-mm-dd)
-     *                [2] documentId (see User.generateUUID)
-     *                [3] Second Reviewer
+     * @param reviewContent the initial, mandatory reviewContent for this review
+     *                [0] Employee ID
+     *                [1] Due By Date (yyyy-mm-dd)
+     *                [2] Document ID (see User.generateUUID)
+     *                [3] Second Reviewer ID
      * @return whether the operation has been successful or not
      */
-    public static boolean createPerformanceReview(User user, String[] content)
+    public static boolean createPerformanceReview(User user, String[] reviewContent)
     {
         if (user == null)
         {
@@ -90,34 +94,34 @@ public class Authorise
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[revieweeIdIndex]))
+        if (!dp.checkEmployeeId(reviewContent[rIndexRevieweeId]))
         {
             System.out.println("Invalid employeeId provided");
             return false;
         }
-        String firstReviewer = dp.fetchDirectSupervisor(content[revieweeIdIndex]);
+        String firstReviewer = dp.fetchDirectSupervisor(reviewContent[rIndexRevieweeId]);
 
-        if ((firstReviewer + content[secondReviewerIdIndex - 2]).contains(content[revieweeIdIndex]))
+        if ((firstReviewer + reviewContent[rIndexReviewer2Id - 2]).contains(reviewContent[rIndexRevieweeId]))
         {
             System.out.println("Reviewee can't also be a reviewer");
             return false;
         }
 
-        if (content[dueByIndex] == null)
+        if (reviewContent[rIndexDueBy] == null)
         {
-            System.out.println("Due-date has not been set");
+            System.out.println("Due By Date has not been set");
             return false;
         }
 
         Pattern dateRegex = Pattern.compile("[2][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]");
-        Matcher dateMatch = dateRegex.matcher(content[dueByIndex]);
+        Matcher dateMatch = dateRegex.matcher(reviewContent[rIndexDueBy]);
         if (!dateMatch.matches())
         {
             System.out.println("Date format provided is not valid\n   Use 'yyyy-mm-dd");
             return false;
         }
 
-        if (content[documentIdIndex] == null)
+        if (reviewContent[rIndexDocumentId] == null)
         {
             System.out.println("No document ID has been provided");
             return false;
@@ -129,17 +133,17 @@ public class Authorise
             return false;
         }
 
-        if (!dp.checkEmployeeId(content[secondReviewerIdIndex - 2]))
+        if (!dp.checkEmployeeId(reviewContent[rIndexReviewer2Id - 2]))
         {
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
         }
-        String[] payload = new String[content.length + 2];
-        payload[0] = content[0];
-        payload[1] = content[1];
+        String[] payload = new String[reviewContent.length + 2];
+        payload[0] = reviewContent[0];
+        payload[1] = reviewContent[1];
         payload[2] = User.generateUUID();
         payload[3] = firstReviewer;
-        payload[4] = content[2];
+        payload[4] = reviewContent[2];
 
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
@@ -233,52 +237,52 @@ public class Authorise
         String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
         String[] currentMainDocument = dp.fetchReview(docId);
 
-        if (currentMainDocument[reviewer1SignatureIndex] != null && currentMainDocument[revieweeSignatureIndex] != null && currentMainDocument[reviewer2SignatureIndex] != null)
+        if (currentMainDocument[rIndexReviewer1Signature] != null && currentMainDocument[rIndexRevieweeSignature] != null && currentMainDocument[rIndexReviewer2Signature] != null)
         {
             System.out.println("This Review has already been completed and cannot be updated");
             return false;
         }
 
         // Reject other users signing this box
-        if (!currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()))
+        if (!currentMainDocument[rIndexRevieweeId].equals(user.getEmployeeId()))
         {
-            System.out.println("Cannot overwrite signature on " + currentMainDocument[revieweeIdIndex] + "'s behalf");
-            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[rIndexRevieweeId] + "'s behalf");
+            updatedDocument[rIndexRevieweeSignature] = currentMainDocument[rIndexRevieweeSignature];
         }
         // Cannot un-sign Review
-        else if (currentMainDocument[revieweeIdIndex].equals(user.getEmployeeId()) && (currentMainDocument[revieweeSignatureIndex] != null && updatedDocument[revieweeSignatureIndex].equals("false")))
+        else if (currentMainDocument[rIndexRevieweeId].equals(user.getEmployeeId()) && (currentMainDocument[rIndexRevieweeSignature] != null && updatedDocument[rIndexRevieweeSignature].equals("false")))
         {
             System.out.println("You have already signed this review off. Cannot un-sign document");
-            updatedDocument[revieweeSignatureIndex] = currentMainDocument[revieweeSignatureIndex];
+            updatedDocument[rIndexRevieweeSignature] = currentMainDocument[rIndexRevieweeSignature];
         }
 
 
 
         // If this Reviewer is the reviewee's Line Manager -> first reviewer
-        if (!currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()))
+        if (!currentMainDocument[rIndexReviewer1Id].equals(user.getEmployeeId()))
         {
-            updatedDocument[reviewer1SignatureIndex] = currentMainDocument[reviewer1SignatureIndex];
-            System.out.println("Cannot overwrite signature on " + currentMainDocument[firstReviewerIdIndex] + "'s behalf");
+            updatedDocument[rIndexReviewer1Signature] = currentMainDocument[rIndexReviewer1Signature];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[rIndexReviewer1Id] + "'s behalf");
         }
         // Cannot un-sign Review
-        else if (currentMainDocument[firstReviewerIdIndex].equals(user.getEmployeeId()) && (currentMainDocument[reviewer1SignatureIndex] != null && updatedDocument[reviewer1SignatureIndex].equals("false")))
+        else if (currentMainDocument[rIndexReviewer1Id].equals(user.getEmployeeId()) && (currentMainDocument[rIndexReviewer1Signature] != null && updatedDocument[rIndexReviewer1Signature].equals("false")))
         {
             System.out.println("You have already signed this review off. Cannot un-sign document");
-            updatedDocument[reviewer1SignatureIndex] = currentMainDocument[reviewer1SignatureIndex];
+            updatedDocument[rIndexReviewer1Signature] = currentMainDocument[rIndexReviewer1Signature];
         }
 
 
         // If this Reviewer is just another Reviewer
-        if (!currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()))
+        if (!currentMainDocument[rIndexReviewer2Id].equals(user.getEmployeeId()))
         {
-            updatedDocument[reviewer2SignatureIndex] = currentMainDocument[reviewer2SignatureIndex];
-            System.out.println("Cannot overwrite signature on " + currentMainDocument[secondReviewerIdIndex] + "'s behalf");
+            updatedDocument[rIndexReviewer2Signature] = currentMainDocument[rIndexReviewer2Signature];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[rIndexReviewer2Id] + "'s behalf");
         }
         // Cannot un-sign Review
-        else if (currentMainDocument[secondReviewerIdIndex].equals(user.getEmployeeId()) && (currentMainDocument[reviewer2SignatureIndex] != null && updatedDocument[reviewer2SignatureIndex].equals("false")))
+        else if (currentMainDocument[rIndexReviewer2Id].equals(user.getEmployeeId()) && (currentMainDocument[rIndexReviewer2Signature] != null && updatedDocument[rIndexReviewer2Signature].equals("false")))
         {
-            updatedDocument[reviewer2SignatureIndex] = currentMainDocument[reviewer2SignatureIndex];
-            System.out.println("Cannot overwrite signature on " + currentMainDocument[secondReviewerIdIndex] + "'s behalf");
+            updatedDocument[rIndexReviewer2Signature] = currentMainDocument[rIndexReviewer2Signature];
+            System.out.println("Cannot overwrite signature on " + currentMainDocument[rIndexReviewer2Id] + "'s behalf");
         }
 
         if (AuthorisationAttempt(Action.Update, "Performance Review", user, new String[] { docId }))
@@ -324,7 +328,7 @@ public class Authorise
                     {
                         if (user.getDepartment().equals(Position.Department.HR))
                         {
-                            if (payload[revieweeIdIndex] != null && dp.checkEmployeeId(payload[firstReviewerIdIndex]) && dp.checkEmployeeId(payload[secondReviewerIdIndex]))
+                            if (payload[rIndexRevieweeId] != null && dp.checkEmployeeId(payload[rIndexReviewer1Id]) && dp.checkEmployeeId(payload[rIndexReviewer2Id]))
                             {
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
@@ -412,7 +416,7 @@ public class Authorise
                             {
                                 String[] content = dp.fetchReview(payload[0]);
                                 // Has this already been signed off?
-                                if (content[revieweeSignatureIndex] != null && content[reviewer1SignatureIndex] != null && content[reviewer2SignatureIndex] != null)
+                                if (content[rIndexRevieweeSignature] != null && content[rIndexReviewer1Signature] != null && content[rIndexReviewer2Signature] != null)
                                 {
                                     System.out.println("Changes to this review are not allowed as it has been signed off already");
                                     dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
