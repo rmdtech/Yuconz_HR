@@ -382,9 +382,11 @@ public class YuconzGui extends Application {
         changeScene("HrPortal.fxml");
     }
 
+    /**
+     * Initialises the updated document and signs the document based on who is pressing the button
+     */
     public void signPerformanceReview()
     {
-        System.out.println("Insert Sign Code");
         String[] updatedDocument = mainReview;
 
         if(user.getEmployeeId().equals(updatedDocument[0]))
@@ -399,31 +401,15 @@ public class YuconzGui extends Application {
         {
             updatedDocument[7] = "true";
         }
-        System.out.println("MainReview[5] = " + updatedDocument[5]);
-        System.out.println("MainReview[6] = " + updatedDocument[6]);
-        System.out.println("MainReview[7] = " + updatedDocument[7]);
         savePerformanceReview(updatedDocument);
     }
 
+    /**
+     *Initialises the updated document
+     */
     public void savePerformanceReviewWithoutSigning()
     {
         String[] updatedDocument = mainReview;
-        System.out.println("ID: " + updatedDocument[0]);
-        if(user.getEmployeeId().equals(updatedDocument[0]))
-        {
-            updatedDocument[5] = "false";
-        }
-        if(user.getEmployeeId().equals(updatedDocument[3]))
-        {
-            updatedDocument[6] = "false";
-            System.out.println("this should not run");
-        }
-        if(user.getEmployeeId().equals(updatedDocument[4]))
-        {
-            updatedDocument[7] = "false";
-            System.out.println("this should run");
-        }
-        System.out.println(Arrays.toString(updatedDocument));
         savePerformanceReview(updatedDocument);
     }
 
@@ -472,7 +458,11 @@ public class YuconzGui extends Application {
     }
 
 
-
+    /**
+     * Loads review data from the Database and into the GUI
+     * @param revieweeId 6 Character ID of the employee who is being reviewed
+     * @param dueBy YYYY-MM-DD Date identifying the review
+     */
     public void initialisePerformanceReviewView(String revieweeId, String dueBy)
     {
 
@@ -586,6 +576,7 @@ public class YuconzGui extends Application {
             reviewerCommentsTextArea.setWrapText(true);
             reviewerCommentsTextArea.setText(mainReview[10]);
 
+            //Begin preparing signature label
             signatureLabel = (Label) scene.lookup("#signatureLabel");
             String signatureLabelText = "";
             if(mainReview[5] != "false")
@@ -600,13 +591,12 @@ public class YuconzGui extends Application {
             {
                 signatureLabelText = signatureLabelText + "(" + mainReview[4] + ": " + mainReview[7] + ")";
             }
-
             signatureLabel.setText(signatureLabelText);
+            //Finish preparing signature label
+
             //Disable inputs if all users have signed.
             if(mainReview[5] != "false" && mainReview[6] != "false" && mainReview[7] != "false")
             {
-                //Insert code here.
-                System.out.println("all signed");
                 signButton = (Button) scene.lookup("#signButton");
                 signButton.setDisable(true);
                 saveButton = (Button) scene.lookup("#saveButton");
@@ -618,7 +608,6 @@ public class YuconzGui extends Application {
                 recommendationComboBox.setDisable(true);
                 reviewerCommentsTextArea.setDisable(true);
                 performanceSummaryTextArea.setDisable(true);
-
             }
 
         }
