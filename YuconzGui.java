@@ -312,6 +312,11 @@ public class YuconzGui extends Application {
         }
     }
 
+    /**
+     * logs the user out of the system and returns the user to the login screen
+     * @param actionEvent Button click
+     * @throws Exception
+     */
     public void logout(ActionEvent actionEvent) throws Exception {
         this.actionEvent = actionEvent;
         Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
@@ -320,6 +325,9 @@ public class YuconzGui extends Application {
         changeScene("Login.fxml");
     }
 
+    /**
+     * Initialises the profile page of the logged in user so that it includes all the relevant data speciifc to that user
+     */
     public void initialiseProfilePage()
     {
         if(user.isLoggedIn())
@@ -368,6 +376,9 @@ public class YuconzGui extends Application {
         }
     }
 
+    /**
+     * Automatically fills the supervisor field of the user when initialising a review
+     */
     public void autofillSupervisor()
     {
         firstReviewerTextField.setText(View.getDirectSupervisor(revieweeTextField.getText()));
@@ -617,6 +628,9 @@ public class YuconzGui extends Application {
         }
     }
 
+    /**
+     * Adds an additional row to the Future Performance Table of the review. The new row is given an incremented number identifier
+     */
     public void addFPRow()
     {
         TextInputDialog td = new TextInputDialog();
@@ -630,6 +644,9 @@ public class YuconzGui extends Application {
 
     }
 
+    /**
+     * Deletes the row from the future performance table that the user currently has selected
+     */
     public void deleteSelectedFPRow()
     {
         futurePerformanceTable.getItems().removeAll(
@@ -637,6 +654,10 @@ public class YuconzGui extends Application {
         );
     }
 
+    /**
+     * Initialises the View Personal Details page with the relevant details to the given user
+     * @param employeeId 6 Character Employee ID
+     */
     public void initialiseViewPersonalDetails(String employeeId)
     {
         String[] payload = Authorise.readPersonalDetails(user, employeeId);
@@ -734,6 +755,10 @@ public class YuconzGui extends Application {
 
     }
 
+    /**
+     * Enables editing in all Personal Details fields so that the user can modify the Personal Details records
+     * @param actionEvent
+     */
     public void unlockPersonalDetails(ActionEvent actionEvent)
     {
         this.actionEvent = actionEvent;
@@ -755,6 +780,10 @@ public class YuconzGui extends Application {
         savePersonalDetailsButton.setVisible(true);
     }
 
+    /**
+     * Disables editing in all Personal Details fields so that the user can not modify the Personal Details records
+     * @param actionEvent
+     */
     public void lockPersonalDetails(ActionEvent actionEvent) {
         this.actionEvent = actionEvent;
         String id = employeeIdLabel.getText().substring(employeeIdLabel.getText().length() - 6);
@@ -787,6 +816,9 @@ public class YuconzGui extends Application {
         }
     }
 
+    /**
+     * Initialises the page Create New User page so that drop down boxes have all the correct options available
+     */
     public void initialiseCreateNewUser()
     {
         newDepartmentComboBox = (ComboBox<String>) scene.lookup("#newDepartmentComboBox");
@@ -807,6 +839,11 @@ public class YuconzGui extends Application {
         ));
     }
 
+    /**
+     * Adds a new user to the Database, provided that all the provided details are valid
+     * @param actionEvent Button click
+     * @throws Exception
+     */
     public void doCreateUser(ActionEvent actionEvent) throws Exception
     {
         this.actionEvent = actionEvent;
@@ -864,6 +901,9 @@ public class YuconzGui extends Application {
         }
     }
 
+    /**
+     * Initialises the HR Portal page with all of the logged in user's relevant details
+     */
     public void initialiseHrPortal()
     {
         otherUserDetailsComboBox = (ComboBox<String>) scene.lookup("#otherUserDetailsComboBox");
@@ -882,7 +922,9 @@ public class YuconzGui extends Application {
         viewCompletedReviewsDropdown.setItems(completedReviews);
 
     }
-
+    /**
+     * Initialises the Manager Portal page with all of the logged in user's relevant details
+     */
     public void initialiseManagerPortal()
     {
         ArrayList<String[]> myReviews = View.getReviewsAsReviewer(user);
@@ -895,6 +937,10 @@ public class YuconzGui extends Application {
         manageReviewsDropdown.setItems(myReviewsAsStrings);
     }
 
+    /**
+     * Allows the logged in user to see another user's Personal Details form, provided they have the correct permissions
+     * @throws Exception
+     */
     public void viewOtherUsersPersonalDetailsForm() throws Exception
     {
         if(otherUserDetailsComboBox.getValue() == null)
