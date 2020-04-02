@@ -117,13 +117,7 @@ public class Authorise
         Matcher dateMatch = dateRegex.matcher(reviewContent[rIndexDueBy]);
         if (!dateMatch.matches())
         {
-            System.out.println("Date format provided is not valid\n   Use 'yyyy-mm-dd");
-            return false;
-        }
-
-        if (reviewContent[rIndexDocumentId] == null)
-        {
-            System.out.println("No document ID has been provided");
+            System.out.println("Date format provided is not valid\n   Use 'yyyy-mm-dd'");
             return false;
         }
 
@@ -138,12 +132,13 @@ public class Authorise
             System.out.println("Invalid employeeId given for the second reviewer");
             return false;
         }
+
         String[] payload = new String[reviewContent.length + 2];
-        payload[0] = reviewContent[0];
-        payload[1] = reviewContent[1];
-        payload[2] = User.generateUUID();
-        payload[3] = firstReviewer;
-        payload[4] = reviewContent[2];
+        payload[rIndexRevieweeId] = reviewContent[rIndexRevieweeId];
+        payload[rIndexDueBy] = reviewContent[rIndexDueBy];
+        payload[rIndexDocumentId] = User.generateUUID();
+        payload[rIndexReviewer1Id] = firstReviewer;
+        payload[rIndexReviewer2Id] = reviewContent[rIndexReviewer2Id - 2];
 
         if (AuthorisationAttempt(Action.Create, "Performance Review", user, payload))
         {
@@ -153,10 +148,21 @@ public class Authorise
     }
 
     /**
-     * Read the Personal Details record of a certain member of Staff
-     * @param user the user that is performing the action
-     * @param pdEmpId the employeeId of which the user is accessing the Personal Details record from
-     * @return a String array containing the Personal Details record [employeeID, surname, name, date of birth, address, city, postcode, telephoneNumber, mobileNumber, emergency contact, emergency contact number]
+     * Read the Personal Details Record of a certain Employee
+     * @param user logged in User performing this action
+     * @param pdEmpId the Employee ID of which the user is accessing the Personal Details record from
+     * @return a string array containing the Personal Details record
+     *                [0] Employee ID
+     *                [1] Surname
+     *                [2] First Name
+     *                [3] Date of Birth (yyyy-mm-dd)
+     *                [4] Address
+     *                [5] City
+     *                [6] Postcode
+     *                [7] Telephone Number
+     *                [8] Mobile Number
+     *                [9] Emergency Contact
+     *                [10] Emergency Contact Phone Number
      */
     public static String[] readPersonalDetails (User user, String pdEmpId)
     {
