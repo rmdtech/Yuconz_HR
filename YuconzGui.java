@@ -616,6 +616,8 @@ public class YuconzGui extends Application {
                 deleteFPRowButton = (Button) scene.lookup("#deleteFPRowButton");
                 deleteFPRowButton.setDisable(true);
                 recommendationComboBox.setDisable(true);
+                reviewerCommentsTextArea.setDisable(true);
+                performanceSummaryTextArea.setDisable(true);
 
             }
 
