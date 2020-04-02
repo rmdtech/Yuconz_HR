@@ -22,6 +22,45 @@ public class View
     }
 
     /**
+     * Returns the keys for last year's Review for a given Employee
+     * @param user the user logged in performing the action
+     * @param employeeId the employee in question of who's review shall be returned
+     * @return the keys required to get this review. Null if not found
+     */
+    static String[] getPreviousReview(User user, String employeeId)
+    {
+        if (user.getDepartment().equals(Position.Department.HR) || user.getEmployeeId().equals(employeeId))
+        {
+            ArrayList<String[]> allKeys = dp.fetchAllReviewKeys();
+            ArrayList<String[]> empIdsReviews = new ArrayList<>();
+            for (int i = 0; i < allKeys.size(); i++)
+            {
+                if (allKeys.get(i)[0].equals(employeeId))
+                {
+                    empIdsReviews.add(allKeys.get(i));
+                }
+            }
+
+            int currentYear = 0;
+            for (int i = 0; i < empIdsReviews.size(); i++)
+            {
+                if (Integer.parseInt(empIdsReviews.get(i)[1].substring(0, 4)) > currentYear)
+                {
+                    currentYear = Integer.parseInt(empIdsReviews.get(i)[1].substring(0, 4));
+                }
+            }
+            for (int i = 0; i < empIdsReviews.size(); i++)
+            {
+                if (Integer.parseInt(empIdsReviews.get(i)[1].substring(0, 4)) == (currentYear -1))
+                {
+                    return empIdsReviews.get(i);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Gets all completed reviews currently in the Database. Only to be used by HR Staff
      * @param user The currently logged in member of HR
      * @return An ArrayList containing all the main elements of a completed review
