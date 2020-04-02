@@ -84,7 +84,12 @@ public class YuconzGui extends Application {
     public ComboBox<String> recommendationComboBox;
     public Button viewOtherUsersPersonalDetailsButton;
     public Button viewReviewsButton;
+    public Button signButton;
+    public Button saveButton;
+    public Button addFPRowButton;
+    public Button deleteFPRowButton;
     public Label youAreADirectorLabel;
+    public Label signatureLabel;
     public ComboBox<String> manageReviewsDropdown;
     public Label personalDetailsHeader;
     public ComboBox<String> viewCompletedReviewsDropdown;
@@ -368,18 +373,21 @@ public class YuconzGui extends Application {
         System.out.println("Insert Sign Code");
         String[] updatedDocument = mainReview;
 
-        if(user.getEmployeeId() == updatedDocument[0])
+        if(user.getEmployeeId().equals(updatedDocument[0]))
         {
             updatedDocument[5] = "true";
         }
-        if(user.getEmployeeId() == updatedDocument[3])
+        if(user.getEmployeeId().equals(updatedDocument[3]))
         {
             updatedDocument[6] = "true";
         }
-        if(user.getEmployeeId() == updatedDocument[4])
+        if(user.getEmployeeId().equals(updatedDocument[4]))
         {
             updatedDocument[7] = "true";
         }
+        System.out.println("MainReview[5] = " + updatedDocument[5]);
+        System.out.println("MainReview[6] = " + updatedDocument[6]);
+        System.out.println("MainReview[7] = " + updatedDocument[7]);
         savePerformanceReview(updatedDocument);
     }
 
@@ -456,7 +464,6 @@ public class YuconzGui extends Application {
         {
 
             mainReview = Authorise.readReviewMain(documentId); //import existing review data from database
-            System.out.println(mainReview[8]);
             if(mainReview[5] == null)
             {
                 mainReview[5] = "false";
@@ -519,6 +526,7 @@ public class YuconzGui extends Application {
             ppAchievementsCol.setCellValueFactory(new PropertyValueFactory<>("achievement"));
             pastPerformanceTable.getColumns().addAll(ppNumberCol, ppObjectivesCol, ppAchievementsCol);
 
+
             for(int i = 0; i < pastPerformance.size(); i++)
             {
                 pastPerformanceTable.getItems().add(new ReviewGuiTableWrapper("" + (i+1), pastPerformance.get(i)[0], pastPerformance.get(i)[1]));
@@ -526,6 +534,7 @@ public class YuconzGui extends Application {
             //Finish setting up pastPerformanceTable
 
             performanceSummaryTextArea = (TextArea) scene.lookup("#performanceSummaryTextArea");
+            performanceSummaryTextArea.setWrapText(true);
             performanceSummaryTextArea.setText(mainReview[9]);
 
             //Begin setting up futurePerformanceTable
@@ -546,12 +555,40 @@ public class YuconzGui extends Application {
             //Finish setting up futurePerformanceTable
 
             reviewerCommentsTextArea = (TextArea) scene.lookup("#reviewerCommentsTextArea");
+            reviewerCommentsTextArea.setWrapText(true);
             reviewerCommentsTextArea.setText(mainReview[10]);
 
+            signatureLabel = (Label) scene.lookup("#signatureLabel");
+            String signatureLabelText = "";
+            if(mainReview[5] != "false")
+            {
+                signatureLabelText = signatureLabelText + "(" + revieweeId + ": " + mainReview[5] + ") ";
+            }
+            if(mainReview[6] != "false")
+            {
+                signatureLabelText = signatureLabelText + "(" + mainReview[3] + ": " + mainReview[6] + ") ";
+            }
+            if(mainReview[7] != "false")
+            {
+                signatureLabelText = signatureLabelText + "(" + mainReview[4] + ": " + mainReview[7] + ")";
+            }
+
+            signatureLabel.setText(signatureLabelText);
             //Disable inputs if all users have signed.
-            if(mainReview[5] == "true" && mainReview[6] == "true" && mainReview[7] == "true")
+            if(mainReview[5] != "false" && mainReview[6] != "false" && mainReview[7] != "false")
             {
                 //Insert code here.
+                System.out.println("all signed");
+                signButton = (Button) scene.lookup("#signButton");
+                signButton.setDisable(true);
+                saveButton = (Button) scene.lookup("#saveButton");
+                saveButton.setDisable(true);
+                addFPRowButton = (Button) scene.lookup("#addFPRowButton");
+                addFPRowButton.setDisable(true);
+                deleteFPRowButton = (Button) scene.lookup("#deleteFPRowButton");
+                deleteFPRowButton.setDisable(true);
+                recommendationComboBox.setDisable(true);
+
             }
 
         }
