@@ -19,8 +19,8 @@ public class Position {
         }
 
         /**
-         * Converts the Department into a String only to be used when writing to the Database
-         * @return the String version of this Department
+         * Returns the Department as a String (only to be used when writing to the Database)
+         * @return the String value of this Department
          */
         public String toString()
         {
@@ -38,8 +38,8 @@ public class Position {
 
         /**
          * Constructor for a Role
-         * @param level the level 0-2 of this role within the company
-         * @param label the name of this role
+         * @param level the level 0-2 of this Role
+         * @param label the name of this Role
          */
         Role(int level, String label)
         {
@@ -48,8 +48,8 @@ public class Position {
         }
 
         /**
-         * Converts the Role into a String only to be used when writing to the Database
-         * @return the String version of this Role
+         * Returns the Role as a String (only to be used when writing to the Database)
+         * @return the String value of this Role
          */
         public String toString()
         {
