@@ -4,9 +4,9 @@ public class View
 {
     static DatabaseParser dp = new DatabaseParser();
     /**
-     * Gets all reviews currently in the Database. Only to be used by HR Staff
-     * @param user The currently logged in member of HR
-     * @return An ArrayList containing all the keys required to fetch a review
+     * Returns all Reviews currently in the Database. Only to be used by HR Staff
+     * @param user user object of the HR department. Must be logged in
+     * @return an ArrayList containing all the keys required to fetch a review (use getReviewDocId with those keys to get the Document ID)
      */
     static ArrayList<String[]> getAllReviews(User user)
     {
@@ -23,9 +23,9 @@ public class View
 
     /**
      * Returns the keys for last year's Review for a given Employee
-     * @param user the user logged in performing the action
-     * @param employeeId the employee in question of who's review shall be returned
-     * @return the Document ID for the Review wanting to be accessed
+     * @param user user object of the HR department or with the Employee ID equivalent to the Employee ID parameter
+     * @param employeeId the Employee in question of who's review should be returned
+     * @return the Document ID required for the Review to be accessed to be accessed
      */
     static String getPreviousReview(User user, String employeeId)
     {
@@ -61,9 +61,9 @@ public class View
     }
 
     /**
-     * Gets all completed reviews currently in the Database. Only to be used by HR Staff
-     * @param user The currently logged in member of HR
-     * @return An ArrayList containing all the main elements of a completed review
+     * Returns all completed Reviews currently in the Database. Only to be used by HR Staff
+     * @param user user object of the HR Department. Must be logged in.
+     * @return an ArrayList containing all the main elements of a completed Review
      */
     static ArrayList<String[]> getAllCompletedReviewKeys(User user)
     {
@@ -91,8 +91,8 @@ public class View
 
     /**
      * Returns all reviews where a User is registered as a Reviewer (only to be used by managers or above)
-     * @param user the User object that is performing this action
-     * @return an ArrayList containing all the keys required to fetch a certain review
+     * @param user logged in User object of them performing the action
+     * @return an ArrayList containing all the keys required to access a certain Review
      */
     static ArrayList<String[]> getReviewsAsReviewer(User user)
     {
@@ -117,9 +117,9 @@ public class View
     }
 
     /**
-     * Returns all reviews of a certain User
-     * @param user the User currently logged in, trying to read their own reviews
-     * @return an ArrayList containing all the keys fetch all relevant reviews
+     * Returns all Reviews where a User is involved in as a Reviewee
+     * @param user logged in User object of those attempting to read their own Reviews
+     * @return an ArrayList containing all the keys required to access the given Reviews.
      */
     static ArrayList<String[]> getReviewsAsReviewee(User user)
     {
@@ -138,9 +138,9 @@ public class View
     }
 
     /**
-     * Gets all reviews currently in the Database. Only to be used by HR Staff
-     * @param user The currently logged in member of HR
-     * @return An ArrayList containing all the keys required to fetch a review
+     * Returns all Reviews currently in the Database. Only to be used by HR Staff
+     * @param user logged in user object of the HR Department
+     * @return an ArrayList containing all the keys required to access a Review
      */
     static ArrayList<String> getAllUsers(User user)
     {
@@ -156,8 +156,8 @@ public class View
     }
 
     /**
-     * Returns the full name of a given employee based on their name
-     * @param employeeId the employeeId of the user
+     * Returns the full name of a given Employee based on an Employee ID
+     * @param employeeId the Employee ID of the User who's name should be returned
      * @return an array in form of [0] First Name [1] Last name
      */
     static String[] getUserName(String employeeId)
@@ -167,8 +167,8 @@ public class View
 
     /**
      * Returns the Department Enum of a certain Employee
-     * @param employeeId the employeeID for which the department is to be gotten
-     * @return the Department Enum. Use Position.Department.label to get its proper String value
+     * @param employeeId the Employee ID for which the department is to be returned
+     * @return the Department Enum. Use Department.label to get its string value
      */
     static Position.Department getDepartment(String employeeId)
     {
@@ -177,8 +177,8 @@ public class View
 
     /**
      * Returns the Role Enum of a certain Employee
-     * @param employeeId the employeeID for which the role is to be gotten
-     * @return the Role Enum. Use Position.Role.label to get its proper String value
+     * @param employeeId the Employee ID for which the role is to be returned
+     * @return the Role Enum. Use Role.label to get its string value
      */
     static Position.Role getRole(String employeeId)
     {
@@ -187,8 +187,8 @@ public class View
 
     /**
      * Returns the Direct Supervisor of a certain Employee
-     * @param employeeId the employeeID for which the supervisor is to be gotten
-     * @return the employeeId of that supervisor
+     * @param employeeId the Employee ID for which the Direct Supervisor is to be returned
+     * @return the Employee Id of an Employee's Direct Supervisor
      */
     static String getDirectSupervisor(String employeeId)
     {
@@ -197,13 +197,12 @@ public class View
 
     /**
      * Returns an array containing the information stored in a Review record
-     * @param revieweeId the employeeId of the user who's review is trying to be accessed (makes composite key)
-     * @param dueBy the year of the review for that employeeId that is trying to be accessed (makes composite key)
-     * @return the documentID
+     * @param revieweeId the Employee Id of the User who's review is trying to be accessed
+     * @param dueBy the year of the Review for that Employee ID that is trying to be accessed (makes composite key)
+     * @return the Document ID of that Review
      */
     public static String getReviewDocId(String revieweeId, String dueBy)
     {
-        String docId = dp.fetchReviewDocumentId(revieweeId, dueBy);
-        return docId;
+        return dp.fetchReviewDocumentId(revieweeId, dueBy);
     }
 }
