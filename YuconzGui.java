@@ -14,7 +14,6 @@ import javafx.stage.Window;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -112,9 +111,9 @@ public class YuconzGui extends Application {
         Application.launch(args);
     }
 
-    public String getAbsPath(String filename)
+    public URL getClassPath(String filename)
     {
-        return "file:///" + new File(filename).getAbsolutePath();
+        return YuconzGui.class.getResource(filename);
     }
 
     /**
@@ -130,7 +129,7 @@ public class YuconzGui extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Yuconz");
-        loader.setLocation(new URL(getAbsPath("Boot.fxml")));
+        loader.setLocation(getClassPath("Boot.fxml"));
         primaryStage.show();
         primaryStage.setResizable(false);
 
@@ -157,7 +156,7 @@ public class YuconzGui extends Application {
     public void changeScene(String fxml) throws Exception
     {
         Stage stage = (Stage) Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null);
-        loader.setLocation(new URL(getAbsPath(fxml)));
+        loader.setLocation(getClassPath(fxml));
         AnchorPane anchorPane = loader.load();
         scene = new Scene(anchorPane);
         Objects.requireNonNull(stage).setScene(scene);
