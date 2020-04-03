@@ -658,13 +658,9 @@ public class YuconzGui extends Application {
      */
     public void addFPRow()
     {
-        TextInputDialog td = new TextInputDialog();
-        td.setHeaderText("Input Objective");
-        td.setContentText(("Input the objective here"));
-        td.showAndWait();
         if(!futurePerformanceTable.getItems().contains("1"))
         {
-            futurePerformanceTable.getItems().add(new ReviewGuiTableWrapper(""+(futurePerformanceTable.getItems().size()+1), td.getEditor().getText()));
+            futurePerformanceTable.getItems().add(new ReviewGuiTableWrapper(""+(futurePerformanceTable.getItems().size()+1), showInputBox("Input Objective", "Input the objective here")));
         }
 
     }
@@ -674,9 +670,15 @@ public class YuconzGui extends Application {
      */
     public void deleteSelectedFPRow()
     {
-        futurePerformanceTable.getItems().removeAll(
-                futurePerformanceTable.getSelectionModel().getSelectedItems()
-        );
+        if(futurePerformanceTable.getSelectionModel().getSelectedItems().size() > 0) {
+            futurePerformanceTable.getItems().removeAll(
+                    futurePerformanceTable.getSelectionModel().getSelectedItems()
+            );
+        }
+        else
+        {
+            showError("Selection Error", "Please select a row to delete");
+        }
     }
 
     public void editSelectedPPRow()
