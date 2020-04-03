@@ -271,11 +271,9 @@ public class Authorise
 
         if (AuthorisationAttempt(Action.Update, "Personal Details", user, details))
         {
-            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", true);
             return dp.updatePersonalDetails(details);
         }
 
-        dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", false);
         return false;
     }
 
