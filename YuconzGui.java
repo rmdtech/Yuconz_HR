@@ -353,7 +353,7 @@ public class YuconzGui extends Application {
     }
 
     /**
-     * Initialises the profile page of the logged in user so that it includes all the relevant data speciifc to that user
+     * Initialises the profile page of the logged in user so that it includes all the relevant data specific to that user
      */
     public void initialiseProfilePage()
     {
