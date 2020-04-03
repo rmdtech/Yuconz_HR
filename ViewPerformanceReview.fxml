@@ -107,9 +107,14 @@
                   <Button fx:id="saveButton" layoutX="166.0" layoutY="122.0" mnemonicParsing="false" onAction="#savePerformanceReviewWithoutSigning" text="Save &amp; Exit" translateX="-5.0" translateY="12.0" />
                </children>
             </Pane>
-            <Button fx:id="addFPRowButton" mnemonicParsing="false" onAction="#addFPRow" text="Add Row" translateY="-30.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-            <Button fx:id="deleteFPRowButton" mnemonicParsing="false" onAction="#deleteSelectedFPRow" text="Delete Row" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <Button fx:id="addFPRowButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addFPRow" prefHeight="25.0" prefWidth="79.0" text="Add Row" translateY="-50.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin></Button>
+            <Button fx:id="deleteFPRowButton" mnemonicParsing="false" onAction="#deleteSelectedFPRow" prefHeight="25.0" prefWidth="79.0" text="Delete Row" GridPane.columnIndex="3" GridPane.rowIndex="3" />
             <TextArea fx:id="reviewerCommentsTextArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="55.0" prefWidth="583.0" promptText="Reviewer Comments" translateX="10.0" translateY="80.0" wrapText="true" GridPane.rowIndex="3" />
+            <Button fx:id="editSelectedPPRowButton" mnemonicParsing="false" onAction="#editSelectedPPRow" text="Edit Row" translateX="80.0" translateY="-65.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <Button fx:id="fpEditRowButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#editSelectedFPRow" prefHeight="25.0" prefWidth="79.0" text="Edit Row" translateY="-25.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
          </children>
       </GridPane>
    </children>

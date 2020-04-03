@@ -99,6 +99,7 @@ public class YuconzGui extends Application {
     public static String[] mainReview;
 
 
+
     FXMLLoader loader = new FXMLLoader();
     public static Scene scene;
     private ActionEvent actionEvent;
@@ -188,6 +189,21 @@ public class YuconzGui extends Application {
         alert.setHeaderText(infoHeader);
         alert.setContentText(infoContent);
         alert.showAndWait();
+    }
+
+    /**
+     * Displays a pop up box to the user with a text field for inputting data
+     * @param headerText String content of the header
+     * @param ContentText String content of the content box
+     * @return The string that the user entered
+     */
+    public String showInputBox(String headerText, String ContentText)
+    {
+        TextInputDialog td = new TextInputDialog();
+        td.setHeaderText(headerText);
+        td.setContentText(ContentText);
+        td.showAndWait();
+        return td.getEditor().getText();
     }
 
     /**
@@ -602,6 +618,10 @@ public class YuconzGui extends Application {
             {
                 signatureLabelText = signatureLabelText + "(" + mainReview[4] + ": " + mainReview[7] + ")";
             }
+            if(signatureLabelText == "")
+            {
+                signatureLabelText = "Nobody has signed this document yet";
+            }
             signatureLabel.setText(signatureLabelText);
             //Finish preparing signature label
 
@@ -652,6 +672,33 @@ public class YuconzGui extends Application {
         futurePerformanceTable.getItems().removeAll(
                 futurePerformanceTable.getSelectionModel().getSelectedItems()
         );
+    }
+
+    public void editSelectedPPRow()
+    {
+        if(pastPerformanceTable.getSelectionModel().getSelectedItems().size() < 1)
+        {
+            showError("Selection Error", "You must select a row to edit");
+        }
+        else
+        {
+            String number = "" + (pastPerformanceTable.getSelectionModel().getSelectedIndex() + 1);
+            String objective = ppObjectivesCol.getCellData(pastPerformanceTable.getSelectionModel().getSelectedItem()).toString();
+            pastPerformanceTable.getItems().set(pastPerformanceTable.getSelectionModel().getSelectedIndex(), new ReviewGuiTableWrapper((number), objective, showInputBox("Input Achievement", "Input the achievement here")));
+        }
+    }
+
+    public void editSelectedFPRow()
+    {
+        if(futurePerformanceTable.getSelectionModel().getSelectedItems().size() < 1)
+        {
+            showError("Selection Error", "You must select a row to edit");
+        }
+        else
+        {
+            String number = "" + (futurePerformanceTable.getSelectionModel().getSelectedIndex() + 1);
+            futurePerformanceTable.getItems().set(futurePerformanceTable.getSelectionModel().getSelectedIndex(), new ReviewGuiTableWrapper((number), showInputBox("Input Objective", "Input the objective here")));
+        }
     }
 
     /**
