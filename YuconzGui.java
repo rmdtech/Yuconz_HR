@@ -680,7 +680,6 @@ public class YuconzGui extends Application {
         {
             showError("Selection Error", "Please select a row to delete");
         }
-
     }
 
     public void editSelectedPPRow()
