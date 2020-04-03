@@ -111,6 +111,11 @@ public class YuconzGui extends Application {
         Application.launch(args);
     }
 
+    /**
+     * Gets the local class path of a requested resource
+     * @param filename the resource to location
+     * @return URL object pointing to resource
+     */
     public URL getClassPath(String filename)
     {
         return YuconzGui.class.getResource(filename);
@@ -126,6 +131,11 @@ public class YuconzGui extends Application {
         return !dbFile.exists();
     }
 
+    /**
+     * loads the initial scenes depending on whether or not the db file exists
+     * @param primaryStage the JFX object being used
+     * @throws Exception required for JFX
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Yuconz");
