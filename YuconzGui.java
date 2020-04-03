@@ -1085,6 +1085,11 @@ public class YuconzGui extends Application {
         }
     }
 
+    /**
+     * return the user to the home scene
+     * @param actionEvent Button Click
+     * @throws Exception
+     */
     public void goHome(ActionEvent actionEvent) throws Exception {
         this.actionEvent = actionEvent;
         changeScene("ProfilePage.fxml");
