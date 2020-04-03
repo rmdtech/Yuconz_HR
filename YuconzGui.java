@@ -93,6 +93,8 @@ public class YuconzGui extends Application {
     public ComboBox<String> manageReviewsDropdown;
     public Label personalDetailsHeader;
     public ComboBox<String> viewCompletedReviewsDropdown;
+    public Button fpEditRowButton;
+    public Button editSelectedPPRowButton;
 
     //Initialising other  elements
     public static User user;
@@ -639,6 +641,10 @@ public class YuconzGui extends Application {
                 recommendationComboBox.setDisable(true);
                 reviewerCommentsTextArea.setDisable(true);
                 performanceSummaryTextArea.setDisable(true);
+                editSelectedPPRowButton = (Button) scene.lookup("#editSelectedPPRowButton");
+                editSelectedPPRowButton.setDisable(true);
+                fpEditRowButton = (Button) scene.lookup("#fpEditRowButton");
+                fpEditRowButton.setDisable(true);
             }
 
         }
