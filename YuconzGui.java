@@ -1061,7 +1061,7 @@ public class YuconzGui extends Application {
         }
         else
         {
-            changeScene("viewPerformanceReview.fxml");
+            changeScene("ViewPerformanceReview.fxml");
             initialisePerformanceReviewView(user.getEmployeeId(), reviewsDropdown.getValue());
         }
     }
@@ -1076,7 +1076,7 @@ public class YuconzGui extends Application {
         {
             String employeeIdOfReview = manageReviewsDropdown.getValue().split(" ")[0];
             String dateOfReview = manageReviewsDropdown.getValue().split(" ")[1].replace("(", "").replace(")", "");
-            changeScene("viewPerformanceReview.fxml");
+            changeScene("ViewPerformanceReview.fxml");
             initialisePerformanceReviewView(employeeIdOfReview, dateOfReview);
         }
     }
@@ -1090,7 +1090,7 @@ public class YuconzGui extends Application {
         {
             String employeeIdOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[0];
             String dateOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[1].replace("(", "").replace(")", "");
-            changeScene("viewPerformanceReview.fxml");
+            changeScene("ViewPerformanceReview.fxml");
             initialisePerformanceReviewView(employeeIdOfReview, dateOfReview);
         }
     }
