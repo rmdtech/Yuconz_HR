@@ -54,21 +54,25 @@ public class Authenticate{
         Matcher employeeIdMatcher = Pattern.compile("[a-z]{3}[0-9]{3}").matcher(employeeId);
         if (!employeeIdMatcher.matches())
         {
+            Authorise.errorMessage = employeeId + " is not valid";
             System.out.println(employeeId + " is not valid.");
             return false;
         }
         if(dp.checkEmployeeId(employeeId))
         {
+            Authorise.errorMessage = "An employee with ID: "+ employeeId + " already exists";
             System.out.println("An employee with ID: "+ employeeId + " already exists");
             return false;
         }
         if (supervisor != null && !dp.checkEmployeeId(supervisor))
         {
+            Authorise.errorMessage = "No supervisor with this ID exists";
             System.out.println("No supervisor with this ID exists");
             return false;
         }
         if (dp.fetchRole(supervisor) != null && dp.fetchRole(supervisor).level <= (Position.Role.Employee.level))
         {
+            Authorise.errorMessage = "Supervisor cannot be of the same or lower level than the User you are trying to add";
             System.out.println("Supervisor cannot be of the same or lower level than the User you are trying to add");
             return false;
         }
