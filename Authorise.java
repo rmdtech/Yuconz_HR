@@ -45,6 +45,20 @@ public class Authorise
     static int rIndexRevieweeSignature = 5;
     static int rIndexReviewer1Signature = 6;
     static int rIndexReviewer2Signature = 7;
+    static String errorMessage;
+
+    /**
+     * Returns the error under which a certain operation may have failed
+     * @return the error message
+     */
+    static String getErrorMessage()
+    {
+        if (errorMessage != null)
+        {
+            return errorMessage;
+        }
+        return "No error has occured";
+    }
 
     /**
      * Creates a new Personal Details record for an Employee
@@ -69,6 +83,7 @@ public class Authorise
         {
             if (personalDetails[pIndexEmployeeId] == null)
             {
+                errorMessage = "No Employee ID has been provided";
                 return false;
             }
             return dp.createPersonalDetailsRecord(personalDetails, User.generateUUID());
@@ -90,26 +105,26 @@ public class Authorise
     {
         if (user == null)
         {
-            System.out.println("No User provided");
+            errorMessage = "Internal Error: No User object has been passed to Authorise.createPerformanceReview";
             return false;
         }
 
         if (!dp.checkEmployeeId(reviewContent[rIndexRevieweeId]))
         {
-            System.out.println("Invalid employeeId provided");
+            errorMessage = "Review does not contain an Employee ID for the reviewee";
             return false;
         }
         String firstReviewer = dp.fetchDirectSupervisor(reviewContent[rIndexRevieweeId]);
 
         if ((firstReviewer + reviewContent[rIndexReviewer2Id - 2]).contains(reviewContent[rIndexRevieweeId]))
         {
-            System.out.println("Reviewee can't also be a reviewer");
+            errorMessage = "Reviewee has been assigned to also be a Reviewer which is not possible";
             return false;
         }
 
         if (reviewContent[rIndexDueBy] == null)
         {
-            System.out.println("Due By Date has not been set");
+            errorMessage = "Due By Date has not been set";
             return false;
         }
 
@@ -117,19 +132,19 @@ public class Authorise
         Matcher dateMatch = dateRegex.matcher(reviewContent[rIndexDueBy]);
         if (!dateMatch.matches())
         {
-            System.out.println("Date format provided is not valid\n   Use 'yyyy-mm-dd'");
+            errorMessage = "Invalid date provided '" + reviewContent[rIndexDueBy] + "' is not of format yyyy-mm-dd";
             return false;
         }
 
         if (!dp.checkEmployeeId(firstReviewer))
         {
-            System.out.println(firstReviewer + " is no longer registered on the system");
+            errorMessage = firstReviewer + " is no longer registered on the system";
             return false;
         }
 
         if (!dp.checkEmployeeId(reviewContent[rIndexReviewer2Id - 2]))
         {
-            System.out.println("Invalid employeeId given for the second reviewer");
+            errorMessage = "Invalid Employee ID provided for the second reviewer (" + reviewContent[rIndexReviewer2Id] + ")";
             return false;
         }
 
@@ -255,7 +270,8 @@ public class Authorise
     {
         if (details == null || details[pIndexEmployeeId] == null)
         {
-            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", true);
+            errorMessage = "Either no Updated Performance Review has been passed or no Reviewee ID has been provided to Authorise.updatePersonalDetails";
+            dp.recordAuthorisationAttempt(user.getEmployeeId(), Action.Create.label, "Personal Details", false);
             return false;
         }
 
@@ -273,7 +289,6 @@ public class Authorise
         {
             return dp.updatePersonalDetails(details);
         }
-
         return false;
     }
 
@@ -309,8 +324,10 @@ public class Authorise
         String docId = dp.fetchReviewDocumentId(updatedDocument[0], updatedDocument[1]);
         String[] currentMainDocument = dp.fetchReview(docId);
 
+        errorMessage = "";
         if (currentMainDocument[rIndexReviewer1Signature] != null && currentMainDocument[rIndexRevieweeSignature] != null && currentMainDocument[rIndexReviewer2Signature] != null)
         {
+            errorMessage += "This Review has already been completed and cannot be modified/updated";
             System.out.println("This Review has already been completed and cannot be updated");
             return false;
         }
@@ -318,12 +335,14 @@ public class Authorise
         // Reject other users signing this box
         if (!currentMainDocument[rIndexRevieweeId].equals(user.getEmployeeId()))
         {
+            errorMessage += "\nCannot overwrite signature on " + currentMainDocument[rIndexRevieweeId] + "'s behalf";
             System.out.println("Cannot overwrite signature on " + currentMainDocument[rIndexRevieweeId] + "'s behalf");
             updatedDocument[rIndexRevieweeSignature] = currentMainDocument[rIndexRevieweeSignature];
         }
         // Cannot un-sign Review
         else if (currentMainDocument[rIndexRevieweeId].equals(user.getEmployeeId()) && (currentMainDocument[rIndexRevieweeSignature] != null && updatedDocument[rIndexRevieweeSignature].equals("false")))
         {
+            errorMessage += "\nYou have already signed this review off. Cannot un-sign document";
             System.out.println("You have already signed this review off. Cannot un-sign document");
             updatedDocument[rIndexRevieweeSignature] = currentMainDocument[rIndexRevieweeSignature];
         }
@@ -333,12 +352,14 @@ public class Authorise
         // If this Reviewer is the reviewee's Line Manager -> first reviewer
         if (!currentMainDocument[rIndexReviewer1Id].equals(user.getEmployeeId()))
         {
-            updatedDocument[rIndexReviewer1Signature] = currentMainDocument[rIndexReviewer1Signature];
+            errorMessage += "\nCannot overwrite signature on " + currentMainDocument[rIndexReviewer1Id] + "'s behalf";
             System.out.println("Cannot overwrite signature on " + currentMainDocument[rIndexReviewer1Id] + "'s behalf");
+            updatedDocument[rIndexReviewer1Signature] = currentMainDocument[rIndexReviewer1Signature];
         }
         // Cannot un-sign Review
         else if (currentMainDocument[rIndexReviewer1Id].equals(user.getEmployeeId()) && (currentMainDocument[rIndexReviewer1Signature] != null && updatedDocument[rIndexReviewer1Signature].equals("false")))
         {
+            errorMessage += "You have already signed this review off. Cannot un-sign document";
             System.out.println("You have already signed this review off. Cannot un-sign document");
             updatedDocument[rIndexReviewer1Signature] = currentMainDocument[rIndexReviewer1Signature];
         }
@@ -347,14 +368,16 @@ public class Authorise
         // If this Reviewer is just another Reviewer
         if (!currentMainDocument[rIndexReviewer2Id].equals(user.getEmployeeId()))
         {
-            updatedDocument[rIndexReviewer2Signature] = currentMainDocument[rIndexReviewer2Signature];
+            errorMessage += "Cannot overwrite signature on " + currentMainDocument[rIndexReviewer2Id] + "'s behalf";
             System.out.println("Cannot overwrite signature on " + currentMainDocument[rIndexReviewer2Id] + "'s behalf");
+            updatedDocument[rIndexReviewer2Signature] = currentMainDocument[rIndexReviewer2Signature];
         }
         // Cannot un-sign Review
         else if (currentMainDocument[rIndexReviewer2Id].equals(user.getEmployeeId()) && (currentMainDocument[rIndexReviewer2Signature] != null && updatedDocument[rIndexReviewer2Signature].equals("false")))
         {
-            updatedDocument[rIndexReviewer2Signature] = currentMainDocument[rIndexReviewer2Signature];
+            errorMessage += "Cannot overwrite signature on " + currentMainDocument[rIndexReviewer2Id] + "'s behalf";
             System.out.println("Cannot overwrite signature on " + currentMainDocument[rIndexReviewer2Id] + "'s behalf");
+            updatedDocument[rIndexReviewer2Signature] = currentMainDocument[rIndexReviewer2Signature];
         }
 
         if (AuthorisationAttempt(Action.Update, "Performance Review", user, new String[] { docId }))
@@ -394,6 +417,7 @@ public class Authorise
                         }
                         dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", false);
                         System.out.println(user.getEmployeeId() + " was not of the right department");
+                        errorMessage = "Create Personal Details: " + user.getEmployeeId() + " is of " + user.getDepartment().label + " and not HR";
                         return false;
                     }
                     else if (target.equals("Performance Review"))
@@ -405,16 +429,19 @@ public class Authorise
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
                             }
+                            errorMessage = "Interal error: Invalid Employee IDs were passed from Authorise.createPerformanceReview\n" + payload[rIndexReviewer1Id] + " " + payload[rIndexReviewer2Id];
                             System.out.println("Interal error: Invalid employeeIds were passed from Authorise.createPerformanceReview");
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                             return false;
                         }
+                        errorMessage = "User was not of HR Department and did not have sufficient permissions";
                         System.out.println(user.getEmployeeId() + " did not have the required permissions");
                         dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                         return false;
                     }
                     else
                     {
+                        errorMessage = "Fatal Error. Please tell Joel you reached point 1";
                         System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
                         dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", null);
                         return false;
@@ -423,15 +450,15 @@ public class Authorise
                     if (target.equals("Personal Details"))
                     {
                         String associatedEmployee = payload[0];
-                        Position.Department requiredDpt = Position.Department.HR;
 
-                        if (user.getDepartment().equals(requiredDpt)  || associatedEmployee.equals(user.getEmployeeId()))
+                        if (user.getDepartment().equals(Position.Department.HR)  || associatedEmployee.equals(user.getEmployeeId()))
                         {
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", true);
                             return true;
                         }
                         else
                         {
+                            errorMessage = "User was neither of HR nor trying to read their own Personal Details record";
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", false);
                             return false;
                         }
@@ -447,16 +474,19 @@ public class Authorise
                                 dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", true);
                                 return true;
                             }
+                            errorMessage = "User did not have the required permissions of this file. Wasn't a Reviewee, not a Reviewer and not of HR";
                             System.out.println("You do not have the required permissions to access this file");
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                             return false;
                         }
+                        errorMessage = "No Document ID has been provided";
                         System.out.println("Internal Error: No document has been selected when requesting access permission");
                         dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", null);
                         return false;
                     }
                     else
                     {
+                        errorMessage = "Fatal Error. Please tell Joel you reached point 2";
                         System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
                         dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), null, null);
                         return false;
@@ -474,6 +504,7 @@ public class Authorise
                         }
                         else
                         {
+                            errorMessage = "User was not of HR and is not registered as being a Reviewee or Reviewer for this Review " + associatedEmployee;
                             dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Personal Details", false);
                             return false;
                         }
@@ -490,6 +521,7 @@ public class Authorise
                                 // Has this already been signed off?
                                 if (content[rIndexRevieweeSignature] != null && content[rIndexReviewer1Signature] != null && content[rIndexReviewer2Signature] != null)
                                 {
+                                    errorMessage = "Changes to this review are not allowed as it has been signed off already";
                                     System.out.println("Changes to this review are not allowed as it has been signed off already");
                                     dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", false);
                                     return false;
@@ -498,22 +530,26 @@ public class Authorise
                                 return true;
                             }
                         }
+                        errorMessage = "No Document ID has been provided";
                         System.out.println("Internal Error: No documentId provided when attempting to update review");
                         dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), "Performance Review", null);
                         return false;
                     }
                     else
                     {
+                        errorMessage = "Fatal Error. Please tell Joel you reached point 3";
                         System.out.println("Internal error: The given target '" + target + "' has bot been recognised");
                         dp.recordAuthorisationAttempt(user.getEmployeeId(), action.toString(), null, null);
                         return false;
                     }
                 default:
+                    errorMessage = "Fatal Error. Please tell Joel you reached point 4";
                     System.out.println("The given operation was not recognised");
                     dp.recordAuthorisationAttempt(user.getEmployeeId(), null, null, null);
                     break;
             }
         }
+        errorMessage = "User attempting this action \"" + user.getEmployeeId() + "\"was not logged in";
         System.out.println(user.getEmployeeId() + " was not logged in");
         dp.recordAuthorisationAttempt("User that was not logged in", action.toString(), null, null);
         return false;
