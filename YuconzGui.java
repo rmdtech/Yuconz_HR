@@ -813,7 +813,7 @@ public class YuconzGui extends Application {
             }
             else
             {
-                showError("User Initialisation Error!", "Error initialising User, please check employeeID and password.");
+                showError("User Initialisation Error!", Authorise.getErrorMessage());
             }
         }
 
