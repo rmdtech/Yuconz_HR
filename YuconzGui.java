@@ -111,6 +111,11 @@ public class YuconzGui extends Application {
         Application.launch(args);
     }
 
+    /**
+     * Gets the local class path of a requested resource
+     * @param filename the resource to location
+     * @return URL object pointing to resource
+     */
     public URL getClassPath(String filename)
     {
         return YuconzGui.class.getResource(filename);
@@ -126,6 +131,11 @@ public class YuconzGui extends Application {
         return !dbFile.exists();
     }
 
+    /**
+     * loads the initial scenes depending on whether or not the db file exists
+     * @param primaryStage the JFX object being used
+     * @throws Exception required for JFX
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Yuconz");
@@ -343,7 +353,7 @@ public class YuconzGui extends Application {
     }
 
     /**
-     * Initialises the profile page of the logged in user so that it includes all the relevant data speciifc to that user
+     * Initialises the profile page of the logged in user so that it includes all the relevant data specific to that user
      */
     public void initialiseProfilePage()
     {
@@ -1051,7 +1061,7 @@ public class YuconzGui extends Application {
         }
         else
         {
-            changeScene("viewPerformanceReview.fxml");
+            changeScene("ViewPerformanceReview.fxml");
             initialisePerformanceReviewView(user.getEmployeeId(), reviewsDropdown.getValue());
         }
     }
@@ -1066,7 +1076,7 @@ public class YuconzGui extends Application {
         {
             String employeeIdOfReview = manageReviewsDropdown.getValue().split(" ")[0];
             String dateOfReview = manageReviewsDropdown.getValue().split(" ")[1].replace("(", "").replace(")", "");
-            changeScene("viewPerformanceReview.fxml");
+            changeScene("ViewPerformanceReview.fxml");
             initialisePerformanceReviewView(employeeIdOfReview, dateOfReview);
         }
     }
@@ -1080,11 +1090,16 @@ public class YuconzGui extends Application {
         {
             String employeeIdOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[0];
             String dateOfReview = viewCompletedReviewsDropdown.getValue().split(" ")[1].replace("(", "").replace(")", "");
-            changeScene("viewPerformanceReview.fxml");
+            changeScene("ViewPerformanceReview.fxml");
             initialisePerformanceReviewView(employeeIdOfReview, dateOfReview);
         }
     }
 
+    /**
+     * return the user to the home scene
+     * @param actionEvent Button Click
+     * @throws Exception
+     */
     public void goHome(ActionEvent actionEvent) throws Exception {
         this.actionEvent = actionEvent;
         changeScene("ProfilePage.fxml");
