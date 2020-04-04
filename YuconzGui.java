@@ -412,12 +412,19 @@ public class YuconzGui extends Application {
     }
 
     public void doCreateReview() throws Exception {
-        Authorise.createPerformanceReview(user, new String[]{
+        if(Authorise.createPerformanceReview(user, new String[]{
                 revieweeTextField.getText(),
                 dueByTextField.getText(),
                 secondReviewerTextField.getText()
-                });
-        changeScene("HrPortal.fxml");
+        }))
+        {
+            changeScene("HrPortal.fxml");
+        }
+        else
+        {
+            showError("Review Initialisation Error", Authorise.getErrorMessage());
+        }
+
     }
 
     /**
