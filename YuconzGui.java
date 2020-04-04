@@ -950,13 +950,13 @@ public class YuconzGui extends Application {
                     Position.Role.valueOf(newRoleComboBox.getValue())
             ))
             {
-                showError("General Error", "A general error occurred, please make sure all data has been entered correctly and the user does not already exist");
+                showError("User Creation Error", Authorise.getErrorMessage());
                 return;
             }
 
             if(!Authorise.createPersonalDetailsRecord(user, personalDetailsPayload))
             {
-                showError("General Error", "A general error occurred, please make sure all data has been entered correctly and the user does not already exist");
+                showError("User Creation Error", Authorise.getErrorMessage());
                 return;
             }
             showInfo("Database Updated", "New User Added Successfully!");
