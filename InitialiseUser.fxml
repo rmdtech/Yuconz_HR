@@ -27,6 +27,11 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
+            <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+               <children>
+                  <Button layoutX="124.0" layoutY="83.0" mnemonicParsing="false" onAction="#initialiseUser" text="Create" />
+               </children>
+            </Pane>
             <Label alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="300.0" text="Please Set Up Your Account" textAlignment="CENTER" GridPane.columnIndex="1">
                <font>
                   <Font size="20.0" />
@@ -91,11 +96,6 @@
                <GridPane.margin>
                   <Insets left="4.0" />
                </GridPane.margin></TextField>
-            <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
-               <children>
-                  <Button layoutX="124.0" layoutY="83.0" mnemonicParsing="false" onAction="#initialiseUser" text="Create" />
-               </children>
-            </Pane>
          </children>
       </GridPane>
    </children>
