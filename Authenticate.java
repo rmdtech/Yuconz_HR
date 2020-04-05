@@ -24,6 +24,7 @@ public class Authenticate{
                 newUser.setRole(dp.fetchRole(employeeId));
                 newUser.setDirectSupervisor(dp.fetchDirectSupervisor(newUser.getEmployeeId()));
                 dp.createSession(employeeId, newUser.getSessionId());
+                dp.recordAuthentication(employeeId);
                 return newUser;
             }
             return null;
