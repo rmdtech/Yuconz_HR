@@ -26,6 +26,7 @@ public class Authenticate{
                 dp.createSession(employeeId, newUser.getSessionId());
                 return newUser;
             }
+            return null;
         }
         return null;
     }
